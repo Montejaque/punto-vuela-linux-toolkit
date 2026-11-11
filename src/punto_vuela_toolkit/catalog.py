@@ -108,6 +108,20 @@ class AppImageCatalog:
                 break
         return results
 
+    def _download_result(self, name: str, url: str, filename: str | None = None) -> dict[str, Any]:
+        path = self.manager.download(url, filename)
+        try:
+            update = self.manager.check_update(path)
+        except Exception as exc:
+            update = {"supported": False, "available": False, "message": str(exc)}
+        if update.get("supported") and update.get("available"):
+            message = f"{name} se ha descargado. El comprobador detecta una versión posterior; puedes instalarla desde Mis aplicaciones."
+        elif update.get("supported"):
+            message = f"{name} se ha descargado y no se detectan actualizaciones."
+        else:
+            message = f"{name} se ha descargado. No se ha podido comprobar la versión: {update.get('message', 'sin metadatos compatibles')}."
+        return {"ok": True, "path": str(path), "updateAvailable": bool(update.get("available")), "message": message}
+
     def install(self, app_name: str) -> dict[str, Any]:
         entry = next((item for item in self.search(app_name, limit=5000)
                       if item["name"].casefold() == app_name.casefold()), None)
@@ -119,8 +133,7 @@ class AppImageCatalog:
         if not repository:
             direct_url = entry.get("downloadUrl", "")
             if urllib.parse.urlparse(direct_url).path.lower().endswith(".appimage"):
-                path = self.manager.download(direct_url)
-                return {"ok": True, "path": str(path), "message": f"{entry['name']} se ha descargado y ya tiene permisos de ejecución."}
+                return self._download_result(entry["name"], direct_url)
             raise RuntimeError("El catálogo no facilita un enlace directo ni un repositorio GitHub con una versión descargable. Abre la ficha de descarga del autor.")
         api_url = "https://api.github.com/repos/" + repository + "/releases/latest"
         release = json.loads(self._request(api_url, timeout=30).decode("utf-8"))
@@ -132,5 +145,4 @@ class AppImageCatalog:
         if not selected:
             raise RuntimeError("No se ha encontrado un archivo AppImage en la última versión de GitHub. Consulta la página de descargas del desarrollador.")
         asset = selected[0]
-        path = self.manager.download(asset["browser_download_url"], asset["name"])
-        return {"ok": True, "path": str(path), "message": f"{entry['name']} se ha descargado y ya tiene permisos de ejecución."}
+        return self._download_result(entry["name"], asset["browser_download_url"], asset["name"])
