@@ -272,7 +272,11 @@ ApplicationWindow {
                                         delegate:Rectangle {
                                             x:modelData.x;y:modelData.y;width:82;height:82;radius:19;rotation:modelData.rotation;color:"#FFFFFF";border.color:"#E6E2D5"
                                             Image { anchors.fill:parent;anchors.margins:14;source:modelData.image;fillMode:Image.PreserveAspectFit;asynchronous:true }
-                                            SequentialAnimation on y { loops:Animation.Infinite; NumberAnimation { to:modelData.y-8;duration:1500+index*160;easing.type:Easing.InOutSine }; NumberAnimation { to:modelData.y;duration:1500+index*160;easing.type:Easing.InOutSine } }
+                                            SequentialAnimation on y {
+                                                loops: Animation.Infinite
+                                                NumberAnimation { to: modelData.y - 8; duration: 1500 + index * 160; easing.type: Easing.InOutSine }
+                                                NumberAnimation { to: modelData.y; duration: 1500 + index * 160; easing.type: Easing.InOutSine }
+                                            }
                                         }
                                     }
                                 }
