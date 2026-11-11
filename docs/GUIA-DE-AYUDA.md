@@ -14,7 +14,7 @@ Las aplicaciones descargadas desde el catálogo se guardan en una carpeta propia
 ~/.local/share/punto-vuela-linux-toolkit/AppImages/
 ```
 
-Si el sistema define `XDG_DATA_HOME`, se utiliza esa ubicación en lugar de `~/.local/share`. No se necesita acceso root para crear o gestionar esta carpeta. El actualizador auxiliar oficial se almacena en la carpeta hermana `tools/` y también se instala en el perfil del usuario.
+undefined
 
 Puedes abrirla desde el gestor de archivos. Cada AppImage descargada se conserva como un archivo independiente; eliminar una AppImage de esta carpeta no desinstala paquetes del sistema ni borra documentos personales.
 
