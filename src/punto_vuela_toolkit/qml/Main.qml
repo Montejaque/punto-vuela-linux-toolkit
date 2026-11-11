@@ -541,178 +541,105 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                         spacing: 18
                         visible: activePage === "Contacto e información"
 
+                        Text { text: "Solicita incorporar una aplicación"; color: primaryText; font.pixelSize: 22; font.bold: true }
                         Text {
                             Layout.fillWidth: true
-                            text: "Solicita incorporar una aplicación"
-                            color: primaryText
-                            font.pixelSize: 20
-                            font.bold: true
-                        }
-                        Text {
-                            Layout.fillWidth: true
-                            text: "Indica desde qué Punto Vuela se realiza la solicitud y los datos de contacto del/de la AIL. Antes de abrir WhatsApp podrás revisar y editar el mensaje completo."
-                            color: secondaryText
-                            font.pixelSize: 12
-                            wrapMode: Text.WordWrap
+                            text: "Envía una propuesta para estudiar su inclusión en el catálogo Punto Vuela Linux Toolkit. Puedes preparar un correo corporativo o compartir la solicitud por WhatsApp."
+                            color: secondaryText; font.pixelSize: 12; wrapMode: Text.WordWrap
                         }
 
                         Rectangle {
-                            Layout.fillWidth: true
-                            radius: 14
-                            color: panel
-                            border.color: panelBorder
-                            implicitHeight: requestForm.implicitHeight + 32
+                            Layout.fillWidth: true; radius: 16; color: panel; border.color: panelBorder
+                            implicitHeight: requestForm.implicitHeight + 36
                             ColumnLayout {
                                 id: requestForm
-                                anchors.fill: parent
-                                anchors.margins: 18
-                                spacing: 12
-
-                                Text { text: "1. Datos del Punto Vuela y del/de la AIL"; color: primaryText; font.pixelSize: 14; font.bold: true }
+                                anchors.fill: parent; anchors.margins: 18; spacing: 12
+                                Text { text: "Datos del centro y del/de la AIL"; color: primaryText; font.pixelSize: 15; font.bold: true }
                                 GridLayout {
-                                    Layout.fillWidth: true
-                                    columns: width > 680 ? 2 : 1
-                                    columnSpacing: 12
-                                    rowSpacing: 9
+                                    Layout.fillWidth: true; columns: width > 680 ? 2 : 1; columnSpacing: 12; rowSpacing: 9
                                     TextField { id: puntoVuelaField; Layout.fillWidth: true; placeholderText: "Nombre del Punto Vuela *" }
                                     TextField { id: municipioField; Layout.fillWidth: true; placeholderText: "Municipio *" }
                                     TextField { id: ailField; Layout.fillWidth: true; placeholderText: "Nombre y apellidos del/de la AIL *" }
-                                    TextField { id: telefonoField; Layout.fillWidth: true; placeholderText: "Teléfono de contacto *"; inputMethodHints: Qt.ImhTelephoneNumber }
-                                    TextField { id: correoField; Layout.fillWidth: true; placeholderText: "Correo electrónico de contacto *"; inputMethodHints: Qt.ImhEmailCharactersOnly }
+                                    TextField { id: telefonoField; Layout.fillWidth: true; placeholderText: "Teléfono de contacto *" }
+                                    TextField { id: correoField; Layout.fillWidth: true; placeholderText: "Correo electrónico *" }
                                 }
-
                                 Rectangle { Layout.fillWidth: true; height: 1; color: panelBorder }
-                                Text { text: "2. Aplicación que se solicita"; color: primaryText; font.pixelSize: 14; font.bold: true }
+                                Text { text: "Aplicación propuesta"; color: primaryText; font.pixelSize: 15; font.bold: true }
                                 GridLayout {
-                                    Layout.fillWidth: true
-                                    columns: width > 680 ? 2 : 1
-                                    columnSpacing: 12
-                                    rowSpacing: 9
-                                    TextField { id: softwareField; Layout.fillWidth: true; placeholderText: "Nombre del programa o aplicación *" }
-                                    TextField { id: enlaceField; Layout.fillWidth: true; placeholderText: "Web oficial o enlace de descarga" }
-                                    ComboBox {
-                                        id: distroField
-                                        Layout.fillWidth: true
-                                        model: ["Ubuntu", "Debian", "Linux Mint", "Fedora", "Otra distribución", "Cualquier distribución"]
-                                    }
+                                    Layout.fillWidth: true; columns: width > 680 ? 2 : 1; columnSpacing: 12; rowSpacing: 9
+                                    TextField { id: softwareField; Layout.fillWidth: true; placeholderText: "Nombre de la aplicación *" }
+                                    TextField { id: enlaceField; Layout.fillWidth: true; placeholderText: "Web oficial o descarga" }
+                                    ComboBox { id: distroField; Layout.fillWidth: true; model: ["Ubuntu", "Debian", "Linux Mint", "Fedora", "Otra distribución", "Cualquier distribución"] }
                                 }
-                                TextArea {
-                                    id: motivoField
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: 86
-                                    placeholderText: "¿Para qué se utilizaría? ¿Qué necesidad cubriría? *"
-                                    wrapMode: TextEdit.Wrap
-                                }
-                                TextArea {
-                                    id: observacionesField
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: 64
-                                    placeholderText: "Observaciones adicionales (opcional)"
-                                    wrapMode: TextEdit.Wrap
-                                }
-
-                                RowLayout {
-                                    Layout.fillWidth: true
-                                    spacing: 10
-                                    Rectangle {
-                                        radius: 9
-                                        color: accent
-                                        Layout.preferredHeight: 42
-                                        Layout.preferredWidth: 190
-                                        Text { anchors.centerIn: parent; text: "Generar vista previa"; color: "#171717"; font.pixelSize: 12; font.bold: true }
-                                        MouseArea {
-                                            anchors.fill: parent
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: {
-                                                if (!puntoVuelaField.text.trim() || !municipioField.text.trim() ||
-                                                    !ailField.text.trim() || !telefonoField.text.trim() ||
-                                                    !correoField.text.trim() || !softwareField.text.trim() ||
-                                                    !motivoField.text.trim()) {
-                                                    formError.text = "Completa los campos obligatorios marcados con * para generar el mensaje."
-                                                    formError.visible = true
-                                                    return
-                                                }
-                                                formError.visible = false
-                                                previewText.text =
-                                                    "SOLICITUD DE INCORPORACIÓN DE SOFTWARE — PUNTO VUELA\n\n" +
-                                                    "PUNTO VUELA\n" +
-                                                    "Centro: " + puntoVuelaField.text.trim() + "\n" +
-                                                    "Municipio: " + municipioField.text.trim() + "\n\n" +
-                                                    "DATOS DEL/DE LA AIL\n" +
-                                                    "Nombre: " + ailField.text.trim() + "\n" +
-                                                    "Teléfono: " + telefonoField.text.trim() + "\n" +
-                                                    "Correo: " + correoField.text.trim() + "\n\n" +
-                                                    "SOFTWARE SOLICITADO\n" +
-                                                    "Aplicación: " + softwareField.text.trim() + "\n" +
-                                                    "Enlace: " + (enlaceField.text.trim() || "No indicado") + "\n" +
-                                                    "Distribución: " + distroField.currentText + "\n" +
-                                                    "Necesidad / utilidad: " + motivoField.text.trim() + "\n" +
-                                                    "Observaciones: " + (observacionesField.text.trim() || "Ninguna") + "\n"
-                                                previewVisible = true
-                                            }
+                                TextArea { id: motivoField; Layout.fillWidth: true; Layout.preferredHeight: 90; placeholderText: "Utilidad y necesidad que cubriría *"; wrapMode: TextEdit.Wrap }
+                                TextArea { id: observacionesField; Layout.fillWidth: true; Layout.preferredHeight: 64; placeholderText: "Observaciones (opcional)"; wrapMode: TextEdit.Wrap }
+                                Button {
+                                    text: "Generar solicitud y vista previa"
+                                    onClicked: {
+                                        if (!puntoVuelaField.text.trim() || !municipioField.text.trim() || !ailField.text.trim() ||
+                                            !telefonoField.text.trim() || !correoField.text.trim() || !softwareField.text.trim() || !motivoField.text.trim()) {
+                                            formError.text = "Completa los campos obligatorios para continuar."; formError.visible = true; return
                                         }
-                                    }
-                                    Text {
-                                        id: formError
-                                        Layout.fillWidth: true
-                                        visible: false
-                                        color: "#D65A5A"
-                                        font.pixelSize: 11
-                                        wrapMode: Text.WordWrap
+                                        formError.visible = false
+                                        previewText.text =
+                                            "SOLICITUD DE INCORPORACIÓN DE APLICACIÓN\n\n" +
+                                            "PUNTO VUELA\nCentro: " + puntoVuelaField.text.trim() + "\nMunicipio: " + municipioField.text.trim() + "\n\n" +
+                                            "PERSONA DE CONTACTO\nNombre: " + ailField.text.trim() + "\nTeléfono: " + telefonoField.text.trim() +
+                                            "\nCorreo: " + correoField.text.trim() + "\n\n" +
+                                            "APLICACIÓN\nNombre: " + softwareField.text.trim() + "\nEnlace: " + (enlaceField.text.trim() || "No indicado") +
+                                            "\nDistribución: " + distroField.currentText + "\nUtilidad: " + motivoField.text.trim() +
+                                            "\nObservaciones: " + (observacionesField.text.trim() || "Ninguna")
+                                        previewVisible = true
                                     }
                                 }
+                                Text { id: formError; visible: false; color: "#D65A5A"; font.pixelSize: 11; wrapMode: Text.WordWrap }
                             }
                         }
-
                         Rectangle {
-                            Layout.fillWidth: true
-                            radius: 14
-                            color: panel
-                            border.color: panelBorder
-                            visible: previewVisible
-                            implicitHeight: previewColumn.implicitHeight + 32
+                            Layout.fillWidth: true; visible: previewVisible; radius: 16; color: panel; border.color: panelBorder
+                            implicitHeight: previewColumn.implicitHeight + 36
                             ColumnLayout {
                                 id: previewColumn
-                                anchors.fill: parent
-                                anchors.margins: 18
-                                spacing: 10
-                                Text { text: "3. Revisa y modifica el mensaje"; color: primaryText; font.pixelSize: 14; font.bold: true }
-                                Text {
-                                    Layout.fillWidth: true
-                                    text: "Este texto es editable. Los cambios que hagas aquí serán los que se preparen en WhatsApp."
-                                    color: muted
-                                    font.pixelSize: 11
-                                    wrapMode: Text.WordWrap
-                                }
+                                anchors.fill: parent; anchors.margins: 18; spacing: 10
+                                Text { text: "Vista previa editable"; color: primaryText; font.pixelSize: 15; font.bold: true }
                                 TextArea {
-                                    id: previewText
-                                    Layout.fillWidth: true
-                                    Layout.preferredHeight: 300
-                                    wrapMode: TextEdit.Wrap
-                                    selectByMouse: true
-                                    color: primaryText
+                                    id: previewText; Layout.fillWidth: true; Layout.preferredHeight: 260
+                                    wrapMode: TextEdit.Wrap; selectByMouse: true; color: primaryText
                                     background: Rectangle { color: searchColor; border.color: panelBorder; radius: 8 }
                                 }
                                 RowLayout {
                                     Layout.fillWidth: true
-                                    spacing: 10
-                                    Rectangle {
-                                        radius: 9
-                                        color: accent
-                                        Layout.preferredHeight: 42
-                                        Layout.preferredWidth: 190
-                                        Text { anchors.centerIn: parent; text: "Abrir WhatsApp"; color: "#171717"; font.pixelSize: 12; font.bold: true }
-                                        MouseArea {
-                                            anchors.fill: parent
-                                            cursorShape: Qt.PointingHandCursor
-                                            onClicked: {
-                                                if (previewText.text.trim().length > 0) {
-                                                    Qt.openUrlExternally("https://wa.me/34633402959?text=" + encodeURIComponent(previewText.text))
-                                                }
-                                            }
+                                    Button {
+                                        text: "Enviar por WhatsApp"
+                                        onClicked: if (previewText.text.trim()) Qt.openUrlExternally("https://wa.me/34633402959?text=" + encodeURIComponent(previewText.text))
+                                    }
+                                    Button {
+                                        text: "Enviar por email (HTML)"
+                                        onClicked: {
+                                            const escaped = previewText.text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>")
+                                            const html = "<!doctype html><html><body style='margin:0;background:#f3f4f6;font-family:Arial,sans-serif;color:#24262a'><table role='presentation' width='100%' cellspacing='0' cellpadding='0' style='padding:28px 8px'><tr><td align='center'><table width='620' style='max-width:620px;background:#fff;border-radius:14px;overflow:hidden' cellpadding='0' cellspacing='0'><tr><td style='background:#f3d54e;padding:22px 28px;font-size:20px;font-weight:bold'>PUNTO VUELA <span style='font-size:12px'>LINUX TOOLKIT</span></td></tr><tr><td style='padding:28px;line-height:1.7'>" + escaped + "</td></tr><tr><td style='padding:18px 28px;background:#f7f7f7;color:#737984;font-size:12px'>Solicitud generada desde Punto Vuela Linux Toolkit.</td></tr></table></td></tr></table></body></html>"
+                                            Qt.openUrlExternally("mailto:?subject=" + encodeURIComponent("Solicitud de incorporación de aplicación") + "&body=" + encodeURIComponent(previewText.text))
                                         }
                                     }
-                                    Text { text: "Destino: +34 633 402 959"; color: muted; font.pixelSize: 11 }
+                                }
+                                Text { text: "WhatsApp: +34 633 402 959 · El correo se prepara en tu cliente predeterminado."; color: muted; font.pixelSize: 10 }
+                            }
+                        }
+                        Rectangle {
+                            Layout.fillWidth: true; radius: 16; color: panel; border.color: panelBorder
+                            implicitHeight: 154
+                            RowLayout {
+                                anchors.fill: parent; anchors.margins: 20; spacing: 18
+                                Rectangle { width: 72; height: 72; radius: 18; color: accent
+                                    Image { anchors.fill: parent; anchors.margins: 5; source: Qt.resolvedUrl("../assets/logotipovuela.svg"); fillMode: Image.PreserveAspectFit }
+                                }
+                                ColumnLayout {
+                                    Layout.fillWidth: true; spacing: 5
+                                    Text { text: "Desarrollo y mantenimiento"; color: primaryText; font.pixelSize: 16; font.bold: true }
+                                    Text { text: "Punto Vuela Montejaque"; color: secondaryText; font.pixelSize: 13; font.bold: true }
+                                    Text { text: "Desarrollador: Francisco Javier Gallego Orellana"; color: secondaryText; font.pixelSize: 12 }
+                                    Text { text: "Proyecto comunitario de herramientas y aplicaciones para Linux."; color: muted; font.pixelSize: 11; wrapMode: Text.WordWrap }
+                                    Text { text: "Repositorio oficial: github.com/Montejaque/punto-vuela-linux-toolkit"; color: accent; font.pixelSize: 10; wrapMode: Text.WordWrap }
                                 }
                             }
                         }
