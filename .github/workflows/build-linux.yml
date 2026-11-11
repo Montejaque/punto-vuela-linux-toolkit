@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        format: [appimage, deb, rpm]
+        format: [appimage]
     steps:
       - uses: actions/checkout@v5
       - name: Install build dependencies
@@ -151,14 +151,12 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          pattern: linux-*-x86_64
+          pattern: linux-appimage-x86_64
           merge-multiple: true
       - name: Verify all release packages exist
         run: |
           test -n "$(find . -maxdepth 1 -type f -name '*.AppImage' -print -quit)"
-          test -n "$(find . -maxdepth 1 -type f -name '*.deb' -print -quit)"
-          test -n "$(find . -maxdepth 1 -type f -name '*.rpm' -print -quit)"
-          sha256sum *.AppImage *.deb *.rpm > SHA256SUMS
+          sha256sum *.AppImage > SHA256SUMS
       - name: Publish release assets
         uses: softprops/action-gh-release@v2
         with:
@@ -166,6 +164,4 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             *.AppImage
-            *.deb
-            *.rpm
             SHA256SUMS
