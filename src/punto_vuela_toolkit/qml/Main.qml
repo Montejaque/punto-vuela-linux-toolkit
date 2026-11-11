@@ -58,6 +58,21 @@ ApplicationWindow {
             catalogStatus.text = result.message || "La operación ha terminado."
             if (result.ok) refreshAppImages()
         }
+        function onAppImageDownloadFinished(payload) {
+            const result = JSON.parse(payload)
+            appImageStatus.text = result.message || ""
+            if (result.ok) { appImageUrl.text = ""; refreshAppImages() }
+        }
+        function onAppImageUpdateCheckFinished(payload) {
+            const result = JSON.parse(payload)
+            appImageStatus.text = result.path.split("/").pop() + ": " + result.message
+            if (result.available) appImageStatus.text += " · Hay una actualización. Pulsa Actualizar."
+        }
+        function onAppImageUpdated(payload) {
+            const result = JSON.parse(payload)
+            appImageStatus.text = result.message || ""
+            refreshAppImages()
+        }
     }
 
     Dialog {
@@ -401,9 +416,12 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                                     Button {
                                         text: "Descargar"
                                         onClicked: {
-                                            const result = JSON.parse(appImageManager.downloadAppImage(appImageUrl.text.trim()))
-                                            appImageStatus.text = result.message
-                                            if (result.ok) { appImageUrl.text = ""; refreshAppImages() }
+                                            if (!appImageUrl.text.trim()) {
+                                                appImageStatus.text = "Introduce un enlace HTTPS directo a una AppImage."
+                                                return
+                                            }
+                                            appImageStatus.text = "Descargando y comprobando la aplicación…"
+                                            appImageManager.downloadAppImage(appImageUrl.text.trim())
                                         }
                                     }
                                     Button { text: "Abrir AppImageHub"; onClicked: Qt.openUrlExternally("https://www.appimagehub.com/") }
@@ -453,17 +471,15 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                                     Button {
                                         text: "Comprobar"
                                         onClicked: {
-                                            const result = JSON.parse(appImageManager.checkAppImageUpdate(modelData.path))
-                                            appImageStatus.text = modelData.name + ": " + result.message
-                                            if (result.available) appImageStatus.text += " · Hay una actualización. Pulsa Actualizar."
+                                            appImageStatus.text = "Comprobando actualizaciones de " + modelData.name + "…"
+                                            appImageManager.checkAppImageUpdate(modelData.path)
                                         }
                                     }
                                     Button {
                                         text: "Actualizar"
                                         onClicked: {
-                                            const result = JSON.parse(appImageManager.updateAppImage(modelData.path))
-                                            appImageStatus.text = modelData.name + ": " + result.message
-                                            refreshAppImages()
+                                            appImageStatus.text = "Actualizando " + modelData.name + "…"
+                                            appImageManager.updateAppImage(modelData.path)
                                         }
                                     }
                                     Button {
