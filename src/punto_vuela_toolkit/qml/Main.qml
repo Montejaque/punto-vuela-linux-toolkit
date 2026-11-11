@@ -12,7 +12,7 @@ ApplicationWindow {
     visible: true
     title: "Punto Vuela Linux Toolkit"
     property string activePage: "Inicio"
-    property color accent: "#F3D54E"
+    property color accent: "#FAD100"
     property string themeMode: appSettings.savedThemeMode
     property bool darkTheme: themeMode === "dark" || (themeMode === "system" && systemPalette.window.hslLightness < 0.5)
 
@@ -24,7 +24,7 @@ ApplicationWindow {
     }
 
     readonly property color backgroundColor: darkTheme ? "#252B31" : "#F3F4F6"
-    readonly property color sidebarColor: "#F2D000"
+    readonly property color sidebarColor: "#FAD100"
     readonly property color panel: darkTheme ? "#303740" : "#FFFFFF"
     readonly property color panelBorder: darkTheme ? "#3A424C" : "#E1E3E8"
     readonly property color primaryText: darkTheme ? "#F7F8FA" : "#202226"
@@ -140,7 +140,7 @@ ApplicationWindow {
                     Rectangle {
                         width: 44; height: 44; radius: 14
                         color: accent
-                        Image { anchors.fill: parent; anchors.margins: 3; source: Qt.resolvedUrl("../assets/logotipovuela.svg"); fillMode: Image.PreserveAspectFit; smooth: true; mipmap: true; asynchronous: true; sourceSize.width: 512; sourceSize.height: 512; visible: status === Image.Ready }
+                        Image { anchors.fill: parent; anchors.margins: 3; source: Qt.resolvedUrl("../assets/logotipo-v.svg"); fillMode: Image.PreserveAspectFit; smooth: true; mipmap: true; asynchronous: true; sourceSize.width: 512; sourceSize.height: 512; visible: status === Image.Ready }
                     }
                     Column {
                         spacing: 2
@@ -267,7 +267,7 @@ ApplicationWindow {
                                 anchors.fill:parent; anchors.margins:28; spacing:24
                                 ColumnLayout {
                                     Layout.fillWidth:true; spacing:12
-                                    Text { text:"PUNTO VUELA · SOFTWARE HUB"; color:darkTheme?"#F3D54E":"#76601B"; font.pixelSize:10; font.bold:true; font.letterSpacing:1.7 }
+                                    Text { text:"PUNTO VUELA · SOFTWARE HUB"; color:darkTheme?"#FAD100":"#76601B"; font.pixelSize:10; font.bold:true; font.letterSpacing:1.7 }
                                     Text { text:"Todo tu software Linux.\nEn un solo lugar."; color:darkTheme?"#FFFFFF":"#202226"; font.pixelSize:29; font.bold:true }
                                     Text { text:"Descubre herramientas, aplicaciones y utilidades seleccionadas para tu entorno de trabajo."; color:darkTheme?"#D3D0C7":"#55504A"; font.pixelSize:13; wrapMode:Text.WordWrap; Layout.fillWidth:true }
                                     Button { text:"Explorar aplicaciones  →"; onClicked:activePage="Catálogo AppImage" }
