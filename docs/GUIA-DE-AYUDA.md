@@ -83,6 +83,19 @@ AppImageHub (Pling) es una fuente independiente del feed comunitario de AppImage
 
 La sección **Punto Vuela** ofrece acceso a los repositorios de las herramientas propias. Consulta el README de cada proyecto para conocer requisitos, versiones y procedimiento de instalación.
 
+
+## 11. Desarrollador y contacto
+
+**Desarrollado por:** Francisco Javier Gallego Orellana.
+
+**Punto Vuela Montejaque**
+
+- **Dirección:** Avenida Andalucía, 48 · 29360 Montejaque (Málaga)
+- **Teléfono:** 633 402 959
+- **Correo electrónico:** montejaque@puntosvuela.es
+
+Para consultas sobre el funcionamiento del Toolkit, incidencias o sugerencias, utiliza los datos de contacto de Punto Vuela Montejaque.
+
 ---
 
 **Punto Vuela Linux Toolkit** · Guía de ayuda  
