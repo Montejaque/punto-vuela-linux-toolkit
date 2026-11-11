@@ -439,7 +439,6 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                             }
                         }
                     }
-                    }
                 }
             }
         }
