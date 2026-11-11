@@ -71,7 +71,9 @@ def create_application() -> QGuiApplication:
 
 def load_interface() -> QQmlApplicationEngine:
     engine = QQmlApplicationEngine()
-    engine.rootContext().setContextProperty("appImageManager", AppImageBridge())
+    bridge = AppImageBridge()
+    engine.rootContext().setContextProperty("appImageManager", bridge)
+    engine._app_image_bridge = bridge
     engine.load(QUrl.fromLocalFile(str(QML_FILE.resolve())))
     if not engine.rootObjects():
         raise RuntimeError(f"No se pudo cargar la interfaz QML: {QML_FILE}")
