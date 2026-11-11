@@ -9,7 +9,8 @@ Centro de software para Linux con identidad Punto Vuela. Reúne las herramientas
 - Instalación y gestión en el espacio del usuario, sin requerir privilegios root para las funciones propias.
 - Catálogo Punto Vuela con enlaces a los proyectos oficiales.
 - Catálogos AppImageHub y AppImage Community, respetando sus fuentes y condiciones.
-- Diseño oscuro, acento amarillo `#F3D54E`, tipografía Inter y logotipo oficial de Punto Vuela.
+- Diseño claro, oscuro o automático según el tema del sistema; selector visible en la barra superior y preferencia guardada entre sesiones.
+- Acento amarillo `#F3D54E`, tipografía Inter y logotipo oficial de Punto Vuela.
 
 ## Estado
 
