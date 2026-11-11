@@ -39,6 +39,16 @@ ApplicationWindow {
     property var appImageItems: []
     property var catalogItems: []
     property bool catalogLoading: false
+    property string selectedCategory: "Todas"
+    property string selectedAppName: ""
+    property var featuredApps: [
+        {title:"Codex",category:"IA y desarrollo",kind:"Asistente de código",desc:"Asistente de programación para trabajar con repositorios y tareas de desarrollo.",url:"https://github.com/Montejaque/chatgpt-installer-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/openai.png",tag:"PUNTO VUELA"},
+        {title:"Visual Studio Code",category:"Desarrollo",kind:"Editor",desc:"Editor de código extensible con instalador preparado para Linux sin root.",url:"https://github.com/Montejaque/vscode-installer-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/vscode.png",tag:"PUNTO VUELA"},
+        {title:"Antigravity",category:"IA y desarrollo",kind:"Herramienta",desc:"Instalación y mantenimiento de Antigravity en equipos Linux.",url:"https://github.com/Montejaque/antigravity-installer-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/google.png",tag:"PUNTO VUELA"},
+        {title:"Claude Desktop",category:"IA y desarrollo",kind:"Aplicación",desc:"Instalador de Claude Desktop para entornos Linux.",url:"https://github.com/Montejaque/claude-desktop-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/claude.png",tag:"PUNTO VUELA"},
+        {title:"Brother MFC-J5740DW",category:"Sistema y periféricos",kind:"Controlador",desc:"Controlador y herramientas de escáner para la multifunción Brother.",url:"https://github.com/Montejaque/brother-mfc-j5740dw-sinroot",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/brother.png",tag:"PUNTO VUELA"}
+    ]
+    property var visibleFeaturedApps: featuredApps.filter(item => selectedCategory === "Todas" || item.category === selectedCategory)
 
     function refreshCatalog() {
         catalogLoading = true
@@ -237,58 +247,98 @@ ApplicationWindow {
                         visible: activePage !== "Contacto e información" && activePage !== "Mis aplicaciones" && activePage !== "Ayuda" && activePage !== "Catálogo AppImage"
 
                         Rectangle {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 190
-                            radius: 18
-                            gradient: Gradient {
-                                GradientStop { position: 0.0; color: heroStart }
-                                GradientStop { position: 1.0; color: heroEnd }
+                            Layout.fillWidth:true; Layout.preferredHeight:248; radius:22; clip:true
+                            gradient:Gradient {
+                                GradientStop { position:0; color:darkTheme?"#332D1B":"#FFF0AE" }
+                                GradientStop { position:1; color:darkTheme?"#211F1A":"#F8E4A0" }
                             }
                             RowLayout {
-                                anchors.fill: parent; anchors.margins: 28; spacing: 20
+                                anchors.fill:parent; anchors.margins:28; spacing:24
                                 ColumnLayout {
-                                    Layout.fillWidth: true
-                                    spacing: 12
-                                    Text { text: "Bienvenido a tu centro de software"; color: primaryText; font.pixelSize: 22; font.bold: true }
-                                    Text { text: "Las herramientas de Punto Vuela y tus aplicaciones Linux,
-en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
-                                    Rectangle {
-                                        radius: 9; color: accent; Layout.preferredWidth: 154; Layout.preferredHeight: 38
-                                        Text { anchors.centerIn: parent; text: "Explorar catálogo  →"; color: "#171717"; font.pixelSize: 12; font.bold: true }
-                                        MouseArea { anchors.fill: parent; onClicked: activePage = "Catálogo AppImage"; cursorShape: Qt.PointingHandCursor }
-                                    }
+                                    Layout.fillWidth:true; spacing:12
+                                    Text { text:"PUNTO VUELA · SOFTWARE HUB"; color:darkTheme?"#F3D54E":"#76601B"; font.pixelSize:10; font.bold:true; font.letterSpacing:1.7 }
+                                    Text { text:"Todo tu software Linux.\nEn un solo lugar."; color:darkTheme?"#FFFFFF":"#202226"; font.pixelSize:29; font.bold:true }
+                                    Text { text:"Descubre herramientas, aplicaciones y utilidades seleccionadas para tu entorno de trabajo."; color:darkTheme?"#D3D0C7":"#55504A"; font.pixelSize:13; wrapMode:Text.WordWrap; Layout.fillWidth:true }
+                                    Button { text:"Explorar aplicaciones  →"; onClicked:activePage="Catálogo AppImage" }
                                 }
-                                Rectangle {
-                                    width: 116; height: 116; radius: 28; color: "#F3D54E"
-                                    Image { anchors.fill: parent; anchors.margins: 18; source: Qt.resolvedUrl("../assets/logotipovuela.svg"); fillMode: Image.PreserveAspectFit; visible: status === Image.Ready }
+                                Item {
+                                    Layout.preferredWidth:300; Layout.fillHeight:true
+                                    Repeater {
+                                        model:[
+                                            {image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/openai.png",x:10,y:30,rotation:-9},
+                                            {image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/vscode.png",x:105,y:8,rotation:7},
+                                            {image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/claude.png",x:205,y:46,rotation:8}
+                                        ]
+                                        delegate:Rectangle {
+                                            x:modelData.x;y:modelData.y;width:82;height:82;radius:19;rotation:modelData.rotation;color:"#FFFFFF";border.color:"#E6E2D5"
+                                            Image { anchors.fill:parent;anchors.margins:14;source:modelData.image;fillMode:Image.PreserveAspectFit;asynchronous:true }
+                                            SequentialAnimation on y { loops:Animation.Infinite; NumberAnimation { to:modelData.y-8;duration:1500+index*160;easing.type:Easing.InOutSine }; NumberAnimation { to:modelData.y;duration:1500+index*160;easing.type:Easing.InOutSine } }
+                                        }
+                                    }
                                 }
                             }
                         }
-
-                        Text { text: "Accesos destacados"; color: primaryText; font.pixelSize: 17; font.bold: true }
-                        GridLayout {
-                            Layout.fillWidth: true
-                            columns: width > 850 ? 3 : 2
-                            columnSpacing: 14; rowSpacing: 14
+                        RowLayout {
+                            Layout.fillWidth:true
+                            Text { text:"Aplicaciones destacadas"; color:primaryText; font.pixelSize:19; font.bold:true }
+                            Item { Layout.fillWidth:true }
+                            Text { text:featuredApps.length+" herramientas"; color:muted; font.pixelSize:11 }
+                        }
+                        Flow {
+                            Layout.fillWidth:true; spacing:8
                             Repeater {
-                                model: [
-                                    {title:"Antigravity Installer", desc:"Instalación y mantenimiento de Antigravity", url:"https://github.com/Montejaque/antigravity-installer-linux", tag:"PUNTO VUELA"},
-                                    {title:"Claude Desktop Linux", desc:"Instalador de Claude Desktop para Linux", url:"https://github.com/Montejaque/claude-desktop-linux", tag:"PUNTO VUELA"},
-                                    {title:"ChatGPT Installer", desc:"ChatGPT Desktop y Codex CLI", url:"https://github.com/Montejaque/chatgpt-installer-linux", tag:"PUNTO VUELA"},
-                                    {title:"VS Code Installer", desc:"Gestor de Visual Studio Code sin root", url:"https://github.com/Montejaque/vscode-installer-linux", tag:"PUNTO VUELA"},
-                                    {title:"Brother MFC-J5740DW", desc:"Controlador y escáner sin root", url:"https://github.com/Montejaque/brother-mfc-j5740dw-sinroot", tag:"PUNTO VUELA"}
-                                ]
-                                delegate: Rectangle {
-                                    Layout.fillWidth: true; Layout.preferredHeight: 122
-                                    radius: 13; color: panel; border.color: panelBorder
+                                model:["Todas","IA y desarrollo","Desarrollo","Sistema y periféricos"]
+                                delegate:Button { text:modelData; highlighted:selectedCategory===modelData; onClicked:selectedCategory=modelData }
+                            }
+                        }
+                        GridLayout {
+                            Layout.fillWidth:true; columns:width>850?3:2; columnSpacing:14; rowSpacing:14
+                            Repeater {
+                                model:visibleFeaturedApps
+                                delegate:Rectangle {
+                                    Layout.fillWidth:true; Layout.preferredHeight:216; radius:16; color:panel; border.color:panelBorder
                                     ColumnLayout {
-                                        anchors.fill: parent; anchors.margins: 15; spacing: 7
-                                        Text { text: modelData.tag; color: accent; font.pixelSize: 9; font.bold: true; font.letterSpacing: 1 }
-                                        Text { text: modelData.title; color: primaryText; font.pixelSize: 13; font.bold: true }
-                                        Text { text: modelData.desc; color: muted; font.pixelSize: 10; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+                                        anchors.fill:parent; anchors.margins:15; spacing:8
+                                        RowLayout {
+                                            Layout.fillWidth:true
+                                            Rectangle {
+                                                width:54;height:54;radius:13;color:"#FFFFFF";border.color:"#E8E8E8"
+                                                Image { anchors.fill:parent;anchors.margins:7;source:modelData.image;asynchronous:true;fillMode:Image.PreserveAspectFit }
+                                            }
+                                            ColumnLayout {
+                                                Layout.fillWidth:true;spacing:3
+                                                Text { text:modelData.title;color:primaryText;font.pixelSize:14;font.bold:true;Layout.fillWidth:true;elide:Text.ElideRight }
+                                                Text { text:modelData.category;color:muted;font.pixelSize:10 }
+                                            }
+                                        }
+                                        Text { text:modelData.desc;color:secondaryText;font.pixelSize:11;wrapMode:Text.WordWrap;Layout.fillWidth:true;Layout.fillHeight:true }
+                                        RowLayout {
+                                            Layout.fillWidth:true
+                                            Text { text:modelData.tag;color:accent;font.pixelSize:9;font.bold:true }
+                                            Item { Layout.fillWidth:true }
+                                            Button { text:"Ficha";onClicked:{selectedAppName=modelData.title;appDetailDialog.open()} }
+                                            Button { text:"Abrir";onClicked:Qt.openUrlExternally(modelData.url) }
+                                        }
                                     }
-                                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: Qt.openUrlExternally(modelData.url) }
                                 }
+                            }
+                        }
+                        Dialog {
+                            id:appDetailDialog;modal:true;anchors.centerIn:Overlay.overlay;width:Math.min(window.width-80,520)
+                            title:selectedAppName;standardButtons:Dialog.Close
+                            contentItem:ColumnLayout {
+                                spacing:10
+                                Text {
+                                    text:{
+                                        const item=featuredApps.find(entry=>entry.title===selectedAppName)
+                                        return item?item.desc+"\n\nCategoría: "+item.category+"\nTipo: "+item.kind+"\nOrigen: "+item.url:""
+                                    }
+                                    color:primaryText;wrapMode:Text.WordWrap;Layout.fillWidth:true
+                                }
+                                Button { text:"Abrir proyecto";onClicked:{
+                                    const item=featuredApps.find(entry=>entry.title===selectedAppName)
+                                    if(item)Qt.openUrlExternally(item.url)
+                                }}
                             }
                         }
                         Text { text: "Fuentes de aplicaciones"; color: primaryText; font.pixelSize: 17; font.bold: true }
