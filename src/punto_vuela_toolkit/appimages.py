@@ -27,6 +27,7 @@ class AppImageRecord:
     path: Path
     size: int
     executable: bool
+    desktop_entry: Path | None = None
 
 
 class AppImageManager:
@@ -48,10 +49,73 @@ class AppImageManager:
                 continue
             try:
                 stat = path.stat()
-                records.append(AppImageRecord(path, stat.st_size, os.access(path, os.X_OK)))
+                records.append(AppImageRecord(path, stat.st_size, os.access(path, os.X_OK), self._desktop_path(path)))
             except OSError:
                 continue
         return records
+
+    @staticmethod
+    def _desktop_path(appimage: Path) -> Path:
+        data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share"))
+        safe = re.sub(r"[^A-Za-z0-9._-]+", "-", appimage.stem).strip("-").lower()
+        return data_home / "applications" / f"punto-vuela-{safe}.desktop"
+
+    def integrate(self, path: str | Path, display_name: str | None = None) -> Path:
+        """Create a per-user desktop launcher; no system directories are modified."""
+        appimage = self.ensure_executable(path)
+        desktop_dir = self._desktop_path(appimage).parent
+        desktop_dir.mkdir(parents=True, exist_ok=True)
+        name = display_name or appimage.stem.replace("-", " ").replace("_", " ")
+        icon_name = "application-x-executable"
+        categories = "Utility;"
+        comment = "Aplicación AppImage gestionada por Punto Vuela Linux Toolkit"
+        # Read embedded desktop metadata without launching the application.
+        with tempfile.TemporaryDirectory(prefix="pv-appimage-meta-") as tmp:
+            try:
+                result = subprocess.run([str(appimage), "--appimage-extract"], cwd=tmp,
+                                        capture_output=True, text=True, timeout=120, check=False)
+                root = Path(tmp) / "squashfs-root"
+                desktop_files = list(root.rglob("*.desktop")) if result.returncode == 0 and root.exists() else []
+                if desktop_files:
+                    parser = configparser.ConfigParser(interpolation=None, strict=False)
+                    parser.read(desktop_files[0], encoding="utf-8")
+                    entry = parser["Desktop Entry"] if parser.has_section("Desktop Entry") else {}
+                    name = str(entry.get("Name", name)).strip() or name
+                    comment = str(entry.get("Comment", comment)).replace("\n", " ").strip()
+                    categories = str(entry.get("Categories", categories)).strip() or categories
+                    source_icon = str(entry.get("Icon", "")).strip()
+                    if source_icon:
+                        candidates = list(root.rglob(source_icon)) + list(root.rglob(source_icon + ".png")) + list(root.rglob(source_icon + ".svg"))
+                        icon_file = next((item for item in candidates if item.is_file() and item.suffix.lower() in (".png", ".svg", ".xpm")), None)
+                        if icon_file:
+                            icon_root = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")) / "icons" / "hicolor"
+                            extension = icon_file.suffix.lower()
+                            icon_target = icon_root / ("scalable/apps" if extension == ".svg" else "256x256/apps") / (self._desktop_path(appimage).stem + extension)
+                            icon_target.parent.mkdir(parents=True, exist_ok=True)
+                            shutil.copy2(icon_file, icon_target)
+                            icon_name = str(icon_target)
+            except (OSError, subprocess.TimeoutExpired, configparser.Error):
+                pass
+        desktop = self._desktop_path(appimage)
+        safe_exec = str(appimage).replace("\\", "\\\\").replace('"', '\\"')
+        content = (
+            "[Desktop Entry]\nType=Application\n"
+            f"Name={name}\nComment={comment}\n"
+            f'Exec="{safe_exec}" %U\nIcon={icon_name}\n'
+            f"Terminal=false\nCategories={categories}\nStartupNotify=true\n"
+        )
+        temporary = desktop.with_suffix(".desktop.part")
+        temporary.write_text(content, encoding="utf-8")
+        temporary.chmod(0o644)
+        os.replace(temporary, desktop)
+        try:
+            subprocess.run(["update-desktop-database", str(desktop_dir)], capture_output=True, timeout=10, check=False)
+        except (OSError, subprocess.TimeoutExpired):
+            pass
+        return desktop
+
+    def remove_integration(self, path: str | Path) -> None:
+        self._desktop_path(Path(path).expanduser().resolve()).unlink(missing_ok=True)
 
     @staticmethod
     def _safe_filename(url: str, filename: str | None = None) -> str:
@@ -117,6 +181,7 @@ class AppImageManager:
             raise ValueError("Solo se pueden eliminar AppImages de la carpeta administrada.")
         if not appimage.is_file():
             raise FileNotFoundError("No se encuentra la AppImage.")
+        self.remove_integration(appimage)
         appimage.unlink()
 
     def _updater_command(self) -> list[str]:
