@@ -70,6 +70,36 @@ class AppImageManagerTests(unittest.TestCase):
             self.manager.download("https://downloads.example/app.AppImage")
         self.assertEqual(existing.read_bytes(), b"existing")
 
+    def test_check_update_exit_code_one_means_update_available(self):
+        image = self.manager.directory / "check.AppImage"
+        image.write_bytes(b"\x7fELF")
+        completed = __import__("subprocess").CompletedProcess([], 1, "", "update available")
+        with patch.object(self.manager, "_updater_command", return_value=["/fake/updater"]), \
+             patch("punto_vuela_linux_toolkit.appimages.subprocess.run", return_value=completed):
+            result = self.manager.check_update(image)
+        self.assertTrue(result["supported"])
+        self.assertTrue(result["available"])
+
+    def test_check_update_exit_code_zero_means_current(self):
+        image = self.manager.directory / "current.AppImage"
+        image.write_bytes(b"\x7fELF")
+        completed = __import__("subprocess").CompletedProcess([], 0, "", "")
+        with patch.object(self.manager, "_updater_command", return_value=["/fake/updater"]), \
+             patch("punto_vuela_linux_toolkit.appimages.subprocess.run", return_value=completed):
+            result = self.manager.check_update(image)
+        self.assertTrue(result["supported"])
+        self.assertFalse(result["available"])
+
+    def test_update_requires_supported_available_update(self):
+        image = self.manager.directory / "no-update.AppImage"
+        image.write_bytes(b"\x7fELF")
+        image.chmod(0o755)
+        with patch.object(self.manager, "check_update", return_value={
+            "supported": True, "available": False, "message": "up to date"
+        }):
+            result = self.manager.update(image)
+        self.assertFalse(result["updated"])
+
     def test_lists_only_appimage_files(self):
         image = self.manager.directory / "one.AppImage"
         image.write_bytes(b"ELF")
