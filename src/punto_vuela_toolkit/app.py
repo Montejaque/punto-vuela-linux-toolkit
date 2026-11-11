@@ -34,9 +34,12 @@ class AppImageBridge(QObject):
     def downloadAppImage(self, url: str) -> str:
         try:
             path = self.manager.download(url)
-            update = self.manager.check_update(path)
+            try:
+                update = self.manager.check_update(path)
+            except Exception as update_error:
+                update = {"supported": False, "available": False, "message": str(update_error)}
             if update.get("supported") and update.get("available"):
-                message = f"Descargada: {path.name}. Hay una actualización disponible; pulsa Comprobar y después Actualizar para instalarla."
+                message = f"Descargada: {path.name}. Hay una actualización disponible; pulsa Actualizar para instalarla."
             elif update.get("supported"):
                 message = f"Descargada y preparada para ejecutar: {path.name}. No se detectan actualizaciones."
             else:
