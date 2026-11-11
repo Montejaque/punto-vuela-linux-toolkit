@@ -97,6 +97,28 @@ class AppImageManager:
             temporary.unlink(missing_ok=True)
             raise
 
+
+    def ensure_executable(self, path: str | Path) -> Path:
+        appimage = Path(path).expanduser().resolve()
+        if appimage.parent != self.directory.resolve() or appimage.suffix.lower() != ".appimage":
+            raise ValueError("Solo se pueden modificar AppImages de la carpeta administrada.")
+        if not appimage.is_file():
+            raise FileNotFoundError("No se encuentra la AppImage.")
+        appimage.chmod(appimage.stat().st_mode | 0o100)
+        return appimage
+
+    def launch(self, path: str | Path) -> None:
+        appimage = self.ensure_executable(path)
+        subprocess.Popen([str(appimage)], cwd=str(self.directory), start_new_session=True)
+
+    def remove(self, path: str | Path) -> None:
+        appimage = Path(path).expanduser().resolve()
+        if appimage.parent != self.directory.resolve() or appimage.suffix.lower() != ".appimage":
+            raise ValueError("Solo se pueden eliminar AppImages de la carpeta administrada.")
+        if not appimage.is_file():
+            raise FileNotFoundError("No se encuentra la AppImage.")
+        appimage.unlink()
+
     def _updater_command(self) -> list[str]:
         """Find or securely provision the official x86_64 AppImageUpdate CLI."""
         for command in ("appimageupdatetool", "appimageupdate"):
