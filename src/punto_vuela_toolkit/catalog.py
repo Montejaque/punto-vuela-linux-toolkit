@@ -12,14 +12,17 @@ from .appimages import AppImageManager
 
 FEED_URL = "https://appimage.github.io/feed.json"
 USER_AGENT = "PuntoVuelaLinuxToolkit/0.2"
-MAX_GLIBC_UBUNTU_20 = (2, 31)
+MAX_GLIBC_UBUNTU_20 = (2, 31, 0)
 
 
 def _version_tuple(value: str | None) -> tuple[int, ...] | None:
     if not value:
         return None
     match = re.match(r"^\s*(\d+(?:\.\d+)*)", str(value))
-    return tuple(int(part) for part in match.group(1).split(".")) if match else None
+    if not match:
+        return None
+    parts = [int(part) for part in match.group(1).split(".")]
+    return tuple(parts + [0] * max(0, 3 - len(parts)))
 
 
 def _github_repo(entry: dict[str, Any]) -> str | None:
