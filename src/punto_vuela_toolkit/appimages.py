@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import os
 import re
 import shutil
@@ -91,15 +93,62 @@ class AppImageManager:
             temporary.unlink(missing_ok=True)
             raise
 
-    @staticmethod
-    def _updater() -> str | None:
-        return shutil.which("appimageupdatetool") or shutil.which("appimageupdate")
+    def _updater_command(self) -> list[str]:
+        """Find or securely provision the official x86_64 AppImageUpdate CLI."""
+        for command in ("appimageupdatetool", "appimageupdate"):
+            found = shutil.which(command)
+            if found:
+                return [found]
+
+        tools_dir = self.directory.parent / "tools"
+        tools_dir.mkdir(parents=True, exist_ok=True)
+        updater_path = tools_dir / "appimageupdatetool-x86_64.AppImage"
+        if not updater_path.exists():
+            api_url = "https://api.github.com/repos/AppImageCommunity/AppImageUpdate/releases/tags/continuous"
+            request = urllib.request.Request(api_url, headers={
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28",
+                "User-Agent": USER_AGENT,
+            })
+            with urllib.request.urlopen(request, timeout=30) as response:
+                release = json.load(response)
+            asset = next((item for item in release.get("assets", [])
+                          if item.get("name") == "appimageupdatetool-x86_64.AppImage"), None)
+            if not asset or not str(asset.get("digest", "")).startswith("sha256:"):
+                raise RuntimeError("GitHub no ha proporcionado un SHA-256 verificable para AppImageUpdate.")
+            download_request = urllib.request.Request(
+                asset["browser_download_url"], headers={"User-Agent": USER_AGENT}
+            )
+            temporary = updater_path.with_suffix(".AppImage.part")
+            digest = hashlib.sha256()
+            try:
+                with urllib.request.urlopen(download_request, timeout=60) as response, temporary.open("wb") as output:
+                    if urllib.parse.urlparse(response.geturl()).scheme != "https":
+                        raise RuntimeError("La descarga de AppImageUpdate no usa HTTPS.")
+                    while True:
+                        chunk = response.read(1024 * 1024)
+                        if not chunk:
+                            break
+                        digest.update(chunk)
+                        output.write(chunk)
+                expected = asset["digest"].split(":", 1)[1].lower()
+                if digest.hexdigest().lower() != expected:
+                    raise RuntimeError("El SHA-256 de AppImageUpdate no coincide con el publicado por GitHub.")
+                if temporary.read_bytes()[:4] != APPIMAGE_MAGIC:
+                    raise RuntimeError("El actualizador descargado no es un AppImage ELF válido.")
+                temporary.chmod(0o755)
+                os.replace(temporary, updater_path)
+                updater_path.chmod(0o755)
+            except Exception:
+                temporary.unlink(missing_ok=True)
+                raise
+        return [str(updater_path), "--appimage-extract-and-run"]
 
     def check_update(self, path: str | Path) -> dict[str, str | bool]:
         appimage = Path(path).expanduser().resolve()
         if not appimage.is_file() or appimage.suffix.lower() != ".appimage":
             raise ValueError("La ruta indicada no es una AppImage existente.")
-        updater = self._updater()
+        updater = self._updater_command()
         if not updater:
             return {
                 "available": False,
@@ -107,7 +156,7 @@ class AppImageManager:
                 "message": "No está instalado AppImageUpdate. No se puede comprobar la actualización.",
             }
         result = subprocess.run(
-            [updater, "--check-for-update", str(appimage)],
+            [*updater, "-j", str(appimage)],
             capture_output=True, text=True, timeout=300, check=False,
         )
         output = (result.stdout + "\n" + result.stderr).strip()
@@ -136,12 +185,12 @@ class AppImageManager:
             raise RuntimeError(str(check["message"]))
         if not check["available"]:
             return {"updated": False, "message": str(check["message"])}
-        updater = self._updater()
+        updater = self._updater_command()
         if not updater:
             raise RuntimeError("No se encuentra AppImageUpdate.")
         # Keep the updater's backup so the user can roll back if needed.
         result = subprocess.run(
-            [updater, "--overwrite", str(appimage)],
+            [*updater, "--overwrite", str(appimage)],
             capture_output=True, text=True, timeout=1800, check=False,
         )
         output = (result.stdout + "\n" + result.stderr).strip()
