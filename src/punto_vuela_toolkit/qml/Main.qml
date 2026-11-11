@@ -59,6 +59,12 @@ ApplicationWindow {
 
     Connections {
         target: appImageManager
+        function onEmailSent(payload) {
+            const result = JSON.parse(payload)
+            emailStatus.text = result.message || "Resultado del envío"
+            emailStatus.color = result.ok ? "#62B47A" : "#D65A5A"
+            if (result.ok) previewVisible = false
+        }
         function onCatalogLoaded(payload) {
             const result = JSON.parse(payload)
             catalogItems = result.items || []
@@ -611,6 +617,28 @@ ApplicationWindow {
 
                         Rectangle {
                             Layout.fillWidth: true; radius: 16; color: panel; border.color: panelBorder
+                            implicitHeight: smtpForm.implicitHeight + 30
+                            ColumnLayout {
+                                id: smtpForm
+                                anchors.fill: parent; anchors.margins: 16; spacing: 9
+                                Text { text: "Configuración de envío de correo"; color: primaryText; font.pixelSize: 15; font.bold: true }
+                                Text { text: "Configura una cuenta Gmail y una contraseña de aplicación. La contraseña se guarda en el almacén seguro del usuario y no se incluye en el repositorio."; color: secondaryText; font.pixelSize: 11; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+                                TextField { id: smtpSenderField; Layout.fillWidth: true; placeholderText: "Cuenta Gmail remitente"; text: appImageManager.smtpSender() }
+                                TextField { id: smtpPasswordField; Layout.fillWidth: true; placeholderText: "Contraseña de aplicación"; echoMode: TextInput.Password }
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    Button { text: "Guardar configuración segura"; onClicked: {
+                                        const result=JSON.parse(appImageManager.configureSmtp(smtpSenderField.text.trim(),smtpPasswordField.text))
+                                        emailStatus.text=result.message; emailStatus.color=result.ok?"#62B47A":"#D65A5A"
+                                        if(result.ok) smtpPasswordField.text=""
+                                    }}
+                                    Button { text: "Crear contraseña de aplicación"; onClicked: Qt.openUrlExternally("https://myaccount.google.com/apppasswords") }
+                                }
+                                Text { text: "Destino: montejaque@puntosvuela.es · Se enviará una copia al solicitante."; color: muted; font.pixelSize: 10 }
+                            }
+                        }
+                        Rectangle {
+                            Layout.fillWidth: true; radius: 16; color: panel; border.color: panelBorder
                             implicitHeight: requestForm.implicitHeight + 36
                             ColumnLayout {
                                 id: requestForm
@@ -675,15 +703,22 @@ ApplicationWindow {
                                         onClicked: if (previewText.text.trim()) Qt.openUrlExternally("https://wa.me/34633402959?text=" + encodeURIComponent(previewText.text))
                                     }
                                     Button {
-                                        text: "Enviar por email (HTML)"
+                                        text: "Enviar solicitud por email"
                                         onClicked: {
-                                            const escaped = previewText.text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>")
-                                            const html = "<!doctype html><html><body style='margin:0;background:#f3f4f6;font-family:Arial,sans-serif;color:#24262a'><table role='presentation' width='100%' cellspacing='0' cellpadding='0' style='padding:28px 8px'><tr><td align='center'><table width='620' style='max-width:620px;background:#fff;border-radius:14px;overflow:hidden' cellpadding='0' cellspacing='0'><tr><td style='background:#f3d54e;padding:22px 28px;font-size:20px;font-weight:bold'>PUNTO VUELA <span style='font-size:12px'>LINUX TOOLKIT</span></td></tr><tr><td style='padding:28px;line-height:1.7'>" + escaped + "</td></tr><tr><td style='padding:18px 28px;background:#f7f7f7;color:#737984;font-size:12px'>Solicitud generada desde Punto Vuela Linux Toolkit.</td></tr></table></td></tr></table></body></html>"
-                                            Qt.openUrlExternally("mailto:?subject=" + encodeURIComponent("Solicitud de incorporación de aplicación") + "&body=" + encodeURIComponent(previewText.text))
+                                            if(!puntoVuelaField.text.trim() || !municipioField.text.trim() || !ailField.text.trim() || !telefonoField.text.trim() || !correoField.text.trim() || !softwareField.text.trim() || !motivoField.text.trim()) {
+                                                emailStatus.text="Completa los campos obligatorios antes de enviar."; emailStatus.color="#D65A5A"; return
+                                            }
+                                            const payload={
+                                                center:puntoVuelaField.text.trim(),municipality:municipioField.text.trim(),
+                                                contact:ailField.text.trim(),phone:telefonoField.text.trim(),reply_email:correoField.text.trim(),
+                                                application:softwareField.text.trim(),url:enlaceField.text.trim(),
+                                                distribution:distroField.currentText,purpose:motivoField.text.trim(),notes:observacionesField.text.trim()
+                                            }
+                                            emailStatus.text="Enviando solicitud HTML…"; emailStatus.color=secondaryText
+                                            appImageManager.sendApplicationRequest(JSON.stringify(payload))
                                         }
-                                    }
-                                }
-                                Text { text: "WhatsApp: +34 633 402 959 · El correo se prepara en tu cliente predeterminado."; color: muted; font.pixelSize: 10 }
+                                    }                                }
+                                Text { id: emailStatus; text: "El correo se enviará directamente mediante SMTP seguro."; color: muted; font.pixelSize: 10; wrapMode: Text.WordWrap }
                             }
                         }
                         Rectangle {
