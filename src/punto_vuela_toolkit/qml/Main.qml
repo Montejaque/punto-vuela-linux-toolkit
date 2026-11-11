@@ -417,7 +417,7 @@ ApplicationWindow {
                         Flow {
                             Layout.fillWidth:true;spacing:8
                             Repeater {
-                                model:["Todas","AudioVideo","Development","Education","Game","Graphics","Network","Office","Science","Settings","System","Utility"]
+                                model:["Todas"].concat(Array.from(new Set(catalogItems.map(item=>item.category).filter(Boolean))).sort())
                                 delegate:Button { text:modelData;highlighted:catalogCategory===modelData;onClicked:catalogCategory=modelData }
                             }
                         }
