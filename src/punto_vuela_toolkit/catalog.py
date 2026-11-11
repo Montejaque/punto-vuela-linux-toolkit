@@ -123,8 +123,9 @@ class AppImageCatalog:
         release = json.loads(self._request(api_url, timeout=30).decode("utf-8"))
         assets = release.get("assets") or []
         appimage_assets = [asset for asset in assets if str(asset.get("name", "")).lower().endswith(".appimage")]
-        preferred = [asset for asset in appimage_assets if re.search(r"(x86_64|amd64|x64)", asset["name"], re.I)]
-        selected = (preferred or appimage_assets)
+        x86_assets = [asset for asset in appimage_assets if re.search(r"(x86_64|amd64|x64)", asset["name"], re.I)]
+        generic_assets = [asset for asset in appimage_assets if not re.search(r"(aarch64|arm64|armv7|armhf|i386|i686|x86_64|amd64|x64)", asset["name"], re.I)]
+        selected = x86_assets or generic_assets
         if not selected:
             raise RuntimeError("No se ha encontrado un archivo AppImage en la última versión de GitHub. Consulta la página de descargas del desarrollador.")
         asset = selected[0]
