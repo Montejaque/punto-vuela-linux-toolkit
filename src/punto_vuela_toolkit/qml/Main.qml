@@ -741,7 +741,8 @@ ApplicationWindow {
                                             emailStatus.text="Enviando solicitud HTML…"; emailStatus.color=secondaryText
                                             appImageManager.sendApplicationRequest(JSON.stringify(payload))
                                         }
-                                    }                                }
+                                    }
+                                }
                                 Text { id: emailStatus; text: "El correo se enviará directamente mediante SMTP seguro."; color: muted; font.pixelSize: 10; wrapMode: Text.WordWrap }
                             }
                         }
