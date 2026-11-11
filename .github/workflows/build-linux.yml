@@ -47,6 +47,10 @@ jobs:
             --collect-all shiboken6 \
             --paths src src/launcher.py
           test -x dist/punto-vuela-linux-toolkit/punto-vuela-linux-toolkit
+      - name: Smoke-test frozen executable
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: dist/punto-vuela-linux-toolkit/punto-vuela-linux-toolkit --smoke-test
       - name: Build AppImage
         if: matrix.format == 'appimage'
         run: |
@@ -57,7 +61,9 @@ jobs:
           wget --https-only --tries=3 --timeout=30 -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage -O linuxdeploy
           chmod +x linuxdeploy
           ./linuxdeploy --appimage-extract-and-run --appdir AppDir --output appimage
-          test -n "$(find . -maxdepth 1 -type f -name '*.AppImage' -print -quit)"
+          APPIMAGE="$(find . -maxdepth 1 -type f -name '*.AppImage' -print -quit)"
+          test -n "$APPIMAGE"
+          QT_QPA_PLATFORM=offscreen "$APPIMAGE" --appimage-extract-and-run --smoke-test
       - name: Build DEB and RPM
         if: matrix.format != 'appimage'
         run: |
@@ -74,7 +80,16 @@ jobs:
             src/punto_vuela_toolkit/assets/logotipovuela.svg=/usr/share/icons/hicolor/scalable/apps/punto-vuela-linux-toolkit.svg \
             packaging/launcher.sh=/usr/bin/punto-vuela-linux-toolkit \
             packaging/punto-vuela-linux-toolkit.desktop=/usr/share/applications/punto-vuela-linux-toolkit.desktop
-          test -n "$(find . -maxdepth 1 -type f -name "*.${{ matrix.format }}" -print -quit)"
+          PACKAGE="$(find . -maxdepth 1 -type f -name "*.${{ matrix.format }}" -print -quit)"
+          test -n "$PACKAGE"
+          mkdir -p package-check
+          if [[ "${{ matrix.format }}" == "deb" ]]; then
+            dpkg-deb -x "$PACKAGE" package-check
+          else
+            sudo apt-get install -y cpio
+            (cd package-check && rpm2cpio "../$PACKAGE" | cpio -idm --quiet)
+          fi
+          QT_QPA_PLATFORM=offscreen package-check/opt/punto-vuela-linux-toolkit/punto-vuela-linux-toolkit --smoke-test
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
