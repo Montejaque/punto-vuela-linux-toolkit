@@ -18,7 +18,7 @@ MAX_GLIBC_UBUNTU_20 = (2, 31)
 def _version_tuple(value: str | None) -> tuple[int, ...] | None:
     if not value:
         return None
-    match = re.match(r"^\\s*(\\d+(?:\\.\\d+)*)", str(value))
+    match = re.match(r"^\s*(\d+(?:\.\d+)*)", str(value))
     return tuple(int(part) for part in match.group(1).split(".")) if match else None
 
 
