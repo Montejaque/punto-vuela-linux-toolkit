@@ -103,9 +103,11 @@ class AppImageManagerTests(unittest.TestCase):
     def test_lists_only_appimage_files(self):
         image = self.manager.directory / "one.AppImage"
         image.write_bytes(b"ELF")
+        lowercase = self.manager.directory / "two.appimage"
+        lowercase.write_bytes(b"ELF")
         (self.manager.directory / "notes.txt").write_text("not an app")
         records = self.manager.list_appimages()
-        self.assertEqual([record.path.name for record in records], ["one.AppImage"])
+        self.assertEqual([record.path.name for record in records], ["one.AppImage", "two.appimage"])
 
 
 if __name__ == "__main__":
