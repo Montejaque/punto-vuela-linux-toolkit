@@ -288,6 +288,7 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                                             if (result.ok) { appImageUrl.text = ""; refreshAppImages() }
                                         }
                                     }
+                                    Button { text: "Abrir AppImageHub"; onClicked: Qt.openUrlExternally("https://www.appimagehub.com/") }
                                     Button { text: "Abrir carpeta"; onClicked: appImageManager.openAppImageFolder() }
                                 }
                             }
