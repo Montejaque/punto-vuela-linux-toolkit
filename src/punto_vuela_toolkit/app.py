@@ -4,23 +4,30 @@ import json
 import os
 import sys
 from pathlib import Path
+from threading import Thread
 
-from PySide6.QtCore import QObject, QUrl, Slot
+from PySide6.QtCore import QObject, QUrl, Signal, Slot
 from PySide6.QtGui import QDesktopServices, QFont, QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
 
 from .appimages import AppImageManager
+from .catalog import AppImageCatalog
 
 APP_NAME = "Punto Vuela Linux Toolkit"
 QML_FILE = Path(__file__).parent / "qml" / "Main.qml"
 
 
 class AppImageBridge(QObject):
-    """Small QML-facing API for managing AppImages in the current user profile."""
+    """QML-facing API for local AppImages and the community catalogue."""
+
+    catalogLoaded = Signal(str)
+    catalogInstallFinished = Signal(str)
 
     def __init__(self) -> None:
         super().__init__()
         self.manager = AppImageManager()
+        self.catalog = AppImageCatalog(self.manager)
+        self._workers: list[Thread] = []
 
     @Slot(result=str)
     def listAppImages(self) -> str:
@@ -29,6 +36,49 @@ class AppImageBridge(QObject):
              "size": item.size, "executable": item.executable}
             for item in self.manager.list_appimages()
         ], ensure_ascii=False)
+
+
+    @Slot(str)
+    def loadCatalog(self, query: str) -> None:
+        def work() -> None:
+            try:
+                entries = self.catalog.search(query, force=False, limit=500)
+                payload = {"ok": True, "items": entries, "message": f"{len(entries)} aplicaciones encontradas en el catálogo comunitario."}
+            except Exception as exc:
+                payload = {"ok": False, "items": [], "message": f"No se pudo cargar el catálogo: {exc}"}
+            self.catalogLoaded.emit(json.dumps(payload, ensure_ascii=False))
+
+        worker = Thread(target=work, daemon=True)
+        self._workers.append(worker)
+        worker.start()
+
+    @Slot()
+    def refreshCatalog(self) -> None:
+        def work() -> None:
+            try:
+                entries = self.catalog.search("", force=True, limit=500)
+                payload = {"ok": True, "items": entries, "message": f"Catálogo actualizado: {len(entries)} aplicaciones."}
+            except Exception as exc:
+                payload = {"ok": False, "items": [], "message": f"No se pudo actualizar el catálogo: {exc}"}
+            self.catalogLoaded.emit(json.dumps(payload, ensure_ascii=False))
+
+        worker = Thread(target=work, daemon=True)
+        self._workers.append(worker)
+        worker.start()
+
+    @Slot(str)
+    def installCatalogApp(self, app_name: str) -> None:
+        def work() -> None:
+            try:
+                payload = self.catalog.install(app_name)
+                payload["name"] = app_name
+            except Exception as exc:
+                payload = {"ok": False, "name": app_name, "message": str(exc)}
+            self.catalogInstallFinished.emit(json.dumps(payload, ensure_ascii=False))
+
+        worker = Thread(target=work, daemon=True)
+        self._workers.append(worker)
+        worker.start()
 
     @Slot(str, result=str)
     def downloadAppImage(self, url: str) -> str:
