@@ -351,7 +351,7 @@ ApplicationWindow {
                             Layout.fillWidth: true; spacing: 14
                             Repeater {
                                 model: [
-                                    {title:"catálogo oficial AppImage", desc:"Catálogo de aplicaciones AppImage", url:"https://www.appimagehub.com/"},
+                                    {title:"Catálogo oficial AppImage", desc:"Catálogo de aplicaciones AppImage", url:"https://appimage.github.io/"},
                                     {title:"AppImage Community", desc:"Catálogo comunitario oficial", url:"https://appimage.github.io/"}
                                 ]
                                 delegate: Rectangle {
@@ -578,7 +578,7 @@ ApplicationWindow {
                                 {title:"1. Descargar", body:"En Mis aplicaciones, introduce el enlace HTTPS directo al archivo .AppImage. El Toolkit valida que el archivo sea ELF y lo guarda en tu carpeta personal."},
                                 {title:"2. Ejecutar", body:"Al finalizar la descarga, el archivo recibe permisos de ejecución automáticamente. Pulsa Abrir carpeta para localizarlo."},
                                 {title:"3. Actualizar", body:"Pulsa Comprobar. Si la AppImage incluye información compatible, AppImageUpdate consulta el origen del autor. Si existe una versión nueva, pulsa Actualizar."},
-                                {title:"4. Sin actualizador", body:"No todas las AppImages de AppImageHub incluyen información de actualización. En ese caso no se puede confirmar automáticamente si hay una versión posterior: consulta la web del desarrollador."},
+                                {title:"4. Sin actualizador", body:"No todas las AppImages del catálogo incluyen información de actualización. En ese caso no se puede confirmar automáticamente si hay una versión posterior: consulta la web del desarrollador."},
                                 {title:"5. Seguridad", body:"Una AppImage es un programa ejecutable. Descarga software de fuentes fiables. La validación ELF no es un análisis antivirus ni verifica la identidad del autor. Las actualizaciones requieren una acción explícita."}
                             ]
                             delegate: Rectangle {
