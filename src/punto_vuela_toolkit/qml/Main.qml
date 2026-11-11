@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Qt.labs.settings
 
 ApplicationWindow {
     id: window
@@ -10,12 +11,35 @@ ApplicationWindow {
     minimumHeight: 640
     visible: true
     title: "Punto Vuela Linux Toolkit"
-    color: "#111214"
-
     property string activePage: "Inicio"
     property color accent: "#F3D54E"
-    property color panel: "#1B1D20"
-    property color muted: "#9A9DA3"
+    property string themeMode: appSettings.savedThemeMode
+    property bool darkTheme: themeMode === "dark" || (themeMode === "system" && systemPalette.window.hslLightness < 0.5)
+
+    SystemPalette { id: systemPalette; colorGroup: SystemPalette.Active }
+    Settings {
+        id: appSettings
+        category: "appearance"
+        property string savedThemeMode: "system"
+    }
+
+    readonly property color backgroundColor: darkTheme ? "#111214" : "#F5F6F8"
+    readonly property color sidebarColor: darkTheme ? "#17191C" : "#FFFFFF"
+    readonly property color panel: darkTheme ? "#1B1D20" : "#FFFFFF"
+    readonly property color panelBorder: darkTheme ? "#303237" : "#E1E3E8"
+    readonly property color primaryText: darkTheme ? "#FFFFFF" : "#202226"
+    readonly property color secondaryText: darkTheme ? "#B9BBC0" : "#555B65"
+    readonly property color muted: darkTheme ? "#9A9DA3" : "#737984"
+    readonly property color searchColor: darkTheme ? "#202226" : "#FFFFFF"
+    readonly property color selectedNavigation: darkTheme ? "#343126" : "#FFF6D2"
+    readonly property color heroStart: darkTheme ? "#393321" : "#FFF1B8"
+    readonly property color heroEnd: darkTheme ? "#24211A" : "#F8E7A0"
+
+    function setThemeMode(mode) {
+        themeMode = mode
+        appSettings.savedThemeMode = mode
+    }
+    color: backgroundColor
 
     RowLayout {
         anchors.fill: parent
@@ -24,7 +48,7 @@ ApplicationWindow {
         Rectangle {
             Layout.preferredWidth: 238
             Layout.fillHeight: true
-            color: "#17191C"
+            color: sidebarColor
 
             ColumnLayout {
                 anchors.fill: parent
@@ -41,12 +65,12 @@ ApplicationWindow {
                     }
                     Column {
                         spacing: 2
-                        Text { text: "PUNTO VUELA"; color: "#FFFFFF"; font.pixelSize: 13; font.bold: true; font.letterSpacing: 1.2 }
+                        Text { text: "PUNTO VUELA"; color: primaryText; font.pixelSize: 13; font.bold: true; font.letterSpacing: 1.2 }
                         Text { text: "LINUX TOOLKIT"; color: accent; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
                     }
                 }
 
-                Rectangle { Layout.fillWidth: true; height: 1; color: "#303237" }
+                Rectangle { Layout.fillWidth: true; height: 1; color: panelBorder }
 
                 Text { text: "ESPACIO DE TRABAJO"; color: muted; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
                 Repeater {
@@ -91,14 +115,14 @@ ApplicationWindow {
                         MouseArea { anchors.fill: parent; onClicked: activePage = modelData; cursorShape: Qt.PointingHandCursor }
                     }
                 }
-                Text { text: "VERSIÓN 0.1.0 · PREVIEW"; color: "#686B71"; font.pixelSize: 9; Layout.bottomMargin: 4 }
+                Text { text: "VERSIÓN 0.1.0 · PREVIEW"; color: muted; font.pixelSize: 9; Layout.bottomMargin: 4 }
             }
         }
 
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "#111214"
+            color: backgroundColor
 
             ColumnLayout {
                 anchors.fill: parent
@@ -114,12 +138,31 @@ ApplicationWindow {
                     }
                     Item { Layout.fillWidth: true }
                     Rectangle {
-                        radius: 10; color: "#202226"; border.color: "#34363B"
+                        radius: 10; color: searchColor; border.color: panelBorder
                         Layout.preferredWidth: 250; Layout.preferredHeight: 40
                         RowLayout {
                             anchors.fill: parent; anchors.leftMargin: 12; anchors.rightMargin: 12
                             Text { text: "⌕"; color: muted; font.pixelSize: 20 }
-                            Text { text: "Buscar aplicaciones..."; color: "#777A80"; font.pixelSize: 12 }
+                            Text { text: "Buscar aplicaciones..."; color: muted; font.pixelSize: 12 }
+                        }
+                    }
+                    ToolButton {
+                        id: themeButton
+                        Layout.preferredWidth: 42
+                        Layout.preferredHeight: 40
+                        text: themeMode === "system" ? "◐" : (themeMode === "dark" ? "☾" : "☀")
+                        font.pixelSize: 20
+                        palette.buttonText: primaryText
+                        ToolTip.visible: hovered
+                        ToolTip.text: "Apariencia: " + (themeMode === "system" ? "Sistema" : (themeMode === "dark" ? "Oscuro" : "Claro"))
+                        background: Rectangle { radius: 10; color: themeButton.hovered ? panelBorder : searchColor; border.color: panelBorder }
+                        onClicked: themeMenu.open()
+                        Menu {
+                            id: themeMenu
+                            y: themeButton.height
+                            MenuItem { text: "◐  Según el sistema"; checkable: true; checked: themeMode === "system"; onTriggered: setThemeMode("system") }
+                            MenuItem { text: "☀  Claro"; checkable: true; checked: themeMode === "light"; onTriggered: setThemeMode("light") }
+                            MenuItem { text: "☾  Oscuro"; checkable: true; checked: themeMode === "dark"; onTriggered: setThemeMode("dark") }
                         }
                     }
                 }
@@ -139,8 +182,8 @@ ApplicationWindow {
                             Layout.preferredHeight: 190
                             radius: 18
                             gradient: Gradient {
-                                GradientStop { position: 0.0; color: "#393321" }
-                                GradientStop { position: 1.0; color: "#24211A" }
+                                GradientStop { position: 0.0; color: heroStart }
+                                GradientStop { position: 1.0; color: heroEnd }
                             }
                             RowLayout {
                                 anchors.fill: parent; anchors.margins: 28; spacing: 20
@@ -149,7 +192,7 @@ ApplicationWindow {
                                     spacing: 12
                                     Text { text: "Bienvenido a tu centro de software"; color: "#FFFFFF"; font.pixelSize: 22; font.bold: true }
                                     Text { text: "Las herramientas de Punto Vuela y tus aplicaciones Linux,
-en un solo lugar."; color: "#D2D0C7"; font.pixelSize: 13; lineHeight: 1.35 }
+en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                                     Rectangle {
                                         radius: 9; color: accent; Layout.preferredWidth: 154; Layout.preferredHeight: 38
                                         Text { anchors.centerIn: parent; text: "Explorar catálogo  →"; color: "#171717"; font.pixelSize: 12; font.bold: true }
