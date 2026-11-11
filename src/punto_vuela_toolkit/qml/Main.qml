@@ -351,7 +351,7 @@ ApplicationWindow {
                             Layout.fillWidth: true; spacing: 14
                             Repeater {
                                 model: [
-                                    {title:"AppImageHub", desc:"Catálogo de aplicaciones AppImage", url:"https://www.appimagehub.com/"},
+                                    {title:"catálogo oficial AppImage", desc:"Catálogo de aplicaciones AppImage", url:"https://www.appimagehub.com/"},
                                     {title:"AppImage Community", desc:"Catálogo comunitario oficial", url:"https://appimage.github.io/"}
                                 ]
                                 delegate: Rectangle {
@@ -521,17 +521,27 @@ ApplicationWindow {
                                         }
                                     }
                                     Button {
-                                        text: "Comprobar"
+                                        text: modelData.customUpdater ? "Abrir gestor" : "Comprobar"
                                         onClicked: {
-                                            appImageStatus.text = "Comprobando actualizaciones de " + modelData.name + "…"
-                                            appImageManager.checkAppImageUpdate(modelData.path)
+                                            if (modelData.customUpdater) {
+                                                const result = JSON.parse(appImageManager.launchAppImage(modelData.path))
+                                                appImageStatus.text = "Este instalador gestiona sus propias versiones: " + result.message
+                                            } else {
+                                                appImageStatus.text = "Comprobando actualizaciones de " + modelData.name + "…"
+                                                appImageManager.checkAppImageUpdate(modelData.path)
+                                            }
                                         }
                                     }
                                     Button {
-                                        text: "Actualizar"
+                                        text: modelData.customUpdater ? "Abrir actualizador" : "Actualizar"
                                         onClicked: {
-                                            appImageStatus.text = "Actualizando " + modelData.name + "…"
-                                            appImageManager.updateAppImage(modelData.path)
+                                            if (modelData.customUpdater) {
+                                                const result = JSON.parse(appImageManager.launchAppImage(modelData.path))
+                                                appImageStatus.text = "Se ha abierto el actualizador propio: " + result.message
+                                            } else {
+                                                appImageStatus.text = "Actualizando " + modelData.name + "…"
+                                                appImageManager.updateAppImage(modelData.path)
+                                            }
                                         }
                                     }
                                     Button {
