@@ -10,11 +10,14 @@ Centro de software para Linux con identidad Punto Vuela. Reúne las herramientas
 - Catálogo Punto Vuela con enlaces a los proyectos oficiales.
 - Catálogos AppImageHub y AppImage Community, respetando sus fuentes y condiciones.
 - Diseño claro, oscuro o automático según el tema del sistema; selector visible en la barra superior y preferencia guardada entre sesiones.
+- Carpeta de AppImages por usuario en `~/.local/share/punto-vuela-linux-toolkit/AppImages` (o `$XDG_DATA_HOME`), descargas HTTPS, validación ELF y permisos de ejecución automáticos.
+- Comprobación y actualización mediante AppImageUpdate cuando la AppImage incluye información de actualización compatible. El actualizador oficial x86_64 puede descargarse al perfil de usuario y se verifica con el SHA-256 publicado por GitHub.
+- Guía de ayuda en la aplicación y en `docs/GUIA-DE-AYUDA.md`.
 - Acento amarillo `#F3D54E`, tipografía Inter y logotipo oficial de Punto Vuela.
 
 ## Estado
 
-Primera base de desarrollo: interfaz inicial, navegación y estructura de empaquetado. La gestión real de instalaciones, actualizaciones y catálogos se incorporará por fases. No se debe considerar todavía un gestor de paquetes completo.
+Primera base de desarrollo: interfaz inicial, navegación y estructura de empaquetado. La gestión de paquetes del sistema y la integración completa con catálogos externos siguen en desarrollo. La gestión local de AppImages incluye descarga HTTPS, permisos y actualización condicionada a los metadatos embebidos por el autor.
 
 ## Desarrollo
 
