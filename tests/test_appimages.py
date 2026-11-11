@@ -75,7 +75,7 @@ class AppImageManagerTests(unittest.TestCase):
         image.write_bytes(b"\x7fELF")
         completed = __import__("subprocess").CompletedProcess([], 1, "", "update available")
         with patch.object(self.manager, "_updater_command", return_value=["/fake/updater"]), \
-             patch("punto_vuela_linux_toolkit.appimages.subprocess.run", return_value=completed):
+             patch("punto_vuela_toolkit.appimages.subprocess.run", return_value=completed):
             result = self.manager.check_update(image)
         self.assertTrue(result["supported"])
         self.assertTrue(result["available"])
@@ -85,7 +85,7 @@ class AppImageManagerTests(unittest.TestCase):
         image.write_bytes(b"\x7fELF")
         completed = __import__("subprocess").CompletedProcess([], 0, "", "")
         with patch.object(self.manager, "_updater_command", return_value=["/fake/updater"]), \
-             patch("punto_vuela_linux_toolkit.appimages.subprocess.run", return_value=completed):
+             patch("punto_vuela_toolkit.appimages.subprocess.run", return_value=completed):
             result = self.manager.check_update(image)
         self.assertTrue(result["supported"])
         self.assertFalse(result["available"])
