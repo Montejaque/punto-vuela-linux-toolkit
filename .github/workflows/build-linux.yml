@@ -32,7 +32,11 @@ jobs:
       - name: Fetch official Punto Vuela logo
         run: bash packaging/fetch-brand-assets.sh
       - name: Validate Python syntax
-        run: python -m compileall -q src
+        run: python -m compileall -q src tests
+      - name: Run AppImage manager unit tests
+        env:
+          PYTHONPATH: src
+        run: python -m unittest discover -s tests -v
       - name: Smoke-test QML application
         env:
           QT_QPA_PLATFORM: offscreen
