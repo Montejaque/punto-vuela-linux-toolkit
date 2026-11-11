@@ -17,22 +17,17 @@ jobs:
   packages:
     name: Build ${{ matrix.format }} (x86_64)
     runs-on: ubuntu-22.04
+    # Debian 11 uses GLIBC 2.31 (Ubuntu 20.04 baseline) and this image
+    # includes a working Python 3.10/OpenSSL, unlike the minimal Ubuntu image.
     container:
-      image: ubuntu:20.04
+      image: python:3.10-bullseye
+      options: --dns 1.1.1.1 --dns 8.8.8.8
     strategy:
       fail-fast: false
       matrix:
         format: [appimage, deb, rpm]
     steps:
-      - name: Prepare Ubuntu 20.04 runtime libraries
-        run: |
-          apt-get update
-          apt-get install -y ca-certificates libssl1.1 libffi7
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-          cache: pip
       - name: Install build dependencies
         run: |
           apt-get update
@@ -43,7 +38,7 @@ jobs:
         run: bash packaging/fetch-brand-assets.sh
       - name: Validate Python syntax
         run: python -m compileall -q src tests
-      - name: Run AppImage manager unit tests
+      - name: Run unit tests
         env:
           PYTHONPATH: src
         run: python -m unittest discover -s tests -v
