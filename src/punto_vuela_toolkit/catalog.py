@@ -18,7 +18,7 @@ MAX_GLIBC_UBUNTU_20 = (2, 31, 0)
 def _version_tuple(value: str | None) -> tuple[int, ...] | None:
     if not value:
         return None
-    match = re.match(r"^\s*(\d+(?:\.\d+)*)", str(value))
+    match = re.search(r"(\d+(?:\.\d+)*)", str(value))
     if not match:
         return None
     parts = [int(part) for part in match.group(1).split(".")]
@@ -99,7 +99,7 @@ class AppImageCatalog:
                 "glibc": glibc or "No declarada",
                 "compatibleUbuntu20": compatible,
                 "compatibility": ("Compatible por requisito glibc declarado" if required and compatible
-                                  else "Puede ser compatible; requisito glibc no declarado" if required is None
+                                  else "Puede ser compatible; versión de glibc no declarada" if required is None
                                   else "No compatible con Ubuntu 20.04 (glibc requerida superior a 2.31)"),
                 "downloadUrl": download_url,
                 "repository": _github_repo(entry) or "",
