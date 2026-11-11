@@ -60,7 +60,9 @@ class AppImageManager:
         candidate = re.sub(r"[^A-Za-z0-9._+-]", "-", candidate).strip(".-")
         if not candidate:
             raise ValueError("No se pudo determinar un nombre de archivo seguro.")
-        if not candidate.lower().endswith(".appimage"):
+        if candidate.lower().endswith(".appimage"):
+            candidate = candidate[:-len(".appimage")] + ".AppImage"
+        else:
             candidate += ".AppImage"
         return candidate
 
