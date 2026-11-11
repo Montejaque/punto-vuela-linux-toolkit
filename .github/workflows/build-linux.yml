@@ -145,7 +145,7 @@ jobs:
 
   publish:
     name: Publish GitHub release
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/v')
     needs: packages
     runs-on: ubuntu-22.04
     steps:
@@ -160,9 +160,9 @@ jobs:
       - name: Publish release assets
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: pruebas-${{ github.run_number }}
-          name: Compilación de pruebas #${{ github.run_number }}
-          prerelease: true
+          tag_name: ${{ github.ref_name }}
+          name: Punto Vuela Linux Toolkit ${{ github.ref_name }}
+          prerelease: ${{ contains(github.ref_name, '-') }}
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
