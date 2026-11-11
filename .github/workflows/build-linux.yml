@@ -24,6 +24,10 @@ jobs:
       matrix:
         format: [appimage, deb, rpm]
     steps:
+      - name: Prepare Ubuntu 20.04 runtime libraries
+        run: |
+          apt-get update
+          apt-get install -y ca-certificates libssl1.1 libffi7
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
