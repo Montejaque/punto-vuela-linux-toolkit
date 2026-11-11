@@ -114,7 +114,11 @@ class AppImageCatalog:
             raise RuntimeError("Esta aplicación declara una glibc superior a la de Ubuntu 20.04. Se bloquea la instalación para evitar una aplicación que no arranque.")
         repository = entry.get("repository")
         if not repository:
-            raise RuntimeError("El catálogo no facilita un repositorio GitHub para localizar el archivo AppImage. Abre la ficha de descarga del autor.")
+            direct_url = entry.get("downloadUrl", "")
+            if direct_url.lower().endswith(".appimage"):
+                path = self.manager.download(direct_url)
+                return {"ok": True, "path": str(path), "message": f"{entry['name']} se ha descargado y ya tiene permisos de ejecución."}
+            raise RuntimeError("El catálogo no facilita un enlace directo ni un repositorio GitHub con una versión descargable. Abre la ficha de descarga del autor.")
         api_url = "https://api.github.com/repos/" + repository + "/releases/latest"
         release = json.loads(self._request(api_url, timeout=30).decode("utf-8"))
         assets = release.get("assets") or []
