@@ -50,10 +50,17 @@ jobs:
         if: matrix.format != 'appimage'
         run: |
           python -m pip install fpm
-          fpm -s dir -t "${{ matrix.format }}" -n punto-vuela-linux-toolkit -v "${GITHUB_REF_NAME#v}" \
+          VERSION="${GITHUB_REF_NAME#v}"
+          if [[ "$VERSION" == "$GITHUB_REF_NAME" ]]; then VERSION="0.1.0.${GITHUB_RUN_NUMBER}"; fi
+          ARCH=amd64
+          if [[ "${{ matrix.format }}" == "rpm" ]]; then ARCH=x86_64; fi
+          fpm -s dir -t "${{ matrix.format }}" -n punto-vuela-linux-toolkit -v "$VERSION" \
             --description "Centro de software Linux de Punto Vuela" \
-            --license MIT --architecture amd64 \
-            dist/punto-vuela-linux-toolkit/=/opt/punto-vuela-linux-toolkit/ \\\n            src/punto_vuela_toolkit/assets/logotipovuela.svg=/usr/share/icons/hicolor/scalable/apps/punto-vuela-linux-toolkit.svg \\\n            packaging/launcher.sh=/usr/bin/punto-vuela-linux-toolkit \
+            --license MIT --architecture "$ARCH" \
+            --after-install packaging/post-install.sh \
+            dist/punto-vuela-linux-toolkit/=/opt/punto-vuela-linux-toolkit/ \
+            src/punto_vuela_toolkit/assets/logotipovuela.svg=/usr/share/icons/hicolor/scalable/apps/punto-vuela-linux-toolkit.svg \
+            packaging/launcher.sh=/usr/bin/punto-vuela-linux-toolkit \
             packaging/punto-vuela-linux-toolkit.desktop=/usr/share/applications/punto-vuela-linux-toolkit.desktop
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
