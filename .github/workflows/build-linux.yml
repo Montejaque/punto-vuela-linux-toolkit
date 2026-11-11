@@ -35,7 +35,7 @@ jobs:
             --add-data "src/punto_vuela_toolkit/qml:punto_vuela_toolkit/qml" \
             --add-data "src/punto_vuela_toolkit/assets:punto_vuela_toolkit/assets" \
             --collect-all PySide6 \
-            --paths src src/punto_vuela_toolkit/__main__.py
+            --paths src src/launcher.py
       - name: Build AppImage
         if: matrix.format == 'appimage'
         run: |
