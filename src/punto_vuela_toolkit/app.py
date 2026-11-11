@@ -80,6 +80,31 @@ class AppImageBridge(QObject):
         self._workers.append(worker)
         worker.start()
 
+
+    @Slot(str, result=str)
+    def launchAppImage(self, path: str) -> str:
+        try:
+            self.manager.launch(path)
+            return json.dumps({"ok": True, "message": "Aplicación iniciada."}, ensure_ascii=False)
+        except Exception as exc:
+            return json.dumps({"ok": False, "message": str(exc)}, ensure_ascii=False)
+
+    @Slot(str, result=str)
+    def makeAppImageExecutable(self, path: str) -> str:
+        try:
+            self.manager.ensure_executable(path)
+            return json.dumps({"ok": True, "message": "Permisos de ejecución aplicados."}, ensure_ascii=False)
+        except Exception as exc:
+            return json.dumps({"ok": False, "message": str(exc)}, ensure_ascii=False)
+
+    @Slot(str, result=str)
+    def removeAppImage(self, path: str) -> str:
+        try:
+            self.manager.remove(path)
+            return json.dumps({"ok": True, "message": "AppImage eliminada de la carpeta administrada."}, ensure_ascii=False)
+        except Exception as exc:
+            return json.dumps({"ok": False, "message": str(exc)}, ensure_ascii=False)
+
     @Slot(str, result=str)
     def downloadAppImage(self, url: str) -> str:
         try:
