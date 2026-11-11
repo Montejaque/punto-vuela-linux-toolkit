@@ -24,7 +24,7 @@ ApplicationWindow {
     }
 
     readonly property color backgroundColor: darkTheme ? "#252B31" : "#F3F4F6"
-    readonly property color sidebarColor: "#FFC400"
+    readonly property color sidebarColor: "#F2D000"
     readonly property color panel: darkTheme ? "#303740" : "#FFFFFF"
     readonly property color panelBorder: darkTheme ? "#3A424C" : "#E1E3E8"
     readonly property color primaryText: darkTheme ? "#F7F8FA" : "#202226"
@@ -43,13 +43,14 @@ ApplicationWindow {
     property string selectedCategory: "Todas"
     property string selectedAppName: ""
     property var featuredApps: [
-        {title:"Codex",category:"IA y desarrollo",kind:"Asistente de código",desc:"Asistente de programación para trabajar con repositorios y tareas de desarrollo.",url:"https://github.com/Montejaque/chatgpt-installer-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/openai.png",tag:"PUNTO VUELA"},
-        {title:"Visual Studio Code",category:"Desarrollo",kind:"Editor",desc:"Editor de código extensible con instalador preparado para Linux sin root.",url:"https://github.com/Montejaque/vscode-installer-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/vscode.png",tag:"PUNTO VUELA"},
-        {title:"Antigravity",category:"IA y desarrollo",kind:"Herramienta",desc:"Instalación y mantenimiento de Antigravity en equipos Linux.",url:"https://github.com/Montejaque/antigravity-installer-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/google.png",tag:"PUNTO VUELA"},
-        {title:"Claude Desktop",category:"IA y desarrollo",kind:"Aplicación",desc:"Instalador de Claude Desktop para entornos Linux.",url:"https://github.com/Montejaque/claude-desktop-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/claude.png",tag:"PUNTO VUELA"},
-        {title:"Brother MFC-J5740DW",category:"Sistema y periféricos",kind:"Controlador",desc:"Controlador y herramientas de escáner para la multifunción Brother.",url:"https://github.com/Montejaque/brother-mfc-j5740dw-sinroot",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/brother.png",tag:"PUNTO VUELA"}
+        {title:"Codex",category:"Aplicaciones Punto Vuela",kind:"Asistente de código",desc:"Asistente de programación para trabajar con repositorios y tareas de desarrollo.",url:"https://github.com/Montejaque/chatgpt-installer-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/openai.png",tag:"PUNTO VUELA"},
+        {title:"Visual Studio Code",category:"Aplicaciones Punto Vuela",kind:"Editor",desc:"Editor de código extensible con instalador preparado para Linux sin root.",url:"https://github.com/Montejaque/vscode-installer-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/vscode.png",tag:"PUNTO VUELA"},
+        {title:"Antigravity",category:"Aplicaciones Punto Vuela",kind:"Herramienta",desc:"Instalación y mantenimiento de Antigravity en equipos Linux.",url:"https://github.com/Montejaque/antigravity-installer-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/simpleicons.org/google/4285F4",tag:"PUNTO VUELA"},
+        {title:"Claude Desktop",category:"Aplicaciones Punto Vuela",kind:"Aplicación",desc:"Instalador de Claude Desktop para entornos Linux.",url:"https://github.com/Montejaque/claude-desktop-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/simpleicons.org/anthropic/D97757",tag:"PUNTO VUELA"},
+        {title:"Brother MFC-J5740DW",category:"Aplicaciones Punto Vuela",kind:"Controlador",desc:"Controlador y herramientas de escáner para la multifunción Brother.",url:"https://github.com/Montejaque/brother-mfc-j5740dw-sinroot",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/brother.png",tag:"PUNTO VUELA"}
     ]
-    property var visibleFeaturedApps: featuredApps.filter(item => selectedCategory === "Todas" || item.category === selectedCategory)
+    property var allHomeApps: featuredApps.concat(catalogItems.map(item => ({title:item.name,category:item.category,kind:"AppImage oficial",desc:item.description||"Aplicación del catálogo oficial.",url:item.catalogUrl,image:item.iconUrl,tag:"CATÁLOGO OFICIAL",official:true})))
+    property var visibleFeaturedApps: allHomeApps.filter(item => selectedCategory === "Todas" || item.category === selectedCategory)
 
     function refreshCatalog() {
         catalogLoading = true
@@ -287,7 +288,7 @@ ApplicationWindow {
                             Layout.fillWidth:true
                             Text { text:"Aplicaciones destacadas"; color:primaryText; font.pixelSize:19; font.bold:true }
                             Item { Layout.fillWidth:true }
-                            Text { text:featuredApps.length+" herramientas"; color:muted; font.pixelSize:11 }
+                            Text { text:allHomeApps.length+" herramientas"; color:muted; font.pixelSize:11 }
                         }
                         Flow {
                             Layout.fillWidth:true; spacing:8
