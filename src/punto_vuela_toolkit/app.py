@@ -42,7 +42,9 @@ class AppImageBridge(QObject):
     def listAppImages(self) -> str:
         return json.dumps([
             {"path": str(item.path), "name": item.path.name,
-             "size": item.size, "executable": item.executable}
+             "size": item.size, "executable": item.executable,
+             "customUpdater": any(token in item.path.name.casefold() for token in
+                                  ("vscode-installer", "chatgpt-installer", "claude-desktop", "antigravity-installer"))}
             for item in self.manager.list_appimages()
         ], ensure_ascii=False)
 
