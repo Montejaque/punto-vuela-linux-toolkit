@@ -20,20 +20,20 @@ ApplicationWindow {
     Settings {
         id: appSettings
         category: "appearance"
-        property string savedThemeMode: "system"
+        property string savedThemeMode: "dark"
     }
 
-    readonly property color backgroundColor: darkTheme ? "#111214" : "#F5F6F8"
-    readonly property color sidebarColor: darkTheme ? "#17191C" : "#FFFFFF"
-    readonly property color panel: darkTheme ? "#1B1D20" : "#FFFFFF"
-    readonly property color panelBorder: darkTheme ? "#303237" : "#E1E3E8"
-    readonly property color primaryText: darkTheme ? "#FFFFFF" : "#202226"
-    readonly property color secondaryText: darkTheme ? "#B9BBC0" : "#555B65"
-    readonly property color muted: darkTheme ? "#9A9DA3" : "#737984"
-    readonly property color searchColor: darkTheme ? "#202226" : "#FFFFFF"
+    readonly property color backgroundColor: darkTheme ? "#252B31" : "#F3F4F6"
+    readonly property color sidebarColor: "#FFC400"
+    readonly property color panel: darkTheme ? "#303740" : "#FFFFFF"
+    readonly property color panelBorder: darkTheme ? "#3A424C" : "#E1E3E8"
+    readonly property color primaryText: darkTheme ? "#F7F8FA" : "#202226"
+    readonly property color secondaryText: darkTheme ? "#C2C8D0" : "#555B65"
+    readonly property color muted: darkTheme ? "#929BA6" : "#737984"
+    readonly property color searchColor: darkTheme ? "#252B31" : "#FFFFFF"
     readonly property color selectedNavigation: darkTheme ? "#343126" : "#FFF6D2"
-    readonly property color heroStart: darkTheme ? "#393321" : "#FFF1B8"
-    readonly property color heroEnd: darkTheme ? "#24211A" : "#F8E7A0"
+    readonly property color heroStart: darkTheme ? "#34303D" : "#FFF1B8"
+    readonly property color heroEnd: darkTheme ? "#292F38" : "#F8E7A0"
 
     property bool previewVisible: false
     property var appImageItems: []
@@ -133,14 +133,14 @@ ApplicationWindow {
                     }
                     Column {
                         spacing: 2
-                        Text { text: "PUNTO VUELA"; color: primaryText; font.pixelSize: 13; font.bold: true; font.letterSpacing: 1.2 }
-                        Text { text: "LINUX TOOLKIT"; color: accent; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
+                        Text { text: "PUNTO VUELA"; color: "#202226"; font.pixelSize: 13; font.bold: true; font.letterSpacing: 1.2 }
+                        Text { text: "LINUX TOOLKIT"; color: "#51430A"; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
                     }
                 }
 
-                Rectangle { Layout.fillWidth: true; height: 1; color: panelBorder }
+                Rectangle { Layout.fillWidth: true; height: 1; color: "#E0AD00" }
 
-                Text { text: "ESPACIO DE TRABAJO"; color: muted; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
+                Text { text: "ESPACIO DE TRABAJO"; color: "#665400"; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
                 Repeater {
                     model: [
                         {name:"Inicio", glyph:"⌂"},
@@ -154,7 +154,7 @@ ApplicationWindow {
                         Rectangle {
                             anchors.fill: parent
                             radius: 10
-                            color: activePage === modelData.name ? "#343126" : "transparent"
+                            color: activePage === modelData.name ? "#292F36" : "transparent"
                             Rectangle { width: 3; height: 22; radius: 2; color: accent; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; visible: activePage === modelData.name }
                         }
                         Row {
@@ -162,27 +162,27 @@ ApplicationWindow {
                             anchors.left: parent.left
                             anchors.leftMargin: 14
                             spacing: 13
-                            Text { text: modelData.glyph; color: activePage === modelData.name ? accent : "#B9BBC0"; font.pixelSize: 18; width: 18; horizontalAlignment: Text.AlignHCenter }
-                            Text { text: modelData.name; color: activePage === modelData.name ? "#FFFFFF" : "#B9BBC0"; font.pixelSize: 13; font.weight: activePage === modelData.name ? Font.DemiBold : Font.Normal }
+                            Text { text: modelData.glyph; color: activePage === modelData.name ? "#FFC400" : "#292F36"; font.pixelSize: 18; width: 18; horizontalAlignment: Text.AlignHCenter }
+                            Text { text: modelData.name; color: activePage === modelData.name ? "#FFFFFF" : "#292F36"; font.pixelSize: 13; font.weight: activePage === modelData.name ? Font.DemiBold : Font.Normal }
                         }
                         MouseArea { anchors.fill: parent; onClicked: activePage = modelData.name; cursorShape: Qt.PointingHandCursor }
                     }
                 }
 
                 Item { Layout.fillHeight: true }
-                Text { text: "SISTEMA"; color: muted; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
+                Text { text: "SISTEMA"; color: "#665400"; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
                 Repeater {
                     model: ["Ayuda"]
                     delegate: Text {
                         Layout.fillWidth: true
                         text: "  ◦   " + modelData
-                        color: activePage === modelData ? "#FFFFFF" : "#B9BBC0"
+                        color: activePage === modelData ? "#292F36" : "#292F36"
                         font.pixelSize: 13
                         padding: 10
                         MouseArea { anchors.fill: parent; onClicked: activePage = modelData; cursorShape: Qt.PointingHandCursor }
                     }
                 }
-                Text { text: "VERSIÓN 0.1.0 · PREVIEW"; color: muted; font.pixelSize: 9; Layout.bottomMargin: 4 }
+                Text { text: "VERSIÓN 0.1.0 · PREVIEW"; color: "#665400"; font.pixelSize: 9; Layout.bottomMargin: 4 }
             }
         }
 
@@ -193,7 +193,7 @@ ApplicationWindow {
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 34
+                anchors.margins: 26
                 spacing: 24
 
                 RowLayout {
