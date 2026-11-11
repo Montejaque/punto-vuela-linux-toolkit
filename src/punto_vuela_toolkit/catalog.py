@@ -115,7 +115,7 @@ class AppImageCatalog:
         repository = entry.get("repository")
         if not repository:
             direct_url = entry.get("downloadUrl", "")
-            if direct_url.lower().endswith(".appimage"):
+            if urllib.parse.urlparse(direct_url).path.lower().endswith(".appimage"):
                 path = self.manager.download(direct_url)
                 return {"ok": True, "path": str(path), "message": f"{entry['name']} se ha descargado y ya tiene permisos de ejecución."}
             raise RuntimeError("El catálogo no facilita un enlace directo ni un repositorio GitHub con una versión descargable. Abre la ficha de descarga del autor.")
