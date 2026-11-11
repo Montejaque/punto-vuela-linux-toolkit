@@ -34,7 +34,14 @@ class AppImageBridge(QObject):
     def downloadAppImage(self, url: str) -> str:
         try:
             path = self.manager.download(url)
-            return json.dumps({"ok": True, "path": str(path), "message": f"Descargada y preparada para ejecutar: {path.name}"}, ensure_ascii=False)
+            update = self.manager.check_update(path)
+            if update.get("supported") and update.get("available"):
+                message = f"Descargada: {path.name}. Hay una actualización disponible; pulsa Comprobar y después Actualizar para instalarla."
+            elif update.get("supported"):
+                message = f"Descargada y preparada para ejecutar: {path.name}. No se detectan actualizaciones."
+            else:
+                message = f"Descargada y preparada para ejecutar: {path.name}. No se pudo comprobar la versión: {update.get('message', 'origen no compatible')}."
+            return json.dumps({"ok": True, "path": str(path), "updateAvailable": bool(update.get("available")), "message": message}, ensure_ascii=False)
         except Exception as exc:
             return json.dumps({"ok": False, "message": str(exc)}, ensure_ascii=False)
 
