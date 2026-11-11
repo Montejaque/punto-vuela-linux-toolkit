@@ -301,7 +301,7 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                         Text { id: appImageStatus; Layout.fillWidth: true; color: secondaryText; wrapMode: Text.WordWrap; font.pixelSize: 11 }
                         ListView {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: Math.max(150, contentHeight)
+                            Layout.preferredHeight: Math.max(150, appImageItems.length * 92)
                             interactive: false
                             model: appImageItems
                             spacing: 8
@@ -334,7 +334,7 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                                 }
                             }
                         }
-                        Text { Layout.fillWidth: true; text: "La comprobación requiere información de actualización compatible dentro de la AppImage y AppImageUpdate instalado. Si no existe esa información, consulta la web del desarrollador y descarga la nueva versión manualmente."; color: muted; font.pixelSize: 11; wrapMode: Text.WordWrap }
+                        Text { Layout.fillWidth: true; text: "La comprobación requiere información de actualización compatible dentro de la AppImage. Si no encuentra AppImageUpdate, el Toolkit descarga el actualizador oficial en tu perfil y verifica su SHA-256; no necesita root. Si no existe esa información, consulta la web del desarrollador y descarga la nueva versión manualmente."; color: muted; font.pixelSize: 11; wrapMode: Text.WordWrap }
                         Component.onCompleted: refreshAppImages()
                     }
 
