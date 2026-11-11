@@ -37,6 +37,28 @@ ApplicationWindow {
 
     property bool previewVisible: false
     property var appImageItems: []
+    property var catalogItems: []
+    property bool catalogLoading: false
+
+    function refreshCatalog() {
+        catalogLoading = true
+        appImageManager.loadCatalog(catalogSearch.text.trim())
+    }
+
+    Connections {
+        target: appImageManager
+        function onCatalogLoaded(payload) {
+            const result = JSON.parse(payload)
+            catalogItems = result.items || []
+            catalogStatus.text = result.message || ""
+            catalogLoading = false
+        }
+        function onCatalogInstallFinished(payload) {
+            const result = JSON.parse(payload)
+            catalogStatus.text = result.message || "La operación ha terminado."
+            if (result.ok) refreshAppImages()
+        }
+    }
 
     function refreshAppImages() {
         appImageItems = JSON.parse(appImageManager.listAppImages())
@@ -178,13 +200,13 @@ ApplicationWindow {
                 Flickable {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    contentHeight: activePage === "Contacto e información" ? contactPage.implicitHeight : (activePage === "Mis aplicaciones" ? appImagesPage.implicitHeight : (activePage === "Ayuda" ? helpPage.implicitHeight : contentColumn.implicitHeight))
+                    contentHeight: activePage === "Contacto e información" ? contactPage.implicitHeight : (activePage === "Mis aplicaciones" ? appImagesPage.implicitHeight : (activePage === "Ayuda" ? helpPage.implicitHeight : (activePage === "Catálogo AppImage" ? catalogPage.implicitHeight : contentColumn.implicitHeight)))
                     clip: true
                     ColumnLayout {
                         id: contentColumn
                         width: parent.width
                         spacing: 22
-                        visible: activePage !== "Contacto e información" && activePage !== "Mis aplicaciones" && activePage !== "Ayuda"
+                        visible: activePage !== "Contacto e información" && activePage !== "Mis aplicaciones" && activePage !== "Ayuda" && activePage !== "Catálogo AppImage"
 
                         Rectangle {
                             Layout.fillWidth: true
@@ -262,6 +284,89 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
 
                     }
 
+
+
+                    ColumnLayout {
+                        id: catalogPage
+                        width: parent.width
+                        spacing: 14
+                        visible: activePage === "Catálogo AppImage"
+
+                        Text { text: "Catálogo de aplicaciones"; color: primaryText; font.pixelSize: 21; font.bold: true }
+                        Text {
+                            Layout.fillWidth: true
+                            text: "Busca en el catálogo comunitario AppImage. Se muestran los requisitos de glibc cuando el editor los ha declarado; las aplicaciones que requieren una versión superior a Ubuntu 20.04 quedan bloqueadas para evitar instalaciones incompatibles."
+                            color: secondaryText; font.pixelSize: 12; wrapMode: Text.WordWrap
+                        }
+                        Rectangle {
+                            Layout.fillWidth: true; radius: 12; color: panel; border.color: panelBorder
+                            implicitHeight: 66
+                            RowLayout {
+                                anchors.fill: parent; anchors.margins: 12; spacing: 8
+                                TextField {
+                                    id: catalogSearch
+                                    Layout.fillWidth: true
+                                    placeholderText: "Buscar por nombre, descripción, categoría o autor"
+                                    onAccepted: refreshCatalog()
+                                }
+                                Button { text: "Buscar"; onClicked: refreshCatalog() }
+                                Button { text: "Actualizar catálogo"; enabled: !catalogLoading; onClicked: { catalogLoading = true; appImageManager.refreshCatalog() } }
+                            }
+                        }
+                        Text {
+                            id: catalogStatus
+                            Layout.fillWidth: true
+                            text: catalogLoading ? "Cargando catálogo…" : "El catálogo se cargará al abrir esta sección."
+                            color: accent; font.pixelSize: 11; wrapMode: Text.WordWrap
+                        }
+                        ListView {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: Math.max(220, catalogItems.length * 116)
+                            interactive: false
+                            model: catalogItems
+                            spacing: 9
+                            delegate: Rectangle {
+                                width: ListView.view.width
+                                height: 108
+                                radius: 12; color: panel; border.color: panelBorder
+                                RowLayout {
+                                    anchors.fill: parent; anchors.margins: 12; spacing: 10
+                                    ColumnLayout {
+                                        Layout.fillWidth: true; spacing: 4
+                                        Text { text: modelData.name; color: primaryText; font.pixelSize: 13; font.bold: true; Layout.fillWidth: true; elide: Text.ElideRight }
+                                        Text { text: modelData.description || "Sin descripción"; color: secondaryText; font.pixelSize: 10; Layout.fillWidth: true; elide: Text.ElideRight }
+                                        Text { text: modelData.category + " · " + (modelData.author || "Autor no indicado") + " · Licencia: " + modelData.license; color: muted; font.pixelSize: 9; Layout.fillWidth: true; elide: Text.ElideRight }
+                                        Text {
+                                            text: "glibc " + modelData.glibc + " · " + modelData.compatibility
+                                            color: modelData.compatibleUbuntu20 ? "#7BA880" : "#D86B63"
+                                            font.pixelSize: 9; Layout.fillWidth: true; elide: Text.ElideRight
+                                        }
+                                    }
+                                    ColumnLayout {
+                                        spacing: 5
+                                        Button {
+                                            text: "Instalar"
+                                            enabled: modelData.compatibleUbuntu20 && modelData.repository !== ""
+                                            onClicked: {
+                                                catalogStatus.text = "Descargando " + modelData.name + "…"
+                                                appImageManager.installCatalogApp(modelData.name)
+                                            }
+                                        }
+                                        Button {
+                                            text: "Ver proyecto"
+                                            onClicked: Qt.openUrlExternally(modelData.repository ? "https://github.com/" + modelData.repository : modelData.downloadUrl)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Text {
+                            Layout.fillWidth: true
+                            text: "Fuente: appimage.github.io/feed.json. El catálogo enlaza con los proyectos originales y no aloja los programas. La disponibilidad de una AppImage en la última versión depende de cada editor. Los requisitos glibc no declarados no pueden garantizar compatibilidad con Ubuntu 20.04. AppImageHub (pling) es una fuente distinta y puede requerir descarga manual desde su ficha."
+                            color: muted; font.pixelSize: 10; wrapMode: Text.WordWrap
+                        }
+                        Component.onCompleted: refreshCatalog()
+                    }
 
                     ColumnLayout {
                         id: appImagesPage
