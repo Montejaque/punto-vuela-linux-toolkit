@@ -129,7 +129,7 @@ ApplicationWindow {
                     Rectangle {
                         width: 44; height: 44; radius: 14
                         color: accent
-                        Image { anchors.fill: parent; anchors.margins: 7; source: Qt.resolvedUrl("../assets/logotipovuela.svg"); fillMode: Image.PreserveAspectFit; visible: status === Image.Ready }
+                        Image { anchors.fill: parent; anchors.margins: 3; source: Qt.resolvedUrl("../assets/logotipovuela.svg"); fillMode: Image.PreserveAspectFit; smooth: true; mipmap: true; asynchronous: true; sourceSize.width: 512; sourceSize.height: 512; visible: status === Image.Ready }
                     }
                     Column {
                         spacing: 2
