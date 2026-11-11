@@ -36,6 +36,11 @@ ApplicationWindow {
     readonly property color heroEnd: darkTheme ? "#24211A" : "#F8E7A0"
 
     property bool previewVisible: false
+    property var appImageItems: []
+
+    function refreshAppImages() {
+        appImageItems = JSON.parse(appImageManager.listAppImages())
+    }
 
     function setThemeMode(mode) {
         themeMode = mode
@@ -108,7 +113,7 @@ ApplicationWindow {
                 Item { Layout.fillHeight: true }
                 Text { text: "SISTEMA"; color: muted; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
                 Repeater {
-                    model: ["Diagnóstico", "Configuración"]
+                    model: ["Diagnóstico", "Configuración", "Ayuda"]
                     delegate: Text {
                         Layout.fillWidth: true
                         text: "  ◦   " + modelData
@@ -173,13 +178,13 @@ ApplicationWindow {
                 Flickable {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    contentHeight: activePage === "Contacto e información" ? contactPage.implicitHeight : contentColumn.implicitHeight
+                    contentHeight: activePage === "Contacto e información" ? contactPage.implicitHeight : (activePage === "Mis aplicaciones" ? appImagesPage.implicitHeight : (activePage === "Ayuda" ? helpPage.implicitHeight : contentColumn.implicitHeight))
                     clip: true
                     ColumnLayout {
                         id: contentColumn
                         width: parent.width
                         spacing: 22
-                        visible: activePage !== "Contacto e información"
+                        visible: activePage !== "Contacto e información" && activePage !== "Mis aplicaciones" && activePage !== "Ayuda"
 
                         Rectangle {
                             Layout.fillWidth: true
@@ -255,6 +260,119 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                             }
                         }
 
+                    }
+
+
+                    ColumnLayout {
+                        id: appImagesPage
+                        width: parent.width
+                        spacing: 16
+                        visible: activePage === "Mis aplicaciones"
+                        Text { text: "Tus aplicaciones AppImage"; color: primaryText; font.pixelSize: 20; font.bold: true }
+                        Text { Layout.fillWidth: true; text: "Descarga aplicaciones desde enlaces HTTPS. Se guardan en tu carpeta personal y reciben permisos de ejecución automáticamente."; color: secondaryText; font.pixelSize: 12; wrapMode: Text.WordWrap }
+                        Rectangle {
+                            Layout.fillWidth: true; radius: 14; color: panel; border.color: panelBorder
+                            implicitHeight: downloadForm.implicitHeight + 30
+                            ColumnLayout {
+                                id: downloadForm
+                                anchors.fill: parent; anchors.margins: 16; spacing: 10
+                                Text { text: "Descargar AppImage"; color: primaryText; font.pixelSize: 14; font.bold: true }
+                                TextField { id: appImageUrl; Layout.fillWidth: true; placeholderText: "Enlace HTTPS directo al archivo .AppImage" }
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    Button {
+                                        text: "Descargar"
+                                        onClicked: {
+                                            const result = JSON.parse(appImageManager.downloadAppImage(appImageUrl.text.trim()))
+                                            appImageStatus.text = result.message
+                                            if (result.ok) { appImageUrl.text = ""; refreshAppImages() }
+                                        }
+                                    }
+                                    Button { text: "Abrir carpeta"; onClicked: appImageManager.openAppImageFolder() }
+                                }
+                            }
+                        }
+                        RowLayout {
+                            Layout.fillWidth: true
+                            Text { text: "Aplicaciones descargadas"; color: primaryText; font.pixelSize: 15; font.bold: true }
+                            Item { Layout.fillWidth: true }
+                            Button { text: "Actualizar lista"; onClicked: refreshAppImages() }
+                        }
+                        Text { id: appImageStatus; Layout.fillWidth: true; color: secondaryText; wrapMode: Text.WordWrap; font.pixelSize: 11 }
+                        ListView {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: Math.max(150, contentHeight)
+                            interactive: false
+                            model: appImageItems
+                            spacing: 8
+                            delegate: Rectangle {
+                                width: ListView.view.width; height: 84
+                                radius: 12; color: panel; border.color: panelBorder
+                                RowLayout {
+                                    anchors.fill: parent; anchors.margins: 12; spacing: 8
+                                    ColumnLayout {
+                                        Layout.fillWidth: true; spacing: 4
+                                        Text { text: modelData.name; color: primaryText; font.pixelSize: 12; font.bold: true; elide: Text.ElideMiddle; Layout.fillWidth: true }
+                                        Text { text: modelData.executable ? "Permisos de ejecución activos" : "Sin permisos de ejecución"; color: muted; font.pixelSize: 10 }
+                                    }
+                                    Button {
+                                        text: "Comprobar"
+                                        onClicked: {
+                                            const result = JSON.parse(appImageManager.checkAppImageUpdate(modelData.path))
+                                            appImageStatus.text = modelData.name + ": " + result.message
+                                            if (result.available) appImageStatus.text += " · Hay una actualización. Pulsa Actualizar."
+                                        }
+                                    }
+                                    Button {
+                                        text: "Actualizar"
+                                        onClicked: {
+                                            const result = JSON.parse(appImageManager.updateAppImage(modelData.path))
+                                            appImageStatus.text = modelData.name + ": " + result.message
+                                            refreshAppImages()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Text { Layout.fillWidth: true; text: "La comprobación requiere información de actualización compatible dentro de la AppImage y AppImageUpdate instalado. Si no existe esa información, consulta la web del desarrollador y descarga la nueva versión manualmente."; color: muted; font.pixelSize: 11; wrapMode: Text.WordWrap }
+                        Component.onCompleted: refreshAppImages()
+                    }
+
+                    ColumnLayout {
+                        id: helpPage
+                        width: parent.width
+                        spacing: 16
+                        visible: activePage === "Ayuda"
+                        Text { text: "Guía de ayuda"; color: primaryText; font.pixelSize: 22; font.bold: true }
+                        Text { text: "PUNTO VUELA LINUX TOOLKIT"; color: accent; font.pixelSize: 12; font.bold: true; font.letterSpacing: 1 }
+                        Rectangle {
+                            Layout.fillWidth: true; radius: 14; color: heroStart; border.color: panelBorder
+                            ColumnLayout {
+                                anchors.fill: parent; anchors.margins: 18; spacing: 8
+                                Text { text: "Tus aplicaciones, organizadas en un solo lugar"; color: "#202226"; font.pixelSize: 17; font.bold: true }
+                                Text { text: "Las AppImages se guardan en ~/.local/share/punto-vuela-linux-toolkit/AppImages. No necesitas permisos de administrador para descargarlas o gestionarlas."; color: "#343434"; font.pixelSize: 12; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+                            }
+                        }
+                        Repeater {
+                            model: [
+                                {title:"1. Descargar", body:"En Mis aplicaciones, introduce el enlace HTTPS directo al archivo .AppImage. El Toolkit valida que el archivo sea ELF y lo guarda en tu carpeta personal."},
+                                {title:"2. Ejecutar", body:"Al finalizar la descarga, el archivo recibe permisos de ejecución automáticamente. Pulsa Abrir carpeta para localizarlo."},
+                                {title:"3. Actualizar", body:"Pulsa Comprobar. Si la AppImage incluye información compatible, AppImageUpdate consulta el origen del autor. Si existe una versión nueva, pulsa Actualizar."},
+                                {title:"4. Sin actualizador", body:"No todas las AppImages de AppImageHub incluyen información de actualización. En ese caso no se puede confirmar automáticamente si hay una versión posterior: consulta la web del desarrollador."},
+                                {title:"5. Seguridad", body:"Una AppImage es un programa ejecutable. Descarga software de fuentes fiables. La validación ELF no es un análisis antivirus ni verifica la identidad del autor. Las actualizaciones requieren una acción explícita."}
+                            ]
+                            delegate: Rectangle {
+                                Layout.fillWidth: true; radius: 12; color: panel; border.color: panelBorder
+                                implicitHeight: helpText.implicitHeight + 30
+                                ColumnLayout {
+                                    id: helpText
+                                    anchors.fill: parent; anchors.margins: 15; spacing: 6
+                                    Text { text: modelData.title; color: primaryText; font.pixelSize: 13; font.bold: true }
+                                    Text { text: modelData.body; color: secondaryText; font.pixelSize: 11; wrapMode: Text.WordWrap; Layout.fillWidth: true }
+                                }
+                            }
+                        }
+                        Text { Layout.fillWidth: true; text: "Guía completa: docs/GUIA-DE-AYUDA.md en el repositorio."; color: muted; font.pixelSize: 10; wrapMode: Text.WordWrap }
                     }
 
                     ColumnLayout {
