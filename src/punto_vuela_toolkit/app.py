@@ -82,7 +82,7 @@ class AppImageBridge(QObject):
     def loadCatalog(self, query: str) -> None:
         def work() -> None:
             try:
-                entries = self.catalog.search(query, force=False, limit=500)
+                entries = self.catalog.search(query, force=False, limit=5000)
                 payload = {"ok": True, "items": entries, "message": f"{len(entries)} aplicaciones encontradas en el catálogo comunitario."}
             except Exception as exc:
                 payload = {"ok": False, "items": [], "message": f"No se pudo cargar el catálogo: {exc}"}
@@ -96,7 +96,7 @@ class AppImageBridge(QObject):
     def refreshCatalog(self) -> None:
         def work() -> None:
             try:
-                entries = self.catalog.search("", force=True, limit=500)
+                entries = self.catalog.search("", force=True, limit=5000)
                 payload = {"ok": True, "items": entries, "message": f"Catálogo actualizado: {len(entries)} aplicaciones."}
             except Exception as exc:
                 payload = {"ok": False, "items": [], "message": f"No se pudo actualizar el catálogo: {exc}"}
