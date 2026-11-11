@@ -1,0 +1,152 @@
+from __future__ import annotations
+
+import os
+import re
+import shutil
+import subprocess
+import urllib.parse
+import urllib.request
+from dataclasses import dataclass
+from pathlib import Path
+
+
+APPIMAGE_MAGIC = b"\x7fELF"
+USER_AGENT = "PuntoVuelaLinuxToolkit/0.1"
+
+
+def appimage_directory() -> Path:
+    """Return the per-user AppImage storage directory (no root required)."""
+    data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share"))
+    return data_home / "punto-vuela-linux-toolkit" / "AppImages"
+
+
+@dataclass(frozen=True)
+class AppImageRecord:
+    path: Path
+    size: int
+    executable: bool
+
+
+class AppImageManager:
+    """Safe, user-local AppImage download and update helper.
+
+    Update checks and updates are delegated to AppImageUpdate-compatible
+    tooling. An AppImage can only be updated this way when its publisher
+    embedded supported update information in the file.
+    """
+
+    def __init__(self, directory: Path | None = None) -> None:
+        self.directory = (directory or appimage_directory()).expanduser()
+        self.directory.mkdir(parents=True, exist_ok=True)
+
+    def list_appimages(self) -> list[AppImageRecord]:
+        records: list[AppImageRecord] = []
+        for path in sorted(self.directory.glob("*.AppImage"), key=lambda p: p.name.casefold()):
+            if not path.is_file():
+                continue
+            try:
+                stat = path.stat()
+                records.append(AppImageRecord(path, stat.st_size, os.access(path, os.X_OK)))
+            except OSError:
+                continue
+        return records
+
+    @staticmethod
+    def _safe_filename(url: str, filename: str | None = None) -> str:
+        candidate = filename or Path(urllib.parse.urlparse(url).path).name
+        candidate = Path(candidate).name
+        candidate = re.sub(r"[^A-Za-z0-9._+-]", "-", candidate).strip(".-")
+        if not candidate:
+            raise ValueError("No se pudo determinar un nombre de archivo seguro.")
+        if not candidate.lower().endswith(".appimage"):
+            candidate += ".AppImage"
+        return candidate
+
+    def download(self, url: str, filename: str | None = None) -> Path:
+        parsed = urllib.parse.urlparse(url)
+        if parsed.scheme != "https" or not parsed.netloc:
+            raise ValueError("Solo se permiten descargas desde direcciones HTTPS.")
+        name = self._safe_filename(url, filename)
+        destination = self.directory / name
+        temporary = destination.with_name(destination.name + ".part")
+        request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+        try:
+            with urllib.request.urlopen(request, timeout=45) as response:
+                final_url = urllib.parse.urlparse(response.geturl())
+                if final_url.scheme != "https":
+                    raise ValueError("La descarga ha sido redirigida a una dirección no segura.")
+                with temporary.open("wb") as output:
+                    first = response.read(4)
+                    if first != APPIMAGE_MAGIC:
+                        raise ValueError("El archivo descargado no parece ser una AppImage ELF válida.")
+                    output.write(first)
+                    shutil.copyfileobj(response, output, length=1024 * 1024)
+            if temporary.stat().st_size < 1024 * 1024:
+                raise ValueError("El archivo descargado es demasiado pequeño para ser una AppImage válida.")
+            temporary.chmod(0o755)
+            os.replace(temporary, destination)
+            destination.chmod(0o755)
+            return destination
+        except Exception:
+            temporary.unlink(missing_ok=True)
+            raise
+
+    @staticmethod
+    def _updater() -> str | None:
+        return shutil.which("appimageupdatetool") or shutil.which("appimageupdate")
+
+    def check_update(self, path: str | Path) -> dict[str, str | bool]:
+        appimage = Path(path).expanduser().resolve()
+        if not appimage.is_file() or appimage.suffix.lower() != ".appimage":
+            raise ValueError("La ruta indicada no es una AppImage existente.")
+        updater = self._updater()
+        if not updater:
+            return {
+                "available": False,
+                "supported": False,
+                "message": "No está instalado AppImageUpdate. No se puede comprobar la actualización.",
+            }
+        result = subprocess.run(
+            [updater, "--check-for-update", str(appimage)],
+            capture_output=True, text=True, timeout=300, check=False,
+        )
+        output = (result.stdout + "\n" + result.stderr).strip()
+        if result.returncode == 0:
+            return {
+                "available": False,
+                "supported": True,
+                "message": output or "No se ha detectado ninguna actualización disponible.",
+            }
+        if result.returncode == 1:
+            return {
+                "available": True,
+                "supported": True,
+                "message": output or "Hay una actualización disponible.",
+            }
+        return {
+            "available": False,
+            "supported": False,
+            "message": output or f"AppImageUpdate terminó con el código {result.returncode}.",
+        }
+
+    def update(self, path: str | Path) -> dict[str, str | bool]:
+        appimage = Path(path).expanduser().resolve()
+        check = self.check_update(appimage)
+        if not check["supported"]:
+            raise RuntimeError(str(check["message"]))
+        if not check["available"]:
+            return {"updated": False, "message": str(check["message"])}
+        updater = self._updater()
+        if not updater:
+            raise RuntimeError("No se encuentra AppImageUpdate.")
+        # Keep the updater's backup so the user can roll back if needed.
+        result = subprocess.run(
+            [updater, "--overwrite", str(appimage)],
+            capture_output=True, text=True, timeout=1800, check=False,
+        )
+        output = (result.stdout + "\n" + result.stderr).strip()
+        if result.returncode != 0:
+            raise RuntimeError(output or f"Falló la actualización (código {result.returncode}).")
+        if not appimage.exists() or not os.access(appimage, os.X_OK):
+            raise RuntimeError("La actualización terminó, pero no se pudo verificar el archivo ejecutable resultante.")
+        return {"updated": True, "message": output or "AppImage actualizada correctamente."}
