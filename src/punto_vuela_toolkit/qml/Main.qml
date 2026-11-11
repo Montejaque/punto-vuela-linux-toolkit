@@ -133,7 +133,7 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     ColumnLayout {
                         spacing: 5
-                        Text { text: activePage; color: "#FFFFFF"; font.pixelSize: 27; font.bold: true }
+                        Text { text: activePage; color: primaryText; font.pixelSize: 27; font.bold: true }
                         Text { text: "Tu espacio para descubrir y mantener aplicaciones Linux"; color: muted; font.pixelSize: 13 }
                     }
                     Item { Layout.fillWidth: true }
@@ -190,7 +190,7 @@ ApplicationWindow {
                                 ColumnLayout {
                                     Layout.fillWidth: true
                                     spacing: 12
-                                    Text { text: "Bienvenido a tu centro de software"; color: "#FFFFFF"; font.pixelSize: 22; font.bold: true }
+                                    Text { text: "Bienvenido a tu centro de software"; color: primaryText; font.pixelSize: 22; font.bold: true }
                                     Text { text: "Las herramientas de Punto Vuela y tus aplicaciones Linux,
 en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                                     Rectangle {
@@ -206,7 +206,7 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                             }
                         }
 
-                        Text { text: "Accesos destacados"; color: "#FFFFFF"; font.pixelSize: 17; font.bold: true }
+                        Text { text: "Accesos destacados"; color: primaryText; font.pixelSize: 17; font.bold: true }
                         GridLayout {
                             Layout.fillWidth: true
                             columns: width > 850 ? 3 : 2
@@ -221,17 +221,17 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                                 ]
                                 delegate: Rectangle {
                                     Layout.fillWidth: true; Layout.preferredHeight: 122
-                                    radius: 13; color: panel; border.color: "#303237"
+                                    radius: 13; color: panel; border.color: panelBorder
                                     ColumnLayout {
                                         anchors.fill: parent; anchors.margins: 15; spacing: 7
                                         Text { text: modelData.tag; color: accent; font.pixelSize: 9; font.bold: true; font.letterSpacing: 1 }
-                                        Text { text: modelData.title; color: "#FFFFFF"; font.pixelSize: 13; font.bold: true }
+                                        Text { text: modelData.title; color: primaryText; font.pixelSize: 13; font.bold: true }
                                         Text { text: modelData.desc; color: muted; font.pixelSize: 10; wrapMode: Text.WordWrap; Layout.fillWidth: true }
                                     }
                                 }
                             }
                         }
-                        Text { text: "Fuentes de aplicaciones"; color: "#FFFFFF"; font.pixelSize: 17; font.bold: true }
+                        Text { text: "Fuentes de aplicaciones"; color: primaryText; font.pixelSize: 17; font.bold: true }
                         RowLayout {
                             Layout.fillWidth: true; spacing: 14
                             Repeater {
@@ -241,10 +241,10 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                                 ]
                                 delegate: Rectangle {
                                     Layout.fillWidth: true; Layout.preferredHeight: 88
-                                    radius: 12; color: panel; border.color: "#303237"
+                                    radius: 12; color: panel; border.color: panelBorder
                                     Column {
                                         anchors.fill: parent; anchors.margins: 14; spacing: 7
-                                        Text { text: modelData.title; color: "#FFFFFF"; font.pixelSize: 13; font.bold: true }
+                                        Text { text: modelData.title; color: primaryText; font.pixelSize: 13; font.bold: true }
                                         Text { text: modelData.desc; color: muted; font.pixelSize: 11 }
                                     }
                                 }
