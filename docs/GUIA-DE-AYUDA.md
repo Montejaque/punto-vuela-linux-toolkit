@@ -14,7 +14,6 @@ Las aplicaciones descargadas desde el catálogo se guardan en una carpeta propia
 ~/.local/share/punto-vuela-linux-toolkit/AppImages/
 ```
 
-undefined
 
 Puedes abrirla desde el gestor de archivos. Cada AppImage descargada se conserva como un archivo independiente; eliminar una AppImage de esta carpeta no desinstala paquetes del sistema ni borra documentos personales.
 
@@ -61,7 +60,7 @@ chmod u+x "Nombre-de-la-aplicacion.AppImage"
 | No se puede descargar | Comprueba la conexión y que el enlace sea HTTPS y directo al archivo. |
 | El archivo no es una AppImage | Vuelve a la ficha y utiliza el enlace correcto del archivo `.AppImage`. |
 | No tiene permisos de ejecución | Vuelve a descargarla desde el Toolkit o aplica `chmod u+x`. |
-| No se puede comprobar una actualización | Comprueba si AppImageUpdate está instalado y si la AppImage incorpora información de actualización. |
+| No se puede comprobar una actualización | Comprueba que la AppImage incorpore información de actualización. Si falta el CLI, el Toolkit intentará descargar el actualizador oficial y verificar su SHA-256. |
 | La aplicación no arranca | Consulta los requisitos del desarrollador; algunas AppImages necesitan FUSE u otras bibliotecas del sistema. |
 | La descarga no procede de una fuente fiable | No ejecutes el archivo; busca la web oficial y las verificaciones publicadas por el autor. |
 
