@@ -22,7 +22,7 @@ Versión de desarrollo: catálogo comunitario consultable, instalación desde Gi
 
 ## Desarrollo
 
-Requiere Python 3.10+ y PySide6 6.6.3:
+Requiere Python 3.10+ y PySide6 6.4.3:
 
 ```bash
 python -m venv .venv
