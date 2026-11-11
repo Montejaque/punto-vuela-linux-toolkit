@@ -103,6 +103,7 @@ class AppImageCatalog:
                                   else "No compatible con Ubuntu 20.04 (glibc requerida superior a 2.31)"),
                 "downloadUrl": download_url,
                 "repository": _github_repo(entry) or "",
+                "catalogUrl": "https://appimage.github.io/" + urllib.parse.quote(name) + "/",
             })
             if len(results) >= limit:
                 break
@@ -133,7 +134,11 @@ class AppImageCatalog:
         if not repository:
             direct_url = entry.get("downloadUrl", "")
             if urllib.parse.urlparse(direct_url).path.lower().endswith(".appimage"):
-                return self._download_result(entry["name"], direct_url)
+                result = self._download_result(entry["name"], direct_url)
+                desktop = self.manager.integrate(result["path"], entry["name"])
+                result["desktopEntry"] = str(desktop)
+                result["message"] = entry["name"] + " descargada e integrada en el menú de aplicaciones."
+                return result
             raise RuntimeError("El catálogo no facilita un enlace directo ni un repositorio GitHub con una versión descargable. Abre la ficha de descarga del autor.")
         api_url = "https://api.github.com/repos/" + repository + "/releases/latest"
         release = json.loads(self._request(api_url, timeout=30).decode("utf-8"))
@@ -145,4 +150,8 @@ class AppImageCatalog:
         if not selected:
             raise RuntimeError("No se ha encontrado un archivo AppImage en la última versión de GitHub. Consulta la página de descargas del desarrollador.")
         asset = selected[0]
-        return self._download_result(entry["name"], asset["browser_download_url"], asset["name"])
+        result = self._download_result(entry["name"], asset["browser_download_url"], asset["name"])
+        desktop = self.manager.integrate(result["path"], entry["name"])
+        result["desktopEntry"] = str(desktop)
+        result["message"] = entry["name"] + " descargada e integrada en el menú de aplicaciones."
+        return result
