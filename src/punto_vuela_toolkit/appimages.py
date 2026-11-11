@@ -43,8 +43,8 @@ class AppImageManager:
 
     def list_appimages(self) -> list[AppImageRecord]:
         records: list[AppImageRecord] = []
-        for path in sorted(self.directory.glob("*.AppImage"), key=lambda p: p.name.casefold()):
-            if not path.is_file():
+        for path in sorted(self.directory.iterdir(), key=lambda p: p.name.casefold()):
+            if not path.is_file() or path.suffix.lower() != ".appimage":
                 continue
             try:
                 stat = path.stat()
