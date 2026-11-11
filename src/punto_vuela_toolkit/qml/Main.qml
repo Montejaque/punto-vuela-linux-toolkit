@@ -40,6 +40,8 @@ ApplicationWindow {
     property var catalogItems: []
     property bool catalogLoading: false
     property var selectedCatalogApp: null
+    property string catalogCategory: "Todas"
+    property var filteredCatalogItems: catalogItems.filter(item => catalogCategory === "Todas" || item.category === catalogCategory)
     property string selectedCategory: "Todas"
     property string selectedAppName: ""
     property var featuredApps: [
@@ -116,6 +118,7 @@ ApplicationWindow {
         appSettings.savedThemeMode = mode
     }
     color: backgroundColor
+    Component.onCompleted: refreshCatalog()
 
     RowLayout {
         anchors.fill: parent
@@ -411,26 +414,48 @@ ApplicationWindow {
                             text: catalogLoading ? "Cargando catálogo…" : "El catálogo se cargará al abrir esta sección."
                             color: accent; font.pixelSize: 11; wrapMode: Text.WordWrap
                         }
-                        ListView {
+                        Flow {
+                            Layout.fillWidth:true;spacing:8
+                            Repeater {
+                                model:["Todas","AudioVideo","Development","Education","Game","Graphics","Network","Office","Science","Settings","System","Utility"]
+                                delegate:Button { text:modelData;highlighted:catalogCategory===modelData;onClicked:catalogCategory=modelData }
+                            }
+                        }
+                        GridView {
+                            id:officialCatalogGrid
                             Layout.fillWidth:true
-                            Layout.preferredHeight:Math.max(260,catalogItems.length*94)
+                            Layout.preferredHeight:Math.max(360,Math.ceil(filteredCatalogItems.length/3)*236)
+                            cellWidth:width/3
+                            cellHeight:226
                             interactive:false
-                            model:catalogItems
-                            spacing:10
+                            model:filteredCatalogItems
                             delegate:Rectangle {
-                                width:ListView.view.width;height:86;radius:14;color:panel;border.color:panelBorder
-                                RowLayout {
-                                    anchors.fill:parent;anchors.margins:13;spacing:12
-                                    Rectangle { width:48;height:48;radius:12;color:"#FFFFFF";Text { anchors.centerIn:parent;text:(modelData.name||"?").charAt(0).toUpperCase();color:"#303740";font.pixelSize:20;font.bold:true } }
-                                    ColumnLayout {
-                                        Layout.fillWidth:true;spacing:4
-                                        Text { text:modelData.name;color:primaryText;font.pixelSize:13;font.bold:true;Layout.fillWidth:true;elide:Text.ElideRight }
-                                        Text { text:(modelData.category||"Sin categoría")+" · "+(modelData.author||"Autor no indicado");color:muted;font.pixelSize:10;Layout.fillWidth:true;elide:Text.ElideRight }
-                                        Text { text:modelData.compatibility;color:modelData.compatibleUbuntu20?"#7BA880":"#D86B63";font.pixelSize:9 }
+                                width:officialCatalogGrid.cellWidth-12;height:214
+                                radius:16;color:panel;border.color:panelBorder
+                                ColumnLayout {
+                                    anchors.fill:parent;anchors.margins:13;spacing:7
+                                    RowLayout {
+                                        Layout.fillWidth:true;spacing:10
+                                        Rectangle {
+                                            width:58;height:58;radius:13;color:"#FFFFFF";border.color:"#E8EAF0"
+                                            Image { anchors.fill:parent;anchors.margins:6;source:modelData.iconUrl||"";asynchronous:true;cache:true;fillMode:Image.PreserveAspectFit;visible:status===Image.Ready }
+                                            Text { anchors.centerIn:parent;text:(modelData.name||"?").charAt(0).toUpperCase();color:"#303740";font.pixelSize:21;font.bold:true;visible:parent.children[0].status!==Image.Ready }
+                                        }
+                                        ColumnLayout {
+                                            Layout.fillWidth:true;spacing:3
+                                            Text { text:modelData.name;color:primaryText;font.pixelSize:12;font.bold:true;wrapMode:Text.WordWrap;maximumLineCount:2;Layout.fillWidth:true }
+                                            Text { text:modelData.category;color:accent;font.pixelSize:9 }
+                                        }
                                     }
-                                    Button { text:"Ver ficha";onClicked:{selectedCatalogApp=modelData;catalogDetailDialog.open()} }
+                                    Text { text:modelData.description||"Aplicación publicada en el catálogo oficial AppImage.";color:secondaryText;font.pixelSize:10;wrapMode:Text.WordWrap;maximumLineCount:3;elide:Text.ElideRight;Layout.fillWidth:true;Layout.fillHeight:true }
+                                    Text { text:modelData.compatibility;color:modelData.compatibleUbuntu20?"#62B47A":"#D65A5A";font.pixelSize:9;wrapMode:Text.WordWrap;Layout.fillWidth:true }
+                                    RowLayout {
+                                        Layout.fillWidth:true
+                                        Button { text:"Ficha";onClicked:{selectedCatalogApp=modelData;catalogDetailDialog.open()} }
+                                        Item { Layout.fillWidth:true }
+                                        Button { text:"Instalar";enabled:modelData.compatibleUbuntu20 && (modelData.repository!=="" || modelData.downloadUrl!=="");onClicked:{selectedCatalogApp=modelData;appImageManager.installCatalogApp(modelData.name);catalogStatus.text="Instalando "+modelData.name+"…"} }
+                                    }
                                 }
-                                MouseArea { anchors.fill:parent;z:-1;onClicked:{selectedCatalogApp=modelData;catalogDetailDialog.open()} }
                             }
                         }
                         Dialog {
@@ -452,7 +477,6 @@ ApplicationWindow {
                             }
                         }
                         Text { Layout.fillWidth:true;text:"Catálogo oficial: appimage.github.io/feed.json. Las aplicaciones se descargan desde los enlaces publicados por sus autores y se integran en el menú del usuario, sin permisos de administrador. Las actualizaciones dependen de que la AppImage incluya metadatos compatibles con AppImageUpdate.";color:muted;font.pixelSize:10;wrapMode:Text.WordWrap }
-                        Component.onCompleted: refreshCatalog()
                     }
 
                     ColumnLayout {
