@@ -27,11 +27,11 @@ jobs:
       matrix:
         format: [appimage, deb, rpm]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install build dependencies
         run: |
           apt-get update
-          apt-get install -y curl wget ca-certificates patchelf desktop-file-utils imagemagick rpm ruby ruby-dev libegl1 libgl1 libdbus-1-3 libfontconfig1 libfreetype6 libx11-xcb1 libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-xfixes0 libxcb-xinerama0 libxkbcommon-x11-0
+          apt-get install -y --no-install-recommends curl wget ca-certificates patchelf desktop-file-utils libegl1 libgl1 libdbus-1-3 libfontconfig1 libfreetype6 libx11-xcb1 libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 libxcb-xfixes0 libxcb-xinerama0 libxkbcommon-x11-0
           python -m pip install --upgrade pip
           pip install -r requirements.txt pyinstaller
       - name: Fetch official Punto Vuela logo
@@ -76,27 +76,57 @@ jobs:
       - name: Build DEB and RPM
         if: matrix.format != 'appimage'
         run: |
-          gem install --no-document fpm
           VERSION="${GITHUB_REF_NAME#v}"
           if [[ "$VERSION" == "$GITHUB_REF_NAME" ]]; then VERSION="0.1.0.${GITHUB_RUN_NUMBER}"; fi
           ARCH=amd64
           if [[ "${{ matrix.format }}" == "rpm" ]]; then ARCH=x86_64; fi
-          fpm -s dir -t "${{ matrix.format }}" -n punto-vuela-linux-toolkit -v "$VERSION" \
-            --description "Centro de software Linux de Punto Vuela" \
-            --license MIT --architecture "$ARCH" \
-            --after-install packaging/post-install.sh \
-            dist/punto-vuela-linux-toolkit/=/opt/punto-vuela-linux-toolkit/ \
-            src/punto_vuela_toolkit/assets/logotipovuela.svg=/usr/share/icons/hicolor/scalable/apps/punto-vuela-linux-toolkit.svg \
-            packaging/launcher.sh=/usr/bin/punto-vuela-linux-toolkit \
-            packaging/punto-vuela-linux-toolkit.desktop=/usr/share/applications/punto-vuela-linux-toolkit.desktop
+          mkdir -p package-root/opt/punto-vuela-linux-toolkit package-root/usr/bin package-root/usr/share/applications package-root/usr/share/icons/hicolor/scalable/apps
+          cp -a dist/punto-vuela-linux-toolkit/. package-root/opt/punto-vuela-linux-toolkit/
+          install -m 755 packaging/launcher.sh package-root/usr/bin/punto-vuela-linux-toolkit
+          install -m 644 packaging/punto-vuela-linux-toolkit.desktop package-root/usr/share/applications/
+          install -m 644 src/punto_vuela_toolkit/assets/logotipovuela.svg package-root/usr/share/icons/hicolor/scalable/apps/punto-vuela-linux-toolkit.svg
+          mkdir -p package-root/DEBIAN
+          cat > package-root/DEBIAN/control <<EOF
+          Package: punto-vuela-linux-toolkit
+          Version: $VERSION
+          Section: utils
+          Priority: optional
+          Architecture: amd64
+          Maintainer: Punto Vuela Montejaque
+          Description: Centro de software Linux de Punto Vuela
+          EOF
+          if [[ "${{ matrix.format }}" == "deb" ]]; then
+            dpkg-deb --root-owner-group --build package-root "punto-vuela-linux-toolkit_${VERSION}_amd64.deb"
+          else
+            mkdir -p package-root/rpm
+            cat > package-root/rpm/punto-vuela-linux-toolkit.spec <<EOF
+          Name: punto-vuela-linux-toolkit
+          Version: $VERSION
+          Release: 1
+          Summary: Centro de software Linux de Punto Vuela
+          License: MIT
+          BuildArch: x86_64
+          %description
+          Centro de software Linux de Punto Vuela
+          %install
+          mkdir -p %{buildroot}
+          cp -a $PWD/package-root/opt $PWD/package-root/usr %{buildroot}/
+          %files
+          /opt/punto-vuela-linux-toolkit
+          /usr/bin/punto-vuela-linux-toolkit
+          /usr/share/applications/punto-vuela-linux-toolkit.desktop
+          /usr/share/icons/hicolor/scalable/apps/punto-vuela-linux-toolkit.svg
+          EOF
+            rpmbuild --define "_topdir $PWD/rpmbuild" --define "_buildrootdir $PWD/rpmbuild/BUILDROOT" -bb package-root/rpm/punto-vuela-linux-toolkit.spec
+            cp rpmbuild/RPMS/x86_64/*.rpm .
+          fi
           PACKAGE="$(find . -maxdepth 1 -type f -name "*.${{ matrix.format }}" -print -quit)"
           test -n "$PACKAGE"
           mkdir -p package-check
           if [[ "${{ matrix.format }}" == "deb" ]]; then
             dpkg-deb -x "$PACKAGE" package-check
           else
-            apt-get install -y cpio
-            (cd package-check && rpm2cpio "../$PACKAGE" | cpio -idm --quiet)
+            rpm2cpio "$PACKAGE" | (cd package-check && cpio -idm --quiet)
           fi
           QT_QPA_PLATFORM=offscreen package-check/opt/punto-vuela-linux-toolkit/punto-vuela-linux-toolkit --smoke-test
       - name: Upload build artifact
