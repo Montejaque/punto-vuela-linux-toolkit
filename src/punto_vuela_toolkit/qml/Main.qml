@@ -635,7 +635,7 @@ ApplicationWindow {
                         Text { text: "Solicita incorporar una aplicación"; color: primaryText; font.pixelSize: 22; font.bold: true }
                         Text {
                             Layout.fillWidth: true
-                            text: "Envía una propuesta para estudiar su inclusión en el catálogo Punto Vuela Linux Toolkit. Puedes preparar un correo corporativo o compartir la solicitud por WhatsApp."
+                            text: "Envía una propuesta para estudiar su inclusión en el catálogo Punto Vuela Linux Toolkit. Puedes enviar la solicitud directamente por correo corporativo o compartirla por WhatsApp."
                             color: secondaryText; font.pixelSize: 12; wrapMode: Text.WordWrap
                         }
 
