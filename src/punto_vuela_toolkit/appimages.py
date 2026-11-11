@@ -70,6 +70,8 @@ class AppImageManager:
             raise ValueError("Solo se permiten descargas desde direcciones HTTPS.")
         name = self._safe_filename(url, filename)
         destination = self.directory / name
+        if destination.exists():
+            raise FileExistsError(f"Ya existe una AppImage con ese nombre: {name}. Renómbrala o elimina la anterior antes de descargar otra copia.")
         temporary = destination.with_name(destination.name + ".part")
         request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
         try:
@@ -134,8 +136,9 @@ class AppImageManager:
                 expected = asset["digest"].split(":", 1)[1].lower()
                 if digest.hexdigest().lower() != expected:
                     raise RuntimeError("El SHA-256 de AppImageUpdate no coincide con el publicado por GitHub.")
-                if temporary.read_bytes()[:4] != APPIMAGE_MAGIC:
-                    raise RuntimeError("El actualizador descargado no es un AppImage ELF válido.")
+                with temporary.open("rb") as updater_file:
+                    if updater_file.read(4) != APPIMAGE_MAGIC:
+                        raise RuntimeError("El actualizador descargado no es un AppImage ELF válido.")
                 temporary.chmod(0o755)
                 os.replace(temporary, updater_path)
                 updater_path.chmod(0o755)
