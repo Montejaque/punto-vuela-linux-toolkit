@@ -39,6 +39,7 @@ ApplicationWindow {
     property var appImageItems: []
     property var catalogItems: []
     property bool catalogLoading: false
+    property var selectedCatalogApp: null
     property string selectedCategory: "Todas"
     property string selectedAppName: ""
     property var featuredApps: [
@@ -404,51 +405,46 @@ ApplicationWindow {
                             color: accent; font.pixelSize: 11; wrapMode: Text.WordWrap
                         }
                         ListView {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: Math.max(220, catalogItems.length * 116)
-                            interactive: false
-                            model: catalogItems
-                            spacing: 9
-                            delegate: Rectangle {
-                                width: ListView.view.width
-                                height: 108
-                                radius: 12; color: panel; border.color: panelBorder
+                            Layout.fillWidth:true
+                            Layout.preferredHeight:Math.max(260,catalogItems.length*94)
+                            interactive:false
+                            model:catalogItems
+                            spacing:10
+                            delegate:Rectangle {
+                                width:ListView.view.width;height:86;radius:14;color:panel;border.color:panelBorder
                                 RowLayout {
-                                    anchors.fill: parent; anchors.margins: 12; spacing: 10
+                                    anchors.fill:parent;anchors.margins:13;spacing:12
+                                    Rectangle { width:48;height:48;radius:12;color:"#FFFFFF";Text { anchors.centerIn:parent;text:(modelData.name||"?").charAt(0).toUpperCase();color:"#303740";font.pixelSize:20;font.bold:true } }
                                     ColumnLayout {
-                                        Layout.fillWidth: true; spacing: 4
-                                        Text { text: modelData.name; color: primaryText; font.pixelSize: 13; font.bold: true; Layout.fillWidth: true; elide: Text.ElideRight }
-                                        Text { text: modelData.description || "Sin descripción"; color: secondaryText; font.pixelSize: 10; Layout.fillWidth: true; elide: Text.ElideRight }
-                                        Text { text: modelData.category + " · " + (modelData.author || "Autor no indicado") + " · Licencia: " + modelData.license; color: muted; font.pixelSize: 9; Layout.fillWidth: true; elide: Text.ElideRight }
-                                        Text {
-                                            text: "glibc " + modelData.glibc + " · " + modelData.compatibility
-                                            color: modelData.compatibleUbuntu20 ? "#7BA880" : "#D86B63"
-                                            font.pixelSize: 9; Layout.fillWidth: true; elide: Text.ElideRight
-                                        }
+                                        Layout.fillWidth:true;spacing:4
+                                        Text { text:modelData.name;color:primaryText;font.pixelSize:13;font.bold:true;Layout.fillWidth:true;elide:Text.ElideRight }
+                                        Text { text:(modelData.category||"Sin categoría")+" · "+(modelData.author||"Autor no indicado");color:muted;font.pixelSize:10;Layout.fillWidth:true;elide:Text.ElideRight }
+                                        Text { text:modelData.compatibility;color:modelData.compatibleUbuntu20?"#7BA880":"#D86B63";font.pixelSize:9 }
                                     }
-                                    ColumnLayout {
-                                        spacing: 5
-                                        Button {
-                                            text: "Instalar"
-                                            enabled: modelData.compatibleUbuntu20 && modelData.repository !== ""
-                                            onClicked: {
-                                                catalogStatus.text = "Descargando " + modelData.name + "…"
-                                                appImageManager.installCatalogApp(modelData.name)
-                                            }
-                                        }
-                                        Button {
-                                            text: "Ver proyecto"
-                                            onClicked: Qt.openUrlExternally(modelData.repository ? "https://github.com/" + modelData.repository : modelData.downloadUrl)
-                                        }
+                                    Button { text:"Ver ficha";onClicked:{selectedCatalogApp=modelData;catalogDetailDialog.open()} }
+                                }
+                                MouseArea { anchors.fill:parent;z:-1;onClicked:{selectedCatalogApp=modelData;catalogDetailDialog.open()} }
+                            }
+                        }
+                        Dialog {
+                            id:catalogDetailDialog;modal:true;anchors.centerIn:Overlay.overlay;width:Math.min(window.width-48,620)
+                            title:selectedCatalogApp?selectedCatalogApp.name:"Ficha de aplicación";standardButtons:Dialog.Close
+                            contentItem:ColumnLayout {
+                                spacing:10
+                                Text { text:selectedCatalogApp?(selectedCatalogApp.description||"El catálogo oficial no proporciona descripción para esta aplicación."):"";color:primaryText;wrapMode:Text.WordWrap;Layout.fillWidth:true }
+                                Text { text:selectedCatalogApp?"Categoría: "+selectedCatalogApp.category+"\nAutor: "+selectedCatalogApp.author+"\nLicencia: "+selectedCatalogApp.license+"\nCompatibilidad: "+selectedCatalogApp.compatibility+"\nRequisito glibc: "+selectedCatalogApp.glibc:"";color:secondaryText;wrapMode:Text.WordWrap;Layout.fillWidth:true }
+                                RowLayout {
+                                    Layout.fillWidth:true
+                                    Button {
+                                        text:"Instalar"
+                                        enabled:selectedCatalogApp && selectedCatalogApp.compatibleUbuntu20 && (selectedCatalogApp.repository!=="" || selectedCatalogApp.downloadUrl!=="")
+                                        onClicked:{catalogStatus.text="Descargando e integrando "+selectedCatalogApp.name+"…";appImageManager.installCatalogApp(selectedCatalogApp.name);catalogDetailDialog.close()}
                                     }
+                                    Button { text:"Ver ficha oficial";onClicked:if(selectedCatalogApp)Qt.openUrlExternally(selectedCatalogApp.catalogUrl||"https://appimage.github.io/") }
                                 }
                             }
                         }
-                        Text {
-                            Layout.fillWidth: true
-                            text: "Fuente: appimage.github.io/feed.json. El catálogo enlaza con los proyectos originales y no aloja los programas. La disponibilidad de una AppImage en la última versión depende de cada editor. Los requisitos glibc no declarados no pueden garantizar compatibilidad con Ubuntu 20.04. AppImageHub (pling) es una fuente distinta y puede requerir descarga manual desde su ficha."
-                            color: muted; font.pixelSize: 10; wrapMode: Text.WordWrap
-                        }
+                        Text { Layout.fillWidth:true;text:"Catálogo oficial: appimage.github.io/feed.json. Las aplicaciones se descargan desde los enlaces publicados por sus autores y se integran en el menú del usuario, sin permisos de administrador. Las actualizaciones dependen de que la AppImage incluya metadatos compatibles con AppImageUpdate.";color:muted;font.pixelSize:10;wrapMode:Text.WordWrap }
                         Component.onCompleted: refreshCatalog()
                     }
 
@@ -480,7 +476,7 @@ ApplicationWindow {
                                             appImageManager.downloadAppImage(appImageUrl.text.trim())
                                         }
                                     }
-                                    Button { text: "Abrir AppImageHub"; onClicked: Qt.openUrlExternally("https://www.appimagehub.com/") }
+                                    Button { text: "Catálogo oficial"; onClicked: { activePage = "Catálogo AppImage"; refreshCatalog() } }
                                     Button { text: "Abrir carpeta"; onClicked: appImageManager.openAppImageFolder() }
                                 }
                             }
