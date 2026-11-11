@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Effects
 
 ApplicationWindow {
     id: window
@@ -38,7 +37,7 @@ ApplicationWindow {
                     Rectangle {
                         width: 44; height: 44; radius: 14
                         color: accent
-                        Text { anchors.centerIn: parent; text: "V"; color: "#171717"; font.pixelSize: 27; font.bold: true }
+                        Image { anchors.fill: parent; anchors.margins: 7; source: Qt.resolvedUrl("../assets/logotipovuela.svg"); fillMode: Image.PreserveAspectFit; visible: status === Image.Ready }
                     }
                     Column {
                         spacing: 2
@@ -159,7 +158,7 @@ en un solo lugar."; color: "#D2D0C7"; font.pixelSize: 13; lineHeight: 1.35 }
                                 }
                                 Rectangle {
                                     width: 116; height: 116; radius: 28; color: "#F3D54E"
-                                    Text { anchors.centerIn: parent; text: "V"; color: "#171717"; font.pixelSize: 78; font.bold: true }
+                                    Image { anchors.fill: parent; anchors.margins: 18; source: Qt.resolvedUrl("../assets/logotipovuela.svg"); fillMode: Image.PreserveAspectFit; visible: status === Image.Ready }
                                 }
                             }
                         }
