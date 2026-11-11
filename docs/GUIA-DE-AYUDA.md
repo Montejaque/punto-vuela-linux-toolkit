@@ -33,8 +33,8 @@ AppImage no dispone de un repositorio universal de versiones. Para que una AppIm
 
 El procedimiento recomendado es:
 
-1. Seleccionar una AppImage descargada.
-2. Solicitar **Comprobar actualizaciones**.
+1. Al terminar una descarga, el Toolkit intenta comprobar automáticamente si hay una actualización.
+2. También puedes seleccionar una AppImage descargada y solicitar **Comprobar actualizaciones**.
 3. Si el archivo incorpora información compatible, AppImageUpdate consulta su origen de actualización.
 4. Si existe una versión nueva, revisar el resultado y confirmar **Actualizar**.
 5. La herramienta realiza la actualización y conserva una copia de respaldo cuando el mecanismo lo permite.
