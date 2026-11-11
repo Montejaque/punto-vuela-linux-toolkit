@@ -8,8 +8,9 @@ from punto_vuela_toolkit.appimages import AppImageManager
 
 class CatalogCompatibilityTests(unittest.TestCase):
     def test_glibc_versions_are_parsed(self):
-        self.assertEqual(_version_tuple("2.31"), (2, 31))
-        self.assertEqual(_version_tuple("glibc 2.34"), (2, 34))
+        self.assertEqual(_version_tuple("2.31"), (2, 31, 0))
+        self.assertEqual(_version_tuple("glibc 2.34"), (2, 34, 0))
+        self.assertEqual(_version_tuple("2.31.1"), (2, 31, 1))
         self.assertIsNone(_version_tuple("unknown"))
 
     def test_github_repository_is_extracted(self):
