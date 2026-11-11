@@ -119,10 +119,8 @@ ApplicationWindow {
                 Repeater {
                     model: [
                         {name:"Inicio", glyph:"⌂"},
-                        {name:"Punto Vuela", glyph:"V"},
                         {name:"Catálogo AppImage", glyph:"▦"},
                         {name:"Mis aplicaciones", glyph:"▣"},
-                        {name:"Actualizaciones", glyph:"↻"},
                         {name:"Contacto e información", glyph:"✉"}
                     ]
                     delegate: Item {
@@ -149,7 +147,7 @@ ApplicationWindow {
                 Item { Layout.fillHeight: true }
                 Text { text: "SISTEMA"; color: muted; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
                 Repeater {
-                    model: ["Diagnóstico", "Configuración", "Ayuda"]
+                    model: ["Ayuda"]
                     delegate: Text {
                         Layout.fillWidth: true
                         text: "  ◦   " + modelData
@@ -181,13 +179,14 @@ ApplicationWindow {
                         Text { text: "Tu espacio para descubrir y mantener aplicaciones Linux"; color: muted; font.pixelSize: 13 }
                     }
                     Item { Layout.fillWidth: true }
-                    Rectangle {
-                        radius: 10; color: searchColor; border.color: panelBorder
-                        Layout.preferredWidth: 250; Layout.preferredHeight: 40
-                        RowLayout {
-                            anchors.fill: parent; anchors.leftMargin: 12; anchors.rightMargin: 12
-                            Text { text: "⌕"; color: muted; font.pixelSize: 20 }
-                            Text { text: "Buscar aplicaciones..."; color: muted; font.pixelSize: 12 }
+                    TextField {
+                        id: globalSearch
+                        Layout.preferredWidth: 270
+                        placeholderText: "Buscar aplicaciones..."
+                        onAccepted: {
+                            catalogSearch.text = text
+                            activePage = "Catálogo AppImage"
+                            refreshCatalog()
                         }
                     }
                     ToolButton {
