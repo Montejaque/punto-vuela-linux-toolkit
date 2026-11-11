@@ -287,6 +287,7 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                                         Text { text: modelData.title; color: primaryText; font.pixelSize: 13; font.bold: true }
                                         Text { text: modelData.desc; color: muted; font.pixelSize: 10; wrapMode: Text.WordWrap; Layout.fillWidth: true }
                                     }
+                                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: Qt.openUrlExternally(modelData.url) }
                                 }
                             }
                         }
@@ -306,6 +307,7 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                                         Text { text: modelData.title; color: primaryText; font.pixelSize: 13; font.bold: true }
                                         Text { text: modelData.desc; color: muted; font.pixelSize: 11 }
                                     }
+                                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: Qt.openUrlExternally(modelData.url) }
                                 }
                             }
                         }
