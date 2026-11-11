@@ -104,8 +104,8 @@ class AppImageCatalog:
                 "downloadUrl": download_url,
                 "repository": _github_repo(entry) or "",
                 "catalogUrl": "https://appimage.github.io/" + urllib.parse.quote(name) + "/",
-                "iconUrl": ("https://appimage.github.io/" + urllib.parse.quote(name) + "/" + str((entry.get("icons") or [""])[0]).lstrip("/")) if (entry.get("icons") or []) else "",
-                "screenshotUrl": (str((entry.get("screenshots") or [""])[0]) if str((entry.get("screenshots") or [""])[0]).startswith("https://") else "https://appimage.github.io/" + urllib.parse.quote(name) + "/" + str((entry.get("screenshots") or [""])[0]).lstrip("/")) if (entry.get("screenshots") or []) else "",
+                "iconUrl": ("https://appimage.github.io/" + str((entry.get("icons") or [""])[0]).lstrip("/")) if (entry.get("icons") or []) else "",
+                "screenshotUrl": (str((entry.get("screenshots") or [""])[0]) if str((entry.get("screenshots") or [""])[0]).startswith("https://") else "https://appimage.github.io/" + str((entry.get("screenshots") or [""])[0]).lstrip("/")) if (entry.get("screenshots") or []) else "",
             })
             if len(results) >= limit:
                 break
