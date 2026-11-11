@@ -12,6 +12,7 @@ from PySide6.QtQml import QQmlApplicationEngine
 
 from .appimages import AppImageManager
 from .catalog import AppImageCatalog
+from .email_sender import configured_sender, save_credentials, send_application_request
 
 APP_NAME = "Punto Vuela Linux Toolkit"
 QML_FILE = Path(__file__).parent / "qml" / "Main.qml"
@@ -25,6 +26,7 @@ class AppImageBridge(QObject):
     appImageDownloadFinished = Signal(str)
     appImageUpdateCheckFinished = Signal(str)
     appImageUpdated = Signal(str)
+    emailSent = Signal(str)
 
     def __init__(self) -> None:
         super().__init__()
@@ -48,6 +50,33 @@ class AppImageBridge(QObject):
             for item in self.manager.list_appimages()
         ], ensure_ascii=False)
 
+
+    @Slot(result=str)
+    def smtpSender(self) -> str:
+        try:
+            return configured_sender()
+        except Exception:
+            return ""
+
+    @Slot(str, str, result=str)
+    def configureSmtp(self, sender: str, app_password: str) -> str:
+        try:
+            save_credentials(sender, app_password)
+            return json.dumps({"ok": True, "message": "Cuenta SMTP guardada de forma segura en el almacén de credenciales del usuario."}, ensure_ascii=False)
+        except Exception as exc:
+            return json.dumps({"ok": False, "message": str(exc)}, ensure_ascii=False)
+
+    @Slot(str)
+    def sendApplicationRequest(self, payload: str) -> None:
+        def work() -> None:
+            try:
+                data = json.loads(payload)
+                send_application_request(data)
+                result = {"ok": True, "message": "Solicitud enviada a montejaque@puntosvuela.es. Se ha enviado una copia a " + data.get("reply_email", "")}
+            except Exception as exc:
+                result = {"ok": False, "message": str(exc)}
+            self.emailSent.emit(json.dumps(result, ensure_ascii=False))
+        self._spawn(work)
 
     @Slot(str)
     def loadCatalog(self, query: str) -> None:
