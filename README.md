@@ -23,12 +23,13 @@ Requiere Python 3.10+ y PySide6:
 python -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt
+bash packaging/fetch-brand-assets.sh
 python -m punto_vuela_toolkit
 ```
 
 ## Paquetes
 
-La estrategia prevista es generar AppImage, DEB y RPM desde GitHub Actions. Los paquetes DEB/RPM serán instalables mediante el gestor de paquetes de cada distribución; las operaciones de administración del sistema pueden solicitar autorización al sistema operativo. La aplicación no ejecutará instalaciones privilegiadas silenciosamente.
+La estrategia prevista es generar AppImage, DEB y RPM x86_64 desde GitHub Actions. La compilación inicial usa Ubuntu 22.04 como entorno de construcción; la compatibilidad binaria con Ubuntu 20.04 y otras distribuciones deberá validarse en pruebas específicas antes de anunciarla como garantizada. Los paquetes DEB/RPM serán instalables mediante el gestor de paquetes de cada distribución; las operaciones de administración del sistema pueden solicitar autorización al sistema operativo. La aplicación no ejecutará instalaciones privilegiadas silenciosamente.
 
 ## Logotipo
 
