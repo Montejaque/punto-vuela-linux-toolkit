@@ -22,12 +22,21 @@ class AppImageBridge(QObject):
 
     catalogLoaded = Signal(str)
     catalogInstallFinished = Signal(str)
+    appImageDownloadFinished = Signal(str)
+    appImageUpdateCheckFinished = Signal(str)
+    appImageUpdated = Signal(str)
 
     def __init__(self) -> None:
         super().__init__()
         self.manager = AppImageManager()
         self.catalog = AppImageCatalog(self.manager)
         self._workers: list[Thread] = []
+
+    def _spawn(self, target) -> None:
+        self._workers = [worker for worker in self._workers if worker.is_alive()]
+        worker = Thread(target=target, daemon=True)
+        self._workers.append(worker)
+        worker.start()
 
     @Slot(result=str)
     def listAppImages(self) -> str:
@@ -105,39 +114,47 @@ class AppImageBridge(QObject):
         except Exception as exc:
             return json.dumps({"ok": False, "message": str(exc)}, ensure_ascii=False)
 
-    @Slot(str, result=str)
-    def downloadAppImage(self, url: str) -> str:
-        try:
-            path = self.manager.download(url)
+    @Slot(str)
+    def downloadAppImage(self, url: str) -> None:
+        def work() -> None:
             try:
-                update = self.manager.check_update(path)
-            except Exception as update_error:
-                update = {"supported": False, "available": False, "message": str(update_error)}
-            if update.get("supported") and update.get("available"):
-                message = f"Descargada: {path.name}. Hay una actualización disponible; pulsa Actualizar para instalarla."
-            elif update.get("supported"):
-                message = f"Descargada y preparada para ejecutar: {path.name}. No se detectan actualizaciones."
-            else:
-                message = f"Descargada y preparada para ejecutar: {path.name}. No se pudo comprobar la versión: {update.get('message', 'origen no compatible')}."
-            return json.dumps({"ok": True, "path": str(path), "updateAvailable": bool(update.get("available")), "message": message}, ensure_ascii=False)
-        except Exception as exc:
-            return json.dumps({"ok": False, "message": str(exc)}, ensure_ascii=False)
+                path = self.manager.download(url)
+                try:
+                    update = self.manager.check_update(path)
+                except Exception as update_error:
+                    update = {"supported": False, "available": False, "message": str(update_error)}
+                if update.get("supported") and update.get("available"):
+                    message = f"Descargada: {path.name}. Hay una actualización disponible; pulsa Actualizar para instalarla."
+                elif update.get("supported"):
+                    message = f"Descargada y preparada para ejecutar: {path.name}. No se detectan actualizaciones."
+                else:
+                    message = f"Descargada y preparada para ejecutar: {path.name}. No se pudo comprobar la versión: {update.get('message', 'origen no compatible')}."
+                payload = {"ok": True, "path": str(path), "updateAvailable": bool(update.get("available")), "message": message}
+            except Exception as exc:
+                payload = {"ok": False, "message": str(exc)}
+            self.appImageDownloadFinished.emit(json.dumps(payload, ensure_ascii=False))
+        self._spawn(work)
 
-    @Slot(str, result=str)
-    def checkAppImageUpdate(self, path: str) -> str:
-        try:
-            result = self.manager.check_update(path)
-            return json.dumps(result, ensure_ascii=False)
-        except Exception as exc:
-            return json.dumps({"supported": False, "available": False, "message": str(exc)}, ensure_ascii=False)
+    @Slot(str)
+    def checkAppImageUpdate(self, path: str) -> None:
+        def work() -> None:
+            try:
+                result = self.manager.check_update(path)
+            except Exception as exc:
+                result = {"supported": False, "available": False, "message": str(exc)}
+            self.appImageUpdateCheckFinished.emit(json.dumps({"path": path, **result}, ensure_ascii=False))
+        self._spawn(work)
 
-    @Slot(str, result=str)
-    def updateAppImage(self, path: str) -> str:
-        try:
-            result = self.manager.update(path)
-            return json.dumps(result, ensure_ascii=False)
-        except Exception as exc:
-            return json.dumps({"updated": False, "message": str(exc)}, ensure_ascii=False)
+    @Slot(str)
+    def updateAppImage(self, path: str) -> None:
+        def work() -> None:
+            try:
+                result = self.manager.update(path)
+                result["path"] = path
+            except Exception as exc:
+                result = {"updated": False, "path": path, "message": str(exc)}
+            self.appImageUpdated.emit(json.dumps(result, ensure_ascii=False))
+        self._spawn(work)
 
     @Slot()
     def openAppImageFolder(self) -> None:
