@@ -60,6 +60,20 @@ ApplicationWindow {
         }
     }
 
+    Dialog {
+        id: removeDialog
+        property string targetPath: ""
+        title: "Eliminar AppImage"
+        modal: true
+        standardButtons: Dialog.Yes | Dialog.Cancel
+        Label { text: "¿Quieres eliminar este archivo de la carpeta de aplicaciones? No se puede deshacer."; wrapMode: Text.WordWrap }
+        onAccepted: {
+            const result = JSON.parse(appImageManager.removeAppImage(targetPath))
+            appImageStatus.text = result.message
+            refreshAppImages()
+        }
+    }
+
     function refreshAppImages() {
         appImageItems = JSON.parse(appImageManager.listAppImages())
     }
@@ -407,12 +421,12 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                         Text { id: appImageStatus; Layout.fillWidth: true; color: secondaryText; wrapMode: Text.WordWrap; font.pixelSize: 11 }
                         ListView {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: Math.max(150, appImageItems.length * 92)
+                            Layout.preferredHeight: Math.max(150, appImageItems.length * 100)
                             interactive: false
                             model: appImageItems
                             spacing: 8
                             delegate: Rectangle {
-                                width: ListView.view.width; height: 84
+                                width: ListView.view.width; height: 92
                                 radius: 12; color: panel; border.color: panelBorder
                                 RowLayout {
                                     anchors.fill: parent; anchors.margins: 12; spacing: 8
@@ -420,6 +434,22 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                                         Layout.fillWidth: true; spacing: 4
                                         Text { text: modelData.name; color: primaryText; font.pixelSize: 12; font.bold: true; elide: Text.ElideMiddle; Layout.fillWidth: true }
                                         Text { text: modelData.executable ? "Permisos de ejecución activos" : "Sin permisos de ejecución"; color: muted; font.pixelSize: 10 }
+                                    }
+                                    Button {
+                                        text: "Abrir"
+                                        onClicked: {
+                                            const result = JSON.parse(appImageManager.launchAppImage(modelData.path))
+                                            appImageStatus.text = modelData.name + ": " + result.message
+                                        }
+                                    }
+                                    Button {
+                                        text: "Permisos"
+                                        visible: !modelData.executable
+                                        onClicked: {
+                                            const result = JSON.parse(appImageManager.makeAppImageExecutable(modelData.path))
+                                            appImageStatus.text = modelData.name + ": " + result.message
+                                            refreshAppImages()
+                                        }
                                     }
                                     Button {
                                         text: "Comprobar"
@@ -435,6 +465,13 @@ en un solo lugar."; color: secondaryText; font.pixelSize: 13; lineHeight: 1.35 }
                                             const result = JSON.parse(appImageManager.updateAppImage(modelData.path))
                                             appImageStatus.text = modelData.name + ": " + result.message
                                             refreshAppImages()
+                                        }
+                                    }
+                                    Button {
+                                        text: "Eliminar"
+                                        onClicked: {
+                                            removeDialog.targetPath = modelData.path
+                                            removeDialog.open()
                                         }
                                     }
                                 }
