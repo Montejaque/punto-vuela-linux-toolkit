@@ -1,10 +1,10 @@
-# Política de privacidad de Punto Vuela Mail
+# Política de privacidad de Punto Vuela Linux Toolkit
 
 **Última actualización: 12 de noviembre de 2026**
 
 ## 1. Identidad y ámbito de la herramienta
 
-Punto Vuela Mail es una herramienta de escritorio de uso interno, destinada exclusivamente a los **Agentes de Innovación Local (AIL) de los centros de la red Puntos Vuela**. No es un formulario público dirigido a la ciudadanía ni a empresas.
+Punto Vuela Linux Toolkit es una herramienta de escritorio de uso interno, destinada exclusivamente a los **Agentes de Innovación Local (AIL) de los centros de la red Puntos Vuela**. No es un formulario público dirigido a la ciudadanía ni a empresas.
 
 El mantenimiento técnico de la herramienta lo realiza **Francisco Javier Gallego Orellana, AIL del Punto Vuela de Montejaque**. Asimismo, gestiona el buzón central **montejaque@puntosvuela.es**, que recibe las propuestas remitidas por los AIL.
 
@@ -67,8 +67,8 @@ También puede presentarse una reclamación ante la Agencia Española de Protecc
 
 ## 9. Actualizaciones
 
-Esta política podrá actualizarse cuando cambien las funciones, los proveedores o los tratamientos asociados a Punto Vuela Mail. La fecha de actualización aparecerá al principio del documento.
+Esta política podrá actualizarse cuando cambien las funciones, los proveedores o los tratamientos asociados a Punto Vuela Linux Toolkit. La fecha de actualización aparecerá al principio del documento.
 
 ---
 
-**Estado del documento:** borrador pendiente de validación por la entidad que sea responsable del tratamiento. Antes de utilizarlo como política definitiva para la publicación OAuth, deben completarse y verificarse la identidad del responsable, la base jurídica, los plazos de conservación y el canal para ejercer derechos.
+**Nota de transparencia:** este documento describe el funcionamiento y los datos tratados por la aplicación. Para que constituya un aviso de privacidad completo conforme al RGPD, la organización responsable debe validar la base jurídica, identificar formalmente al responsable del tratamiento y completar los plazos de conservación y los canales para ejercer derechos. No se atribuye esa condición a una persona o entidad sin confirmación.
