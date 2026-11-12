@@ -2,63 +2,73 @@
 
 **Última actualización: 12 de noviembre de 2026**
 
-## 1. Qué es Punto Vuela Mail
+## 1. Identidad y ámbito de la herramienta
 
-Punto Vuela Mail es una herramienta de escritorio destinada a los centros de la red Puntos Vuela para remitir propuestas de aplicaciones y solicitudes relacionadas con su actividad. La herramienta está mantenida técnicamente por **Francisco Javier Gallego Orellana, AIL (Agente de Innovación Local) del Punto Vuela de Montejaque**.
+Punto Vuela Mail es una herramienta de escritorio de uso interno, destinada exclusivamente a los **Agentes de Innovación Local (AIL) de los centros de la red Puntos Vuela**. No es un formulario público dirigido a la ciudadanía ni a empresas.
 
-La persona que mantiene técnicamente la herramienta no debe confundirse necesariamente con el responsable jurídico del tratamiento de los datos. La identidad y los datos de contacto del responsable del tratamiento deberán ser confirmados por la entidad que determine los fines y medios del tratamiento antes de considerar esta política como versión definitiva.
+El mantenimiento técnico de la herramienta lo realiza **Francisco Javier Gallego Orellana, AIL del Punto Vuela de Montejaque**. Asimismo, gestiona el buzón central **montejaque@puntosvuela.es**, que recibe las propuestas remitidas por los AIL.
 
-## 2. Datos que puede incluir una solicitud
+La función de mantenimiento técnico y gestión del buzón no determina por sí sola quién es el responsable jurídico del tratamiento. La entidad que determine los fines y medios del tratamiento debe confirmar su identidad y los datos de contacto antes de que esta política se considere definitiva.
 
-El formulario puede transmitir:
-- Centro Puntos Vuela y municipio.
-- Nombre o identificación de la persona de contacto.
-- Teléfono y correo electrónico de contacto.
-- Nombre de la aplicación propuesta y, en su caso, dirección web y distribución.
+## 2. Datos tratados
+
+Según los campos cumplimentados, una propuesta puede incluir:
+- Nombre del centro Puntos Vuela y municipio.
+- Nombre o identificación profesional de la persona de contacto.
+- Teléfono y correo electrónico profesional.
+- Nombre de la aplicación propuesta y, cuando proceda, dirección web y distribución.
 - Descripción de la necesidad, utilidad y observaciones.
 
-Se recomienda incluir únicamente información profesional necesaria. No deben introducirse datos especialmente protegidos, contraseñas, documentos de identidad ni datos personales de terceras personas que no sean necesarios para tramitar la propuesta.
+La herramienta está destinada a comunicaciones profesionales. No deben introducirse contraseñas, documentos de identidad, datos especialmente protegidos ni datos personales de terceras personas que no sean necesarios para valorar la propuesta.
 
 ## 3. Finalidad
 
-Los datos se utilizan para recibir, revisar, responder y, cuando corresponda, valorar las propuestas remitidas por los centros Puntos Vuela, así como para mantener la comunicación relacionada con dichas solicitudes.
+Los datos se utilizan para recibir, revisar, valorar y responder a las propuestas de aplicaciones y necesidades remitidas por los AIL de los centros Puntos Vuela, y para mantener la comunicación profesional relacionada con ellas.
 
-## 4. Destinatarios y proveedores tecnológicos
+## 4. Destinatarios y funcionamiento técnico
 
-La solicitud se transmite a través de un servicio alojado en **Cloudflare Workers** y se envía mediante **Gmail API**, desde la cuenta operativa del servicio, al buzón de recepción configurado: **montejaque@puntosvuela.es**. El correo de contacto indicado en el formulario se incluye como dirección de respuesta y recibe copia del mensaje.
+Al enviar una propuesta, la aplicación transmite el contenido mediante HTTPS a un servicio alojado en **Cloudflare Workers**. Este servicio remite el mensaje mediante **Gmail API** al buzón central **montejaque@puntosvuela.es**, gestionado por Francisco Javier Gallego Orellana. La dirección de correo indicada por el AIL se incorpora como dirección de respuesta y recibe una copia.
 
-Cloudflare presta infraestructura de ejecución del servicio y Google proporciona el servicio de correo y la API correspondiente. Estos proveedores pueden tratar datos técnicos y de comunicación necesarios para prestar sus servicios, conforme a sus propias condiciones y acuerdos aplicables.
+Intervienen, por tanto, proveedores tecnológicos:
+- **Cloudflare**, que proporciona la infraestructura para ejecutar el servicio de envío.
+- **Google**, que proporciona Gmail y Gmail API para la entrega y gestión del correo.
 
-La aplicación no solicita al usuario las credenciales OAuth de Gmail. Las credenciales técnicas de envío se mantienen en los secretos del entorno de Cloudflare y no se distribuyen dentro de la aplicación de escritorio.
+Estos proveedores pueden tratar datos técnicos y de comunicación necesarios para prestar sus servicios, conforme a sus condiciones y acuerdos aplicables.
+
+La herramienta no dispone de una base de datos propia ni de un sistema de expedientes para almacenar el contenido de las propuestas. El contenido se entrega al buzón central y puede permanecer en los buzones de correo correspondientes. El servicio puede conservar datos técnicos limitados para controles operativos y de uso, como contadores temporales de solicitudes; estos datos no constituyen un archivo de propuestas.
+
+Las credenciales técnicas de Google utilizadas para el envío se guardan como secretos del entorno de Cloudflare y no se incluyen en la aplicación de escritorio ni se solicitan a los AIL.
 
 ## 5. Conservación
 
-Los datos enviados pueden permanecer en los buzones de correo de origen y destino y en los sistemas de respaldo o seguridad de los proveedores durante los plazos aplicables. El plazo concreto de conservación de las solicitudes debe ser establecido por el responsable del tratamiento según su finalidad y obligaciones. No se debe entender que la herramienta ofrece por sí misma un archivo o expediente con un plazo de conservación propio.
+Las propuestas se conservan en el buzón central y en las copias que puedan existir en el buzón del remitente, de acuerdo con los criterios y plazos que establezca el responsable del tratamiento y con las obligaciones aplicables. Los proveedores tecnológicos pueden mantener registros técnicos o copias de seguridad durante los plazos previstos en sus servicios.
+
+El plazo concreto de conservación debe ser fijado y documentado por el responsable del tratamiento. La herramienta no establece por sí misma un plazo de archivo ni un procedimiento de eliminación del correo.
 
 ## 6. Seguridad
 
-La comunicación con el servicio se realiza mediante HTTPS. El envío se efectúa en el servidor y las credenciales OAuth no se incluyen en el programa de escritorio. Se aplican controles técnicos de validación y limitación de solicitudes, que pueden evolucionar con las versiones del servicio.
+La transmisión entre la aplicación y el servicio se realiza mediante HTTPS. Las credenciales OAuth de envío permanecen en el entorno de servidor de Cloudflare y no se distribuyen con la aplicación. El servicio incorpora validaciones y controles de limitación de solicitudes, que pueden evolucionar.
 
-Ningún sistema conectado a Internet puede garantizar seguridad absoluta. No se deben enviar datos que no sean necesarios para tramitar la solicitud.
+Ningún sistema conectado a Internet puede garantizar seguridad absoluta. Los AIL deben utilizar la herramienta para su finalidad profesional y evitar remitir información excesiva o innecesaria.
 
 ## 7. Derechos de las personas
 
-Las personas interesadas podrán ejercer los derechos que les reconozca la normativa de protección de datos —incluidos, cuando proceda, acceso, rectificación, supresión, oposición, limitación y portabilidad— ante el responsable del tratamiento.
+Las personas cuyos datos personales se incluyan en una propuesta podrán ejercer los derechos que reconozca la normativa de protección de datos —como acceso, rectificación, supresión, oposición, limitación y, cuando proceda, portabilidad— ante el responsable del tratamiento.
 
-**El canal y la identidad del responsable para el ejercicio de derechos deben completarse antes de la publicación definitiva de esta política.** Como contacto técnico de la herramienta puede utilizarse el canal profesional del Punto Vuela de Montejaque, indicando en el asunto «Privacidad – Punto Vuela Mail»; este contacto técnico no sustituye al responsable jurídico del tratamiento.
+**Pendiente de completar antes de la publicación definitiva:** la entidad responsable debe facilitar su denominación oficial, dirección o canal de contacto para el ejercicio de derechos, y confirmar el procedimiento aplicable. El contacto técnico de la herramienta no sustituye al responsable jurídico del tratamiento.
 
-También podrá presentarse una reclamación ante la Agencia Española de Protección de Datos (AEPD): https://www.aepd.es/
+También puede presentarse una reclamación ante la Agencia Española de Protección de Datos: https://www.aepd.es/
 
-## 8. Cambios en esta política
+## 8. Contacto técnico
 
-Esta política podrá actualizarse cuando cambien las funciones, los proveedores o los tratamientos asociados a Punto Vuela Mail. La fecha de última actualización aparecerá al principio del documento.
+**Mantenimiento técnico y gestión del buzón receptor:** Francisco Javier Gallego Orellana, AIL del Punto Vuela de Montejaque.
 
-## 9. Contacto técnico
+**Buzón central de propuestas:** montejaque@puntosvuela.es
 
-**Mantenimiento técnico:** Francisco Javier Gallego Orellana, AIL del Punto Vuela de Montejaque.
+## 9. Actualizaciones
 
-**Buzón receptor de solicitudes:** montejaque@puntosvuela.es
+Esta política podrá actualizarse cuando cambien las funciones, los proveedores o los tratamientos asociados a Punto Vuela Mail. La fecha de actualización aparecerá al principio del documento.
 
 ---
 
-**Aviso importante:** este texto es un borrador informativo basado en el funcionamiento técnico conocido de la herramienta. No constituye asesoramiento jurídico ni identifica todavía de forma definitiva al responsable del tratamiento. Antes de utilizarlo como URL de verificación OAuth en producción, la entidad responsable debe revisar y completar esos datos, los plazos de conservación y el canal para ejercer derechos.
+**Estado del documento:** borrador pendiente de validación por la entidad que sea responsable del tratamiento. Antes de utilizarlo como política definitiva para la publicación OAuth, deben completarse y verificarse la identidad del responsable, la base jurídica, los plazos de conservación y el canal para ejercer derechos.
