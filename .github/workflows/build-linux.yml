@@ -58,7 +58,7 @@ jobs:
             --add-data "src/punto_vuela_toolkit/assets:punto_vuela_toolkit/assets" \
             --collect-all PySide6 \
             --collect-all shiboken6 \
-            --collect-all keyring \\
+            --collect-all keyring \
             --collect-all secretstorage \\
             --collect-all jeepney \\
             --paths src src/launcher.py
