@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=Punto Vuela Linux Toolkit
-Comment=Centro de software Linux de Punto Vuela
+Name=Puntos Vuela Toolkit
+Comment=Herramientas y centro de software para Linux de Puntos Vuela
 Exec=punto-vuela-linux-toolkit
 Icon=punto-vuela-linux-toolkit
 Categories=System;Utility;
