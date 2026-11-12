@@ -7,14 +7,14 @@ from pathlib import Path
 from threading import Thread
 
 from PySide6.QtCore import QObject, QUrl, Signal, Slot
-from PySide6.QtGui import QDesktopServices, QFont, QGuiApplication
+from PySide6.QtGui import QDesktopServices, QFont, QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine
 
 from .appimages import AppImageManager
 from .catalog import AppImageCatalog
 from .email_sender import send_application_request
 
-APP_NAME = "Punto Vuela Linux Toolkit"
+APP_NAME = "Puntos Vuela Toolkit"
 QML_FILE = Path(__file__).parent / "qml" / "Main.qml"
 
 
@@ -182,6 +182,9 @@ def create_application() -> QGuiApplication:
     os.environ.setdefault("QT_QUICK_CONTROLS_STYLE", "Basic")
     app = QGuiApplication.instance() or QGuiApplication(sys.argv[:1])
     app.setApplicationName(APP_NAME)
+    icon_file = Path(__file__).parent / "assets" / "logo_toolkit.svg"
+    if icon_file.is_file():
+        app.setWindowIcon(QIcon(str(icon_file)))
     app.setOrganizationName("Punto Vuela")
     app.setFont(QFont("Inter", 10))
     return app
