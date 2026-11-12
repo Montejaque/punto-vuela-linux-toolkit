@@ -4,8 +4,8 @@ import json
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-# Se sustituirá por la URL workers.dev real después del despliegue en Cloudflare.
-WORKER_URL = "https://CONFIGURAR-TRAS-DESPLIEGUE.workers.dev"
+# Worker de envío de solicitudes de Punto Vuela, desplegado en Cloudflare.
+WORKER_URL = "https://punto-vuela-mail.montejaque.workers.dev"
 
 
 def send_application_request(data: dict[str, str]) -> str:
@@ -13,8 +13,6 @@ def send_application_request(data: dict[str, str]) -> str:
     missing = [field for field in required if not str(data.get(field, "")).strip()]
     if missing:
         raise ValueError("Faltan datos obligatorios en la solicitud.")
-    if "CONFIGURAR-TRAS-DESPLIEGUE" in WORKER_URL:
-        raise RuntimeError("El servicio de correo está pendiente de activación.")
     payload = json.dumps(data, ensure_ascii=False).encode("utf-8")
     request = Request(
         WORKER_URL,
