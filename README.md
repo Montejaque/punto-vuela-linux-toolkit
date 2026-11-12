@@ -46,3 +46,9 @@ Se conserva como recurso de marca y se generan variantes PNG para los lanzadores
 ## Licencia
 
 MIT para el código de este proyecto. El logotipo y otros recursos de marca pertenecen a sus respectivos titulares y no quedan relicenciados por esta licencia.
+
+## Envío de solicitudes por correo
+
+El formulario de contacto utiliza un servicio HTTPS desplegado en Cloudflare Workers. El Worker envía las solicitudes mediante Gmail API desde la cuenta corporativa y mantiene las credenciales OAuth exclusivamente en los secretos de Cloudflare. La AppImage no contiene contraseñas ni tokens.
+
+La configuración y el despliegue se documentan en [docs/CORREO-CLOUDFLARE-WORKERS.md](docs/CORREO-CLOUDFLARE-WORKERS.md). Antes de publicar una versión funcional, hay que desplegar el Worker, configurar los secretos de Google y sustituir la URL provisional en `src/punto_vuela_toolkit/email_sender.py`. Hasta entonces, el envío mostrará que el servicio está pendiente de activación.
