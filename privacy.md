@@ -1,4 +1,4 @@
-# Política de privacidad de Punto Vuela Linux Toolkit
+# Política de privacidad de Puntos Vuela Toolkit
 
 **Última actualización: 12 de noviembre de 2026**
 
