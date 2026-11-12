@@ -36,6 +36,8 @@ ApplicationWindow {
     readonly property color heroEnd: darkTheme ? "#292F38" : "#F8E7A0"
 
     property bool previewVisible: false
+    property bool dataProtectionRead: false
+    property bool privacyPolicyRead: false
     property var appImageItems: []
     property var catalogItems: []
     property bool catalogLoading: false
@@ -109,6 +111,66 @@ ApplicationWindow {
         }
     }
 
+    Dialog {
+        id: dataProtectionDialog
+        modal: true
+        title: "Información sobre protección de datos"
+        width: Math.min(window.width - 48, 680)
+        height: Math.min(window.height - 48, 620)
+        anchors.centerIn: parent
+        standardButtons: Dialog.NoButton
+        contentItem: ColumnLayout {
+            spacing: 12
+            Label { Layout.fillWidth: true; text: "Responsable: Consorcio Puntos Vuela de Andalucía (CPV)."; font.bold: true; wrapMode: Text.WordWrap }
+            ScrollView {
+                Layout.fillWidth: true; Layout.fillHeight: true; clip: true
+                Label {
+                    width: parent.width; wrapMode: Text.WordWrap; color: secondaryText
+                    text: "Finalidad: recibir, revisar y responder a propuestas profesionales de los AIL de los centros Puntos Vuela.\n\nDatos: centro, municipio, datos profesionales de contacto, aplicación propuesta, enlace, distribución, necesidad y observaciones.\n\nDestinatario: las propuestas se remiten a montejaque@puntosvuela.es. El correo indicado por el AIL recibe una copia.\n\nProveedores: Cloudflare Workers y Gmail API. La aplicación no mantiene una base de datos propia de propuestas ni crea expedientes; el contenido queda en los buzones de correo.\n\nMantenimiento técnico y gestión operativa del buzón: Francisco Javier Gallego Orellana, AIL del Punto Vuela de Montejaque.\n\nNo incluyas contraseñas, documentos de identidad ni datos personales innecesarios."
+                }
+            }
+            Label { Layout.fillWidth: true; text: "La base jurídica aplicable es la que corresponda a las funciones del Consorcio y debe estar documentada por este."; color: muted; wrapMode: Text.WordWrap; font.pixelSize: 11 }
+            RowLayout {
+                Layout.fillWidth: true
+                Item { Layout.fillWidth: true }
+                Button { text: "Cerrar"; onClicked: dataProtectionDialog.close() }
+                Button { text: "He leído esta información"; highlighted: true; onClicked: { dataProtectionRead = true; dataProtectionDialog.close() } }
+            }
+        }
+    }
+
+    Dialog {
+        id: privacyPolicyDialog
+        modal: true
+        title: "Política de privacidad"
+        width: Math.min(window.width - 48, 680)
+        height: Math.min(window.height - 48, 620)
+        anchors.centerIn: parent
+        standardButtons: Dialog.NoButton
+        contentItem: ColumnLayout {
+            spacing: 12
+            Label { Layout.fillWidth: true; text: "Punto Vuela Linux Toolkit · Consorcio Puntos Vuela de Andalucía"; font.bold: true; wrapMode: Text.WordWrap }
+            ScrollView {
+                Layout.fillWidth: true; Layout.fillHeight: true; clip: true
+                Label {
+                    width: parent.width; wrapMode: Text.WordWrap; color: secondaryText
+                    text: "La política completa explica los datos tratados, finalidades, proveedores tecnológicos, conservación, seguridad y ejercicio de derechos.\n\nDelegado de Protección de Datos: delegadoprotecciondatos.cfr@puntosvuela.es\n\nBuzón central de propuestas: montejaque@puntosvuela.es"
+                }
+            }
+            Label {
+                Layout.fillWidth: true
+                text: '<a href="https://github.com/Montejaque/punto-vuela-linux-toolkit/blob/main/privacy.md">Abrir política de privacidad completa</a>'
+                textFormat: Text.RichText; color: accent
+                onLinkActivated: Qt.openUrlExternally(link)
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                Item { Layout.fillWidth: true }
+                Button { text: "Cerrar"; onClicked: privacyPolicyDialog.close() }
+                Button { text: "He leído la política"; highlighted: true; onClicked: { privacyPolicyRead = true; privacyPolicyDialog.close() } }
+            }
+        }
+    }
     function refreshAppImages() {
         appImageItems = JSON.parse(appImageManager.listAppImages())
     }
@@ -664,20 +726,22 @@ ApplicationWindow {
                                 }
                                 TextArea { id: motivoField; Layout.fillWidth: true; Layout.preferredHeight: 90; placeholderText: "Utilidad y necesidad que cubriría *"; wrapMode: TextEdit.Wrap }
                                 TextArea { id: observacionesField; Layout.fillWidth: true; Layout.preferredHeight: 64; placeholderText: "Observaciones (opcional)"; wrapMode: TextEdit.Wrap }
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    Button { text: "Protección de datos"; onClicked: dataProtectionDialog.open() }
+                                    Button { text: "Política de privacidad"; onClicked: privacyPolicyDialog.open() }
+                                }
                                 CheckBox {
                                     id: privacyAcknowledged
                                     Layout.fillWidth: true
-                                    text: "He leído la información sobre protección de datos y la política de privacidad."
+                                    text: "Confirmo que he leído la información de protección de datos y la política de privacidad."
                                     checked: false
+                                    enabled: dataProtectionRead && privacyPolicyRead
                                 }
-                                Text {
+                                Label {
                                     Layout.fillWidth: true
-                                    text: '<a href="https://github.com/Montejaque/punto-vuela-linux-toolkit/blob/main/privacy.md">Consultar política de privacidad de Punto Vuela Linux Toolkit</a>'
-                                    textFormat: Text.RichText
-                                    color: accent
-                                    font.pixelSize: 11
-                                    wrapMode: Text.WordWrap
-                                    onLinkActivated: Qt.openUrlExternally(link)
+                                    text: dataProtectionRead && privacyPolicyRead ? "Ya has consultado ambos documentos. Marca la casilla para continuar." : "Abre y lee los dos documentos para habilitar la confirmación."
+                                    color: muted; wrapMode: Text.WordWrap; font.pixelSize: 11
                                 }
                                 Button {
                                     text: "Generar solicitud y vista previa"
@@ -686,7 +750,7 @@ ApplicationWindow {
                                             !telefonoField.text.trim() || !correoField.text.trim() || !softwareField.text.trim() || !motivoField.text.trim()) {
                                             formError.text = "Completa los campos obligatorios para continuar."; formError.visible = true; return
                                         }
-                                        if (!privacyAcknowledged.checked) {
+                                        if (!dataProtectionRead || !privacyPolicyRead || !privacyAcknowledged.checked) {
                                             formError.text = "Debes confirmar que has leído la información de protección de datos."; formError.visible = true; return
                                         }
                                         formError.visible = false
@@ -721,7 +785,7 @@ ApplicationWindow {
                                     Button {
                                         text: "Enviar por WhatsApp"
                                         onClicked: {
-                                            if (!privacyAcknowledged.checked) {
+                                            if (!dataProtectionRead || !privacyPolicyRead || !privacyAcknowledged.checked) {
                                                 emailStatus.text = "Debes confirmar que has leído la información de protección de datos."; emailStatus.color = "#D65A5A"; return
                                             }
                                             if (previewText.text.trim()) Qt.openUrlExternally("https://wa.me/34633402959?text=" + encodeURIComponent(previewText.text))
@@ -733,7 +797,7 @@ ApplicationWindow {
                                             if(!puntoVuelaField.text.trim() || !municipioField.text.trim() || !ailField.text.trim() || !telefonoField.text.trim() || !correoField.text.trim() || !softwareField.text.trim() || !motivoField.text.trim()) {
                                                 emailStatus.text="Completa los campos obligatorios antes de enviar."; emailStatus.color="#D65A5A"; return
                                             }
-                                            if (!privacyAcknowledged.checked) {
+                                            if (!dataProtectionRead || !privacyPolicyRead || !privacyAcknowledged.checked) {
                                                 emailStatus.text="Debes confirmar que has leído la información de protección de datos."; emailStatus.color="#D65A5A"; return
                                             }
                                             const payload={
