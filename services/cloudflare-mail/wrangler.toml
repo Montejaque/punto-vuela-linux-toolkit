@@ -5,4 +5,4 @@ workers_dev = true
 
 [[kv_namespaces]]
 binding = "RATE_LIMIT"
-id = "5b98752b9b4c4f538ef675a95d9cf67"
+id = "5b98752b9b4c4f538ef675a95d9cff67"
