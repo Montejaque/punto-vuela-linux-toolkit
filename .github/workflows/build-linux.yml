@@ -73,7 +73,7 @@ jobs:
           mkdir -p AppDir/usr/bin AppDir/usr/share/applications AppDir/usr/share/icons/hicolor/scalable/apps
           cp -a dist/punto-vuela-linux-toolkit/. AppDir/usr/bin/
           cp packaging/punto-vuela-linux-toolkit.desktop AppDir/usr/share/applications/
-          cp src/punto_vuela_toolkit/assets/logotipo-v.svg AppDir/usr/share/icons/hicolor/scalable/apps/punto-vuela-linux-toolkit.svg
+          cp src/punto_vuela_toolkit/assets/logo_toolkit.svg AppDir/usr/share/icons/hicolor/scalable/apps/punto-vuela-linux-toolkit.svg
           wget --https-only --tries=3 --timeout=30 -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage -O linuxdeploy
           chmod +x linuxdeploy
           ./linuxdeploy --appimage-extract-and-run --appdir AppDir --output appimage
@@ -91,7 +91,7 @@ jobs:
           cp -a dist/punto-vuela-linux-toolkit/. package-root/opt/punto-vuela-linux-toolkit/
           install -m 755 packaging/launcher.sh package-root/usr/bin/punto-vuela-linux-toolkit
           install -m 644 packaging/punto-vuela-linux-toolkit.desktop package-root/usr/share/applications/
-          install -m 644 src/punto_vuela_toolkit/assets/logotipovuela.svg package-root/usr/share/icons/hicolor/scalable/apps/punto-vuela-linux-toolkit.svg
+          install -m 644 src/punto_vuela_toolkit/assets/logo_toolkit.svg package-root/usr/share/icons/hicolor/scalable/apps/punto-vuela-linux-toolkit.svg
           mkdir -p package-root/DEBIAN
           cat > package-root/DEBIAN/control <<EOF
           Package: punto-vuela-linux-toolkit
@@ -164,7 +164,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: Punto Vuela Linux Toolkit ${{ github.ref_name }}
+          name: Puntos Vuela Toolkit ${{ github.ref_name }}
           prerelease: ${{ contains(github.ref_name, '-') }}
           generate_release_notes: true
           fail_on_unmatched_files: true
