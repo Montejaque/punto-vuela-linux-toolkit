@@ -1,4 +1,4 @@
-# Punto Vuela Linux Toolkit
+# Puntos Vuela Toolkit
 
 Centro de software para Linux con identidad Punto Vuela. Reúne las herramientas propias de Punto Vuela y facilita descubrir, instalar y mantener aplicaciones AppImage.
 
@@ -14,7 +14,7 @@ Centro de software para Linux con identidad Punto Vuela. Reúne las herramientas
 - Carpeta de AppImages por usuario en `~/.local/share/punto-vuela-linux-toolkit/AppImages` (o `$XDG_DATA_HOME`), descargas HTTPS, validación ELF, permisos automáticos, lanzamiento, reparación de permisos y eliminación con confirmación.
 - Comprobación y actualización mediante AppImageUpdate cuando la AppImage incluye información de actualización compatible. La actualización se confirma expresamente y se conserva el respaldo del actualizador. El actualizador oficial x86_64 puede descargarse al perfil de usuario y se verifica con el SHA-256 publicado por GitHub.
 - Guía de ayuda en la aplicación y en `docs/GUIA-DE-AYUDA.md`.
-- Acento amarillo `#F3D54E`, tipografía Inter y logotipo oficial de Punto Vuela.
+- Acento amarillo `#F3D54E`, tipografía Inter y símbolo V oficial de Puntos Vuela integrado en el icono de Toolkit.
 
 ## Estado
 
@@ -41,7 +41,7 @@ La estrategia prevista es generar AppImage, DEB y RPM x86_64 desde GitHub Action
 El recurso oficial se obtiene desde:
 https://puntosvuela.es/storage/images/logotipovuela.svg
 
-Se conserva como recurso de marca y se generan variantes PNG para los lanzadores de escritorio durante el empaquetado. Su uso debe respetar las condiciones de identidad corporativa de Punto Vuela.
+El icono de la aplicación utiliza `src/punto_vuela_toolkit/assets/logo_toolkit.svg`, basado en el SVG facilitado: fondo amarillo corporativo y símbolo V negro. Se utiliza en la interfaz, el icono de ventana y los paquetes de escritorio. Su uso debe respetar las condiciones de identidad corporativa de Punto Vuela.
 
 ## Licencia
 
