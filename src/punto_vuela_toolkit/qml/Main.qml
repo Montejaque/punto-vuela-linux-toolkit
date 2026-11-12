@@ -641,28 +641,6 @@ ApplicationWindow {
 
                         Rectangle {
                             Layout.fillWidth: true; radius: 16; color: panel; border.color: panelBorder
-                            implicitHeight: smtpForm.implicitHeight + 30
-                            ColumnLayout {
-                                id: smtpForm
-                                anchors.fill: parent; anchors.margins: 16; spacing: 9
-                                Text { text: "Configuración de envío de correo"; color: primaryText; font.pixelSize: 15; font.bold: true }
-                                Text { text: "Configura una cuenta Gmail y una contraseña de aplicación. La contraseña se guarda en el almacén seguro del usuario y no se incluye en el repositorio."; color: secondaryText; font.pixelSize: 11; wrapMode: Text.WordWrap; Layout.fillWidth: true }
-                                TextField { id: smtpSenderField; Layout.fillWidth: true; placeholderText: "Cuenta Gmail remitente"; text: appImageManager.smtpSender() }
-                                TextField { id: smtpPasswordField; Layout.fillWidth: true; placeholderText: "Contraseña de aplicación"; echoMode: TextInput.Password }
-                                RowLayout {
-                                    Layout.fillWidth: true
-                                    Button { text: "Guardar configuración segura"; onClicked: {
-                                        const result=JSON.parse(appImageManager.configureSmtp(smtpSenderField.text.trim(),smtpPasswordField.text))
-                                        emailStatus.text=result.message; emailStatus.color=result.ok?"#62B47A":"#D65A5A"
-                                        if(result.ok) smtpPasswordField.text=""
-                                    }}
-                                    Button { text: "Crear contraseña de aplicación"; onClicked: Qt.openUrlExternally("https://myaccount.google.com/apppasswords") }
-                                }
-                                Text { text: "Destino: montejaque@puntosvuela.es · Se enviará una copia al solicitante."; color: muted; font.pixelSize: 10 }
-                            }
-                        }
-                        Rectangle {
-                            Layout.fillWidth: true; radius: 16; color: panel; border.color: panelBorder
                             implicitHeight: requestForm.implicitHeight + 36
                             ColumnLayout {
                                 id: requestForm
@@ -743,7 +721,7 @@ ApplicationWindow {
                                         }
                                     }
                                 }
-                                Text { id: emailStatus; text: "El correo se enviará directamente mediante SMTP seguro."; color: muted; font.pixelSize: 10; wrapMode: Text.WordWrap }
+                                Text { id: emailStatus; text: "El envío se realizará de forma segura mediante el servicio corporativo de correo."; color: muted; font.pixelSize: 10; wrapMode: Text.WordWrap }
                             }
                         }
                         Rectangle {
