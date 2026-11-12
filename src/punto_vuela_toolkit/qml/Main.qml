@@ -10,7 +10,7 @@ ApplicationWindow {
     minimumWidth: 960
     minimumHeight: 640
     visible: true
-    title: "Punto Vuela Linux Toolkit"
+    title: "Puntos Vuela Toolkit"
     property string activePage: "Inicio"
     property color accent: "#FAD100"
     property string themeMode: appSettings.savedThemeMode
@@ -149,7 +149,7 @@ ApplicationWindow {
         standardButtons: Dialog.NoButton
         contentItem: ColumnLayout {
             spacing: 12
-            Label { Layout.fillWidth: true; text: "Punto Vuela Linux Toolkit · Consorcio Puntos Vuela de Andalucía"; font.bold: true; wrapMode: Text.WordWrap }
+            Label { Layout.fillWidth: true; text: "Puntos Vuela Toolkit · Consorcio Puntos Vuela de Andalucía"; font.bold: true; wrapMode: Text.WordWrap }
             ScrollView {
                 Layout.fillWidth: true; Layout.fillHeight: true; clip: true
                 Label {
@@ -202,12 +202,12 @@ ApplicationWindow {
                     Rectangle {
                         width: 44; height: 44; radius: 14
                         color: accent
-                        Image { anchors.fill: parent; anchors.margins: 3; source: Qt.resolvedUrl("../assets/logotipo-v.svg"); fillMode: Image.PreserveAspectFit; smooth: true; mipmap: true; asynchronous: true; sourceSize.width: 512; sourceSize.height: 512; visible: status === Image.Ready }
+                        Image { anchors.fill: parent; anchors.margins: 3; source: Qt.resolvedUrl("../assets/logo_toolkit.svg"); fillMode: Image.PreserveAspectFit; smooth: true; mipmap: true; asynchronous: true; sourceSize.width: 512; sourceSize.height: 512; visible: status === Image.Ready }
                     }
                     Column {
                         spacing: 2
-                        Text { text: "PUNTO VUELA"; color: "#202226"; font.pixelSize: 13; font.bold: true; font.letterSpacing: 1.2 }
-                        Text { text: "LINUX TOOLKIT"; color: "#51430A"; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
+                        Text { text: "PUNTOS VUELA"; color: "#202226"; font.pixelSize: 13; font.bold: true; font.letterSpacing: 1.2 }
+                        Text { text: "TOOLKIT"; color: "#51430A"; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
                     }
                 }
 
