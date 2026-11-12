@@ -51,28 +51,13 @@ class AppImageBridge(QObject):
         ], ensure_ascii=False)
 
 
-    @Slot(result=str)
-    def smtpSender(self) -> str:
-        try:
-            return configured_sender()
-        except Exception:
-            return ""
-
-    @Slot(str, str, result=str)
-    def configureSmtp(self, sender: str, app_password: str) -> str:
-        try:
-            save_credentials(sender, app_password)
-            return json.dumps({"ok": True, "message": "Cuenta SMTP guardada de forma segura en el almacén de credenciales del usuario."}, ensure_ascii=False)
-        except Exception as exc:
-            return json.dumps({"ok": False, "message": str(exc)}, ensure_ascii=False)
-
     @Slot(str)
     def sendApplicationRequest(self, payload: str) -> None:
         def work() -> None:
             try:
                 data = json.loads(payload)
-                send_application_request(data)
-                result = {"ok": True, "message": "Solicitud enviada a montejaque@puntosvuela.es. Se ha enviado una copia a " + data.get("reply_email", "")}
+                message = send_application_request(data)
+                result = {"ok": True, "message": message}
             except Exception as exc:
                 result = {"ok": False, "message": str(exc)}
             self.emailSent.emit(json.dumps(result, ensure_ascii=False))
