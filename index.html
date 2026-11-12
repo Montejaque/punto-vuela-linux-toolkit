@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3d54e">
+  <meta name="description" content="Puntos Vuela Toolkit: centro de software para Linux destinado al uso profesional interno de los Agentes de Innovación Local de la red Puntos Vuela.">
+  <title>Puntos Vuela Toolkit</title>
+  <style>
+    :root{color-scheme:light;--ink:#202124;--muted:#5f6368;--line:#e7e5df;--paper:#fff;--soft:#f7f6f2;--yellow:#f3d54e;--dark:#202124}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    a{color:inherit}
+    .topline{height:7px;background:var(--yellow)}
+    .wrap{width:min(1080px,calc(100% - 40px));margin-inline:auto}
+    header{padding:24px 0;border-bottom:1px solid var(--line)}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:750;letter-spacing:-.03em;font-size:1.12rem}
+    .mark{width:36px;height:36px;border-radius:10px;background:var(--yellow);display:grid;place-items:center;font-weight:900;font-size:24px;color:#111}
+    .hero{padding:82px 0 72px;background:linear-gradient(180deg,#fff 0%,#fbfaf6 100%)}
+    .eyebrow{display:inline-block;background:#fff5c4;border:1px solid #f0df91;border-radius:999px;padding:5px 12px;font-size:.78rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+    h1{font-size:clamp(2.5rem,6vw,4.6rem);line-height:1.04;letter-spacing:-.065em;max-width:800px;margin:22px 0}
+    .lead{font-size:clamp(1.08rem,2vw,1.28rem);color:var(--muted);max-width:720px;margin:0}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+    .button{display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700;border:1px solid var(--dark);background:var(--dark);color:white}
+    .button.secondary{background:white;color:var(--dark);border-color:#d4d1c8}
+    section{padding:62px 0}
+    h2{font-size:clamp(1.6rem,3vw,2.15rem);letter-spacing:-.04em;margin:0 0 14px}
+    .intro{color:var(--muted);max-width:760px;margin:0}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+    .card{border:1px solid var(--line);border-radius:16px;padding:22px;background:#fff}
+    .card h3{margin:0 0 8px;font-size:1.05rem}
+    .card p{margin:0;color:var(--muted);font-size:.95rem}
+    .audience{background:var(--soft);border-block:1px solid var(--line)}
+    .audience p{max-width:800px;color:var(--muted)}
+    .notice{border-left:4px solid var(--yellow);padding:16px 18px;background:#fff9dc;border-radius:0 10px 10px 0;margin-top:22px}
+    footer{padding:28px 0 40px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+    .footlinks{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:12px}
+    .footlinks a{color:var(--ink);text-decoration-thickness:1px;text-underline-offset:3px}
+    @media(max-width:760px){.hero{padding:58px 0}.cards{grid-template-columns:1fr}section{padding:46px 0}}
+  </style>
+</head>
+<body>
+  <div class="topline"></div>
+  <header>
+    <div class="wrap">
+      <a class="brand" href="/" aria-label="Puntos Vuela Toolkit, inicio">
+        <span class="mark" aria-hidden="true">V</span>
+        <span>Puntos Vuela Toolkit</span>
+      </a>
+    </div>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <span class="eyebrow">Herramienta de uso profesional interno</span>
+        <h1>Un espacio de software para los centros Puntos Vuela.</h1>
+        <p class="lead">Puntos Vuela Toolkit es una aplicación de escritorio para Linux creada para facilitar a los Agentes de Innovación Local el descubrimiento, la instalación y la gestión de aplicaciones AppImage.</p>
+        <div class="actions">
+          <a class="button" href="https://github.com/Montejaque/punto-vuela-linux-toolkit">Consultar el proyecto en GitHub</a>
+          <a class="button secondary" href="privacy">Política de privacidad</a>
+        </div>
+      </div>
+    </section>
+    <section>
+      <div class="wrap">
+        <h2>Qué ofrece</h2>
+        <p class="intro">La herramienta reúne en una única interfaz funciones para localizar aplicaciones compatibles y administrar las AppImages del perfil de usuario.</p>
+        <div class="cards">
+          <article class="card">
+            <h3>Catálogo de aplicaciones</h3>
+            <p>Explora el catálogo de Puntos Vuela y fuentes comunitarias de aplicaciones para Linux, con búsqueda y fichas informativas.</p>
+          </article>
+          <article class="card">
+            <h3>Biblioteca local</h3>
+            <p>Organiza las AppImages descargadas, ejecútalas, repara permisos y elimina aplicaciones con confirmación.</p>
+          </article>
+          <article class="card">
+            <h3>Gestión desde tu usuario</h3>
+            <p>Las funciones propias de gestión de AppImages se realizan en el espacio del usuario y no requieren privilegios de administrador.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="audience">
+      <div class="wrap">
+        <h2>¿A quién va dirigida?</h2>
+        <p>Puntos Vuela Toolkit está destinada al uso profesional interno de los <strong>Agentes de Innovación Local (AIL) de los centros de la red Puntos Vuela</strong>. No es un servicio público de descarga para la ciudadanía ni un formulario abierto a empresas.</p>
+        <div class="notice"><strong>Importante:</strong> la disponibilidad de determinadas funciones depende de la versión instalada, de las fuentes externas y de los servicios de terceros. La compatibilidad y las actualizaciones deben comprobarse en cada publicación del proyecto.</div>
+      </div>
+    </section>
+    <section>
+      <div class="wrap">
+        <h2>Información y contacto</h2>
+        <p class="intro">El código fuente, las instrucciones de desarrollo y las novedades del proyecto están disponibles en el repositorio de GitHub. Para cuestiones relacionadas con la herramienta, puede consultarse la información de contacto incluida en las condiciones de uso.</p>
+        <div class="actions">
+          <a class="button secondary" href="terms">Condiciones de uso</a>
+          <a class="button secondary" href="https://github.com/Montejaque/punto-vuela-linux-toolkit">Repositorio del proyecto</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="wrap">
+      <nav class="footlinks" aria-label="Información legal">
+        <a href="privacy">Privacidad</a>
+        <a href="terms">Condiciones de uso</a>
+        <a href="https://github.com/Montejaque/punto-vuela-linux-toolkit">GitHub</a>
+      </nav>
+      <div>Puntos Vuela Toolkit · Aplicación de escritorio para Linux · Uso profesional interno de la red Puntos Vuela.</div>
+    </div>
+  </footer>
+</body>
+</html>
