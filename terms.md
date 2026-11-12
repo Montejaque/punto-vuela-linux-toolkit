@@ -1,10 +1,10 @@
-# Condiciones de uso de Punto Vuela Mail
+# Condiciones de uso de Punto Vuela Linux Toolkit
 
 **Última actualización: 12 de noviembre de 2026**
 
 ## 1. Objeto y finalidad
 
-Punto Vuela Mail es una herramienta de escritorio de uso interno destinada exclusivamente a los **Agentes de Innovación Local (AIL) de los centros de la red Puntos Vuela**. Su finalidad es facilitar el envío de propuestas de aplicaciones y comunicaciones sobre necesidades profesionales de los centros.
+Punto Vuela Linux Toolkit es una herramienta de escritorio de uso interno destinada exclusivamente a los **Agentes de Innovación Local (AIL) de los centros de la red Puntos Vuela**. Su finalidad es facilitar el envío de propuestas de aplicaciones y comunicaciones sobre necesidades profesionales de los centros.
 
 No es un formulario público dirigido a ciudadanos, empresas o usuarios externos.
 
@@ -44,7 +44,7 @@ El código de la herramienta se distribuye conforme a la licencia indicada en el
 
 ## 7. Privacidad
 
-El tratamiento de datos personales se describe en la [Política de privacidad de Punto Vuela Mail](privacy.html). Las personas usuarias deben evitar introducir datos personales que no sean necesarios y seguir las instrucciones y procedimientos internos que les sean aplicables.
+El tratamiento de datos personales se describe en la [Política de privacidad de Punto Vuela Linux Toolkit](privacy.html). Las personas usuarias deben evitar introducir datos personales que no sean necesarios y seguir las instrucciones y procedimientos internos que les sean aplicables.
 
 ## 8. Contacto técnico
 
