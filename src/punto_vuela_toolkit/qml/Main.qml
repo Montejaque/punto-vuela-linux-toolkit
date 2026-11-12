@@ -664,12 +664,30 @@ ApplicationWindow {
                                 }
                                 TextArea { id: motivoField; Layout.fillWidth: true; Layout.preferredHeight: 90; placeholderText: "Utilidad y necesidad que cubriría *"; wrapMode: TextEdit.Wrap }
                                 TextArea { id: observacionesField; Layout.fillWidth: true; Layout.preferredHeight: 64; placeholderText: "Observaciones (opcional)"; wrapMode: TextEdit.Wrap }
+                                CheckBox {
+                                    id: privacyAcknowledged
+                                    Layout.fillWidth: true
+                                    text: "He leído la información sobre protección de datos y la política de privacidad."
+                                    checked: false
+                                }
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: '<a href="https://github.com/Montejaque/punto-vuela-linux-toolkit/blob/main/privacy.md">Consultar política de privacidad de Punto Vuela Linux Toolkit</a>'
+                                    textFormat: Text.RichText
+                                    color: accent
+                                    font.pixelSize: 11
+                                    wrapMode: Text.WordWrap
+                                    onLinkActivated: Qt.openUrlExternally(link)
+                                }
                                 Button {
                                     text: "Generar solicitud y vista previa"
                                     onClicked: {
                                         if (!puntoVuelaField.text.trim() || !municipioField.text.trim() || !ailField.text.trim() ||
                                             !telefonoField.text.trim() || !correoField.text.trim() || !softwareField.text.trim() || !motivoField.text.trim()) {
                                             formError.text = "Completa los campos obligatorios para continuar."; formError.visible = true; return
+                                        }
+                                        if (!privacyAcknowledged.checked) {
+                                            formError.text = "Debes confirmar que has leído la información de protección de datos."; formError.visible = true; return
                                         }
                                         formError.visible = false
                                         previewText.text =
@@ -702,13 +720,21 @@ ApplicationWindow {
                                     Layout.fillWidth: true
                                     Button {
                                         text: "Enviar por WhatsApp"
-                                        onClicked: if (previewText.text.trim()) Qt.openUrlExternally("https://wa.me/34633402959?text=" + encodeURIComponent(previewText.text))
+                                        onClicked: {
+                                            if (!privacyAcknowledged.checked) {
+                                                emailStatus.text = "Debes confirmar que has leído la información de protección de datos."; emailStatus.color = "#D65A5A"; return
+                                            }
+                                            if (previewText.text.trim()) Qt.openUrlExternally("https://wa.me/34633402959?text=" + encodeURIComponent(previewText.text))
+                                        }
                                     }
                                     Button {
                                         text: "Enviar solicitud por email"
                                         onClicked: {
                                             if(!puntoVuelaField.text.trim() || !municipioField.text.trim() || !ailField.text.trim() || !telefonoField.text.trim() || !correoField.text.trim() || !softwareField.text.trim() || !motivoField.text.trim()) {
                                                 emailStatus.text="Completa los campos obligatorios antes de enviar."; emailStatus.color="#D65A5A"; return
+                                            }
+                                            if (!privacyAcknowledged.checked) {
+                                                emailStatus.text="Debes confirmar que has leído la información de protección de datos."; emailStatus.color="#D65A5A"; return
                                             }
                                             const payload={
                                                 center:puntoVuelaField.text.trim(),municipality:municipioField.text.trim(),
