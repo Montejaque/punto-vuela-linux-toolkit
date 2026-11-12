@@ -5,4 +5,4 @@ workers_dev = true
 
 [[kv_namespaces]]
 binding = "RATE_LIMIT"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "5b98752b9b4c4f538ef675a95d9cf67"
