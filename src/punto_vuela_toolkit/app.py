@@ -12,7 +12,7 @@ from PySide6.QtQml import QQmlApplicationEngine
 
 from .appimages import AppImageManager
 from .catalog import AppImageCatalog
-from .email_sender import configured_sender, save_credentials, send_application_request
+from .email_sender import send_application_request
 
 APP_NAME = "Punto Vuela Linux Toolkit"
 QML_FILE = Path(__file__).parent / "qml" / "Main.qml"
