@@ -574,7 +574,14 @@ ApplicationWindow {
                             exit:Transition { ParallelAnimation { NumberAnimation { property:"opacity";from:1;to:0;duration:130 } NumberAnimation { property:"scale";from:1;to:0.97;duration:130 } } }
                             contentItem:ColumnLayout {
                                 spacing:14
-                                Text { text:selectedCatalogApp?(selectedCatalogApp.description||"El catálogo oficial no proporciona descripción para esta aplicación."):"";color:primaryText;wrapMode:Text.WordWrap;Layout.fillWidth:true }
+                                RowLayout {
+                                    Layout.fillWidth:true
+                                    Rectangle { width:62;height:62;radius:16;color:"#FFFFFF";border.color:"#E8E8E8";Image { anchors.fill:parent;anchors.margins:8;source:selectedCatalogApp?selectedCatalogApp.iconUrl:"";asynchronous:true;fillMode:Image.PreserveAspectFit } }
+                                    ColumnLayout { Layout.fillWidth:true;spacing:4;Text { text:selectedCatalogApp?selectedCatalogApp.name:"Ficha de aplicación";color:primaryText;font.pixelSize:20;font.bold:true;wrapMode:Text.WordWrap;Layout.fillWidth:true };Text { text:selectedCatalogApp?selectedCatalogApp.category:"";color:muted;font.pixelSize:11 } }
+                                    Button { text:"✕";onClicked:catalogDetailDialog.close();background:Rectangle { radius:10;color:darkTheme?"#414A55":"#F0F1F3" };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:15;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                }
+                                Rectangle { Layout.fillWidth:true;height:1;color:panelBorder }
+                                Text { text:selectedCatalogApp?(selectedCatalogApp.description||"El catálogo oficial no proporciona descripción para esta aplicación."):"";color:secondaryText;font.pixelSize:13;wrapMode:Text.WordWrap;Layout.fillWidth:true }
                                 Text { text:selectedCatalogApp?"Categoría: "+selectedCatalogApp.category+"\nAutor: "+selectedCatalogApp.author+"\nLicencia: "+selectedCatalogApp.license+"\nCompatibilidad: "+selectedCatalogApp.compatibility+"\nRequisito glibc: "+selectedCatalogApp.glibc:"";color:secondaryText;wrapMode:Text.WordWrap;Layout.fillWidth:true }
                                 RowLayout {
                                     Layout.fillWidth:true
