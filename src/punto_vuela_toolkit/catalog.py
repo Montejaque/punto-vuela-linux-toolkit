@@ -137,9 +137,9 @@ class AppImageCatalog:
             if not selected: continue
             asset = selected[0]
             name = str(repo.get("name") or full_name.split("/")[-1])
-            tools.append({"name":str(repo.get("description") or name.replace("-", " ").title()),
+            tools.append({"name":name.replace("-", " ").replace("_", " ").title(),
                 "repository":full_name, "repositoryUrl":str(repo.get("html_url") or ""),
-                "description":str(repo.get("description") or "Herramienta publicada por Montejaque."),
+                "description":str(repo.get("description") or "Herramienta publicada por Montejaque."), "iconUrl":str((repo.get("owner") or {}).get("avatar_url") or ""),
                 "category":"Herramientas Puntos Vuela", "kind":"Aplicación Linux",
                 "version":str(release.get("tag_name") or ""), "releaseName":str(release.get("name") or ""),
                 "publishedAt":str(release.get("published_at") or ""), "releaseUrl":str(release.get("html_url") or ""),
