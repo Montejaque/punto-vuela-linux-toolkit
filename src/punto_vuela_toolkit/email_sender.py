@@ -13,6 +13,8 @@ def send_application_request(data: dict[str, str]) -> str:
     missing = [field for field in required if not str(data.get(field, "")).strip()]
     if missing:
         raise ValueError("Faltan datos obligatorios en la solicitud.")
+    if data.get("data_protection_read") is not True or data.get("privacy_policy_read") is not True or data.get("terms_accepted") is not True:
+        raise ValueError("Debes aceptar la información legal y los términos antes de enviar.")
     payload = json.dumps(data, ensure_ascii=False).encode("utf-8")
     request = Request(
         WORKER_URL,
