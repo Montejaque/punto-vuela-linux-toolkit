@@ -396,14 +396,30 @@ ApplicationWindow {
                                 model:visibleFeaturedApps
                                 delegate:Rectangle {
                                     id:homeAppCard
-                                    Layout.fillWidth:true; Layout.preferredHeight:232; radius:19
+                                    Layout.fillWidth:true; Layout.preferredHeight:246; radius:19; clip:true
                                     color:homeCardHover.containsMouse?(darkTheme?"#3A424D":"#FFFDF5"):panel
                                     border.color:homeCardHover.containsMouse?accent:panelBorder
                                     Behavior on color { ColorAnimation { duration:170 } }
                                     Behavior on border.color { ColorAnimation { duration:170 } }
                                     MouseArea { id:homeCardHover; anchors.fill:parent; hoverEnabled:true; z:-1; onClicked:{selectedHomeApp=modelData;appDetailDialog.open()} }
+                                    Rectangle {
+                                        anchors.top:parent.top; anchors.left:parent.left; anchors.right:parent.right
+                                        height:29
+                                        color:modelData.official?(darkTheme?"#414A55":"#E9EDF2"):accent
+                                        RowLayout {
+                                            anchors.fill:parent; anchors.leftMargin:12; anchors.rightMargin:12; spacing:7
+                                            Rectangle { width:7;height:7;radius:4;color:modelData.official?"#AEB8C4":"#202226" }
+                                            Text {
+                                                text:modelData.official?"CATÁLOGO APPIMAGE":"PUNTO VUELA MONTEJAQUE"
+                                                color:modelData.official?"#FFFFFF":"#202226"
+                                                font.pixelSize:9;font.bold:true;font.letterSpacing:1
+                                                Layout.fillWidth:true
+                                            }
+                                            Text { text:modelData.official?"COMUNIDAD":"DESARROLLO LOCAL";color:modelData.official?"#D8DEE6":"#51430A";font.pixelSize:8;font.bold:true }
+                                        }
+                                    }
                                     ColumnLayout {
-                                        anchors.fill:parent; anchors.margins:15; spacing:8
+                                        anchors.fill:parent; anchors.leftMargin:15; anchors.rightMargin:15; anchors.topMargin:41; anchors.bottomMargin:13; spacing:8
                                         RowLayout {
                                             Layout.fillWidth:true
                                             Rectangle {
