@@ -563,10 +563,17 @@ ApplicationWindow {
                             }
                         }
                         Dialog {
-                            id:catalogDetailDialog;modal:true;anchors.centerIn:Overlay.overlay;width:Math.min(window.width-48,620)
-                            title:selectedCatalogApp?selectedCatalogApp.name:"Ficha de aplicación";standardButtons:Dialog.Close
+                            id:catalogDetailDialog
+                            modal:true
+                            anchors.centerIn:Overlay.overlay
+                            width:Math.min(window.width-48,620)
+                            padding:0
+                            closePolicy:Popup.CloseOnEscape|Popup.CloseOnPressOutside
+                            background:Rectangle { radius:22;color:panel;border.color:panelBorder;Rectangle { anchors.top:parent.top;anchors.left:parent.left;anchors.right:parent.right;height:5;radius:3;color:accent } }
+                            enter:Transition { ParallelAnimation { NumberAnimation { property:"opacity";from:0;to:1;duration:180 } NumberAnimation { property:"scale";from:0.94;to:1;duration:220;easing.type:Easing.OutCubic } } }
+                            exit:Transition { ParallelAnimation { NumberAnimation { property:"opacity";from:1;to:0;duration:130 } NumberAnimation { property:"scale";from:1;to:0.97;duration:130 } } }
                             contentItem:ColumnLayout {
-                                spacing:10
+                                spacing:14
                                 Text { text:selectedCatalogApp?(selectedCatalogApp.description||"El catálogo oficial no proporciona descripción para esta aplicación."):"";color:primaryText;wrapMode:Text.WordWrap;Layout.fillWidth:true }
                                 Text { text:selectedCatalogApp?"Categoría: "+selectedCatalogApp.category+"\nAutor: "+selectedCatalogApp.author+"\nLicencia: "+selectedCatalogApp.license+"\nCompatibilidad: "+selectedCatalogApp.compatibility+"\nRequisito glibc: "+selectedCatalogApp.glibc:"";color:secondaryText;wrapMode:Text.WordWrap;Layout.fillWidth:true }
                                 RowLayout {
