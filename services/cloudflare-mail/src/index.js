@@ -52,6 +52,9 @@ function buildMime(data) {
     ["Correo para la copia", data.reply_email], ["Aplicación", data.application],
     ["Enlace", data.url || "No indicado"], ["Distribución", data.distribution || "No indicada"],
     ["Necesidad y utilidad", data.purpose], ["Observaciones", data.notes || "Ninguna"],
+    ["Información de protección de datos leída", data.data_protection_read ? "Sí" : "No"],
+    ["Política de privacidad leída", data.privacy_policy_read ? "Sí" : "No"],
+    ["Términos y condiciones aceptados", data.terms_accepted ? "Sí" : "No"],
   ];
   const table = rows.map(([label, value]) =>
     '<tr><td style="padding:11px 14px;border-bottom:1px solid #e9edf2;color:#657080;width:34%;font-size:13px">' +
@@ -108,12 +111,13 @@ export default {
         await env.RATE_LIMIT.put(key, String(current + 1), {expirationTtl: 3600});
       }
       const data = await request.json();
+      // Honeypot: silently accept bot submissions without forwarding email.
+      if (String(data.website || "").trim()) return json({ok: true, message: "Solicitud recibida."});
       const required = ["center", "municipality", "province", "contact", "phone", "reply_email", "application", "purpose"];
       if (required.some(key => !String(data[key] || "").trim())) return json({ok: false, message: "Faltan campos obligatorios."}, 400);
+      if (data.data_protection_read !== true || data.privacy_policy_read !== true || data.terms_accepted !== true) return json({ok: false, message: "Debes consultar y aceptar la información legal y los términos antes de enviar."}, 400);
       if (JSON.stringify(data).length > 16000) return json({ok: false, message: "La solicitud supera el tamaño permitido."}, 413);
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.reply_email)) return json({ok: false, message: "El correo de contacto no es válido."}, 400);
-      // Honeypot field: bots often fill hidden form fields.
-      if (data.website) return json({ok: true, message: "Solicitud recibida."});
       const token = await gmailToken(env);
       const raw = b64url(buildMime(data));
       const sent = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
