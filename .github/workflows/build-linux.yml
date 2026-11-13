@@ -148,7 +148,8 @@ jobs:
 
   publish:
     name: Publish GitHub release
-    if: startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/tags/pruebas-')
+    # Also publish this one-time main-branch build when its commit message carries the release marker.
+    if: startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/tags/pruebas-') || (github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[publish-pruebas-78]'))
     needs: packages
     runs-on: ubuntu-22.04
     steps:
@@ -163,9 +164,9 @@ jobs:
       - name: Publish release assets
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }}
-          name: Puntos Vuela Toolkit ${{ github.ref_name }}
-          prerelease: ${{ contains(github.ref_name, '-') }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'pruebas-78' }}
+          name: Puntos Vuela Toolkit ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'pruebas-78' }}
+          prerelease: true
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
