@@ -36,6 +36,9 @@ ApplicationWindow {
     readonly property color heroEnd: darkTheme ? "#292F38" : "#F8E7A0"
 
     property bool previewVisible: false
+    property bool emailSending: false
+    property var puntoVuelaCentres: []
+    property bool puntoVuelaCentresLoading: false
     property bool dataProtectionRead: false
     property bool privacyPolicyRead: false
     property var appImageItems: []
@@ -64,6 +67,8 @@ ApplicationWindow {
         puntoVuelaLoading = true
         appImageManager.loadPuntoVuelaTools()
         appImageManager.loadToolkitRelease()
+        puntoVuelaCentresLoading = true
+        appImageManager.loadPuntoVuelaCentres()
     }
 
     function refreshCatalog() {
@@ -75,9 +80,19 @@ ApplicationWindow {
         target: appImageManager
         function onEmailSent(payload) {
             const result = JSON.parse(payload)
+            emailSending = false
             emailStatus.text = result.message || "Resultado del envío"
             emailStatus.color = result.ok ? "#62B47A" : "#D65A5A"
             if (result.ok) previewVisible = false
+        }
+        function onPuntoVuelaCentresLoaded(payload) {
+            const result = JSON.parse(payload)
+            puntoVuelaCentres = result.items || []
+            puntoVuelaCentresLoading = false
+            if (!result.ok) {
+                emailStatus.text = result.message || "No se pudo cargar el directorio de centros."
+                emailStatus.color = "#D65A5A"
+            }
         }
         function onPuntoVuelaToolsLoaded(payload) {
             const result = JSON.parse(payload)
@@ -806,8 +821,33 @@ ApplicationWindow {
                                 Text { text: "Datos del centro y del/de la AIL"; color: primaryText; font.pixelSize: 15; font.bold: true }
                                 GridLayout {
                                     Layout.fillWidth: true; columns: width > 680 ? 2 : 1; columnSpacing: 12; rowSpacing: 9
-                                    TextField { id: puntoVuelaField; Layout.fillWidth: true; placeholderText: "Nombre del Punto Vuela *" }
-                                    TextField { id: municipioField; Layout.fillWidth: true; placeholderText: "Municipio *" }
+                                    ComboBox {
+                                        id: puntoVuelaField
+                                        Layout.fillWidth: true
+                                        model: puntoVuelaCentres
+                                        textRole: "name"
+                                        valueRole: "name"
+                                        editable: true
+                                        enabled: !puntoVuelaCentresLoading && puntoVuelaCentres.length > 0
+                                        displayText: currentIndex >= 0 ? currentText : (puntoVuelaCentresLoading ? "Cargando centros oficiales…" : "Selecciona tu Punto Vuela *")
+                                        onActivated: {
+                                            if (currentIndex >= 0 && currentIndex < puntoVuelaCentres.length) {
+                                                municipioField.text = puntoVuelaCentres[currentIndex].municipality
+                                                provinciaField.text = puntoVuelaCentres[currentIndex].province
+                                            }
+                                        }
+                                        onAccepted: {
+                                            const query = editText.trim().toLocaleLowerCase()
+                                            const index = puntoVuelaCentres.findIndex(item => item.name.toLocaleLowerCase() === query)
+                                            if (index >= 0) {
+                                                currentIndex = index
+                                                municipioField.text = puntoVuelaCentres[index].municipality
+                                                provinciaField.text = puntoVuelaCentres[index].province
+                                            }
+                                        }
+                                    }
+                                    TextField { id: municipioField; Layout.fillWidth: true; placeholderText: "Municipio"; readOnly: true }
+                                    TextField { id: provinciaField; Layout.fillWidth: true; placeholderText: "Provincia"; readOnly: true }
                                     TextField { id: ailField; Layout.fillWidth: true; placeholderText: "Nombre y apellidos del/de la AIL *" }
                                     TextField { id: telefonoField; Layout.fillWidth: true; placeholderText: "Teléfono de contacto *" }
                                     TextField { id: correoField; Layout.fillWidth: true; placeholderText: "Correo electrónico *" }
@@ -842,7 +882,7 @@ ApplicationWindow {
                                 Button {
                                     text: "Generar solicitud y vista previa"
                                     onClicked: {
-                                        if (!puntoVuelaField.text.trim() || !municipioField.text.trim() || !ailField.text.trim() ||
+                                        if (puntoVuelaField.currentIndex < 0 || !municipioField.text.trim() || !provinciaField.text.trim() || !ailField.text.trim() ||
                                             !telefonoField.text.trim() || !correoField.text.trim() || !softwareField.text.trim() || !motivoField.text.trim()) {
                                             formError.text = "Completa los campos obligatorios para continuar."; formError.visible = true; return
                                         }
@@ -888,26 +928,28 @@ ApplicationWindow {
                                         }
                                     }
                                     Button {
-                                        text: "Enviar solicitud por email"
+                                        text: emailSending ? "Enviando…" : "Enviar Email"
+                                        enabled: !emailSending
                                         onClicked: {
-                                            if(!puntoVuelaField.text.trim() || !municipioField.text.trim() || !ailField.text.trim() || !telefonoField.text.trim() || !correoField.text.trim() || !softwareField.text.trim() || !motivoField.text.trim()) {
+                                            if(puntoVuelaField.currentIndex < 0 || !municipioField.text.trim() || !provinciaField.text.trim() || !ailField.text.trim() || !telefonoField.text.trim() || !correoField.text.trim() || !softwareField.text.trim() || !motivoField.text.trim()) {
                                                 emailStatus.text="Completa los campos obligatorios antes de enviar."; emailStatus.color="#D65A5A"; return
                                             }
                                             if (!dataProtectionRead || !privacyPolicyRead || !privacyAcknowledged.checked) {
                                                 emailStatus.text="Debes confirmar que has leído la información de protección de datos."; emailStatus.color="#D65A5A"; return
                                             }
                                             const payload={
-                                                center:puntoVuelaField.text.trim(),municipality:municipioField.text.trim(),
+                                                center:puntoVuelaField.currentText.trim(),municipality:municipioField.text.trim(),province:provinciaField.text.trim(),
                                                 contact:ailField.text.trim(),phone:telefonoField.text.trim(),reply_email:correoField.text.trim(),
                                                 application:softwareField.text.trim(),url:enlaceField.text.trim(),
                                                 distribution:distroField.currentText,purpose:motivoField.text.trim(),notes:observacionesField.text.trim()
                                             }
-                                            emailStatus.text="Enviando solicitud HTML…"; emailStatus.color=secondaryText
+                                            emailSending = true
+                                            emailStatus.text="Enviando email…"; emailStatus.color=secondaryText
                                             appImageManager.sendApplicationRequest(JSON.stringify(payload))
                                         }
                                     }
                                 }
-                                Text { id: emailStatus; text: "El envío se realizará de forma segura mediante el servicio corporativo de correo."; color: muted; font.pixelSize: 10; wrapMode: Text.WordWrap }
+                                Text { id: emailStatus; text: "El email se envía directamente desde la aplicación mediante el servicio corporativo de correo."; color: muted; font.pixelSize: 10; wrapMode: Text.WordWrap }
                             }
                         }
                         Rectangle {
