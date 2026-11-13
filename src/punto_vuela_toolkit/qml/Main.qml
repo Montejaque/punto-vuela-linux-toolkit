@@ -383,6 +383,12 @@ ApplicationWindow {
                                 delegate:Button { text:modelData; highlighted:selectedCategory===modelData; onClicked:selectedCategory=modelData }
                             }
                         }
+                        RowLayout {
+                            Layout.fillWidth:true
+                            Text { text:puntoVuelaStatus; color:muted; font.pixelSize:10; Layout.fillWidth:true; wrapMode:Text.WordWrap }
+                            Button { text:"Actualizar repositorios"; enabled:!puntoVuelaLoading; onClicked:{puntoVuelaLoading=true;appImageManager.refreshPuntoVuelaTools()} }
+                        }
+                        Text { visible:!!toolkitRelease.version; text:"Puntos Vuela Toolkit · Última versión: "+(toolkitRelease.version||""); color:secondaryText; font.pixelSize:10 }
                         GridLayout {
                             Layout.fillWidth:true; columns:width>850?3:2; columnSpacing:14; rowSpacing:14
                             Repeater {
