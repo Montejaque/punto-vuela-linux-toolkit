@@ -10,10 +10,56 @@
     .to-top svg{width:23px;height:23px;display:block}
     @media(max-width:600px){.to-top{right:16px;bottom:16px;width:48px;height:48px}}
     @media(prefers-reduced-motion:reduce){.to-top{transition:none}}
+  
+    /* Movimiento ambiental y transiciones de entrada */
+    .hero{background-image:radial-gradient(circle at 18% 78%,rgba(243,213,78,.09),transparent 28%),radial-gradient(circle at 82% 18%,rgba(255,255,255,.075),transparent 25%),linear-gradient(125deg,#17191c 0%,#292b2e 48%,#1b1d20 100%);background-size:140% 140%;animation:heroBackdrop 26s ease-in-out infinite alternate}
+    @keyframes heroBackdrop{0%{background-position:0% 20%}100%{background-position:100% 80%}}
+    .hero:before{animation:orbDriftA 17s ease-in-out infinite alternate}
+    .hero:after{animation:orbDriftB 21s ease-in-out infinite alternate}
+    @keyframes orbDriftA{0%{transform:translate3d(-14px,8px,0) scale(.94);opacity:.7}100%{transform:translate3d(24px,22px,0) scale(1.1);opacity:1}}
+    @keyframes orbDriftB{0%{transform:translate3d(12px,-8px,0) scale(1);opacity:.45}100%{transform:translate3d(-20px,16px,0) scale(1.12);opacity:.8}}
+    .hero-copy>*{opacity:0;animation:heroTextIn .78s cubic-bezier(.2,.75,.25,1) forwards}
+    .hero-copy>*:nth-child(1){animation-delay:.08s}
+    .hero-copy>*:nth-child(2){animation-delay:.2s}
+    .hero-copy>*:nth-child(3){animation-delay:.34s}
+    .hero-copy>*:nth-child(4){animation-delay:.48s}
+    @keyframes heroTextIn{from{opacity:0;transform:translate3d(0,22px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+    .hero-art{animation:artFloat 9s ease-in-out infinite,heroArtIn 1.1s .18s both}
+    @keyframes heroArtIn{from{opacity:0;filter:drop-shadow(0 22px 30px rgba(0,0,0,0))}to{opacity:1;filter:drop-shadow(0 22px 30px rgba(0,0,0,.24))}}
+    .hero-art svg{overflow:visible}
+    .scroll-reveal{opacity:0;transform:translate3d(0,24px,0);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+    .scroll-reveal.is-in-view{opacity:1;transform:translate3d(0,0,0)}
+    .scroll-reveal[data-reveal-delay="1"]{transition-delay:.08s}
+    .scroll-reveal[data-reveal-delay="2"]{transition-delay:.16s}
+    .scroll-reveal[data-reveal-delay="3"]{transition-delay:.24s}
+    section, .content h2, .content h3{scroll-margin-top:2rem}
+    @media(prefers-reduced-motion:reduce){.hero{animation:none}.hero:before,.hero:after,.hero-copy>*,.hero-art{animation:none;opacity:1;transform:none}.scroll-reveal{opacity:1;transform:none;transition:none}}
+
   </style></head><body><div class="topline"></div><header><div class="wrap"><a class="brand" href="/" aria-label="Puntos Vuela Toolkit, inicio"><span class="mark" aria-hidden="true">V</span><span>Puntos Vuela Toolkit</span></a></div></header><main><section class="hero"><div class="wrap hero-grid"><div class="hero-copy"><span class="eyebrow">Condiciones del servicio</span><h1>Condiciones de uso</h1><p class="updated">Normas y criterios para el uso profesional de Puntos Vuela Toolkit.</p></div><div class="hero-art"><svg viewBox="0 0 560 390" role="img" aria-label="Ilustración de condiciones y documentación de uso" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="t" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#F3D54E"/><stop offset="1" stop-color="#FFF0A6"/></linearGradient><filter id="st"><feDropShadow dx="0" dy="18" stdDeviation="16" flood-color="#000" flood-opacity=".25"/></filter></defs><circle cx="285" cy="190" r="150" fill="#fff" opacity=".06"/><circle cx="285" cy="190" r="118" fill="none" stroke="#fff" stroke-opacity=".18" stroke-dasharray="5 9"/><g filter="url(#st)"><rect x="174" y="55" width="210" height="280" rx="20" fill="#fff"/><path d="M327 55v55h57" fill="#F0EFEA"/><rect x="205" y="104" width="102" height="12" rx="6" fill="#202124"/><rect x="205" y="128" width="145" height="7" rx="3.5" fill="#D7D5CE"/><rect x="205" y="145" width="126" height="7" rx="3.5" fill="#D7D5CE"/><g fill="none" stroke="#202124" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><rect x="205" y="178" width="20" height="20" rx="5"/><path d="M210 188l5 5 9-11"/><path d="M240 188h108"/><rect x="205" y="220" width="20" height="20" rx="5"/><path d="M210 230l5 5 9-11"/><path d="M240 230h90"/><rect x="205" y="262" width="20" height="20" rx="5"/><path d="M210 272l5 5 9-11"/><path d="M240 272h100"/></g></g><circle cx="414" cy="95" r="40" fill="url(#t)"/><path d="M397 95h34M414 78v34" stroke="#202124" stroke-width="7" stroke-linecap="round"/><circle cx="124" cy="295" r="30" fill="#fff"/><path d="M111 295h26M124 282v26" stroke="#202124" stroke-width="6" stroke-linecap="round"/></svg></div></div></section><article class="content"><div class="wrap"><h2>Condiciones de uso de Punto Vuela Linux Toolkit</h2><p><strong>Última actualización: 12 de noviembre de 2026</strong></p><h2>1. Objeto y finalidad</h2><p>Punto Vuela Linux Toolkit es una herramienta de escritorio de uso interno destinada exclusivamente a los <strong>Agentes de Innovación Local (AIL) de los centros de la red Puntos Vuela</strong>. Su finalidad es facilitar el envío de propuestas de aplicaciones y comunicaciones sobre necesidades profesionales de los centros.</p><p>No es un formulario público dirigido a ciudadanos, empresas o usuarios externos.</p><h2>2. Mantenimiento y recepción de propuestas</h2><p>El mantenimiento técnico de la herramienta lo realiza <strong>Francisco Javier Gallego Orellana, AIL del Punto Vuela de Montejaque</strong>, quien también gestiona el buzón central <strong>montejaque@puntosvuela.es</strong>, destinatario de las propuestas remitidas por los AIL.</p><p>La herramienta se ofrece a los AIL de los distintos centros Puntos Vuela para el uso profesional descrito en estas condiciones.</p><h2>3. Uso autorizado y adecuado</h2><p>Las personas usuarias se comprometen a:</p><ul><li>Utilizar la herramienta exclusivamente en el ejercicio de sus funciones profesionales como AIL.</li><li>Facilitar información veraz, actualizada y pertinente para valorar la propuesta.</li><li>No enviar spam, publicidad no solicitada, contenido ilícito o información que vulnere derechos de terceros.</li><li>No incluir contraseñas, credenciales, documentos de identidad ni datos personales innecesarios o especialmente protegidos.</li><li>No realizar envíos automatizados abusivos, intentar eludir los controles de seguridad ni interferir en el servicio.</li><li>Comprobar que están autorizadas para facilitar los datos de contacto incluidos en la propuesta.</li></ul><h2>4. Envío y almacenamiento de propuestas</h2><p>Al enviar el formulario, la información se transmite mediante HTTPS al servicio de correo y se remite al buzón <strong>montejaque@puntosvuela.es</strong>. El correo profesional indicado en el formulario se utiliza como dirección de respuesta y recibe una copia.</p><p>La aplicación y el servicio de envío no mantienen una base de datos propia de propuestas ni crean expedientes. El contenido queda disponible en los buzones de correo de destino y copia, sujetos a sus reglas de conservación y gestión.</p><p>La confirmación de envío indica que el servicio ha remitido técnicamente el mensaje. No garantiza que la propuesta sea aprobada, publicada, adquirida o implantada.</p><h2>5. Disponibilidad y cambios</h2><p>El funcionamiento depende de proveedores externos de infraestructura y correo electrónico. Puede haber interrupciones, límites de uso o cambios técnicos. El mantenimiento podrá actualizar, suspender o retirar funciones por motivos técnicos, de seguridad o de funcionamiento.</p><p>No se garantiza disponibilidad ininterrumpida ni la aceptación de todas las propuestas enviadas.</p><h2>6. Propiedad intelectual y marcas</h2><p>El código de la herramienta se distribuye conforme a la licencia indicada en el repositorio del proyecto. Los nombres, logotipos y demás elementos de identidad de Puntos Vuela pertenecen a sus respectivos titulares. La disponibilidad de la herramienta no concede derechos adicionales sobre esas marcas o recursos.</p><h2>7. Privacidad</h2><p>El tratamiento de datos personales se describe en la <a href="privacy.html">Política de privacidad de Punto Vuela Linux Toolkit</a>. Las personas usuarias deben evitar introducir datos personales que no sean necesarios y seguir las instrucciones y procedimientos internos que les sean aplicables.</p><h2>8. Contacto técnico</h2><p><strong>Mantenimiento técnico:</strong> Francisco Javier Gallego Orellana, AIL del Punto Vuela de Montejaque.</p><p><strong>Buzón central de propuestas:</strong> montejaque@puntosvuela.es</p><h2>9. Actualizaciones</h2><p>Estas condiciones podrán modificarse para reflejar cambios en el servicio. La fecha de actualización se indicará al principio del documento.</p><hr><p>Estas condiciones describen el uso previsto de la herramienta y no sustituyen las instrucciones, políticas o procedimientos oficiales que resulten aplicables a los centros Puntos Vuela.</p></div></article></main><footer><div class="wrap"><nav class="footlinks" aria-label="Información legal"><a href="/">Inicio</a><a href="/privacy.html">Privacidad</a><a href="/terms.html">Condiciones de uso</a><a href="https://github.com/Montejaque/punto-vuela-linux-toolkit">GitHub</a></nav><div>Puntos Vuela Toolkit · Aplicación de escritorio para Linux · Uso profesional interno de la red Puntos Vuela.</div></div></footer>
   <button class="to-top" id="toTop" type="button" aria-label="Volver arriba" title="Volver arriba">
     <svg viewBox="0 0 24 24" aria-hidden="true" fill="none"><path d="M12 19V5M6 11l6-6 6 6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
+
+  <script>
+    (() => {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const targets = document.querySelectorAll('main section:not(.hero), .cards .card, .content h2, .content h3, .content p, .content ul, .content hr, footer .wrap > *');
+      if (reduceMotion || !('IntersectionObserver' in window)) return;
+      targets.forEach((el, index) => {
+        el.classList.add('scroll-reveal');
+        if (el.matches('.cards .card')) el.dataset.revealDelay = String((index % 3) + 1);
+      });
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {threshold: 0.12, rootMargin: '0px 0px -40px 0px'});
+      targets.forEach(el => revealObserver.observe(el));
+    })();
+  </script>
   <script>
     (() => {
       const button = document.getElementById('toTop');
