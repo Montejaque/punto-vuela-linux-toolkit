@@ -50,5 +50,27 @@ class CatalogCompatibilityTests(unittest.TestCase):
             self.assertEqual(catalog.search("office")[0]["name"], "Editor")
 
 
+    def test_public_github_discovery_excludes_private_and_requires_appimage_release(self):
+        import json
+        with tempfile.TemporaryDirectory() as tmp:
+            manager = AppImageManager(Path(tmp) / "AppImages")
+            catalog = AppImageCatalog(manager)
+            responses = {
+                "https://api.github.com/users/Montejaque/repos?type=public&sort=updated&per_page=100": [
+                    {"name":"public-tool", "full_name":"Montejaque/public-tool", "private":False, "archived":False, "disabled":False, "html_url":"https://github.com/Montejaque/public-tool", "description":"Public tool", "owner":{"avatar_url":"https://avatars.githubusercontent.com/u/1"}},
+                    {"name":"private-tool", "full_name":"Montejaque/private-tool", "private":True, "archived":False, "disabled":False},
+                    {"name":"archived-tool", "full_name":"Montejaque/archived-tool", "private":False, "archived":True, "disabled":False}
+                ],
+                "https://api.github.com/repos/Montejaque/public-tool/releases/latest": {
+                    "tag_name":"v1.2.0", "html_url":"https://github.com/Montejaque/public-tool/releases/tag/v1.2.0",
+                    "assets":[{"name":"public-tool-x86_64.AppImage", "browser_download_url":"https://example.com/public-tool.AppImage"}]
+                }
+            }
+            catalog._request = lambda url, timeout=30: json.dumps(responses[url]).encode("utf-8")
+            items = catalog.discover_public_github_tools(force=True)
+            self.assertEqual(len(items), 1)
+            self.assertEqual(items[0]["repository"], "Montejaque/public-tool")
+            self.assertEqual(items[0]["version"], "v1.2.0")
+            self.assertEqual(items[0]["downloadUrl"], "https://example.com/public-tool.AppImage")
 if __name__ == "__main__":
     unittest.main()
