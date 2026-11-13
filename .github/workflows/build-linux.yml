@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: ["main"]
-    tags: ["v*"]
+    tags: ["v*", "pruebas-*"]
 
 permissions:
   contents: write
@@ -59,8 +59,8 @@ jobs:
             --collect-all PySide6 \
             --collect-all shiboken6 \
             --collect-all keyring \
-            --collect-all secretstorage \\
-            --collect-all jeepney \\
+            --collect-all secretstorage \
+            --collect-all jeepney \
             --paths src src/launcher.py
           test -x dist/punto-vuela-linux-toolkit/punto-vuela-linux-toolkit
       - name: Smoke-test frozen executable
@@ -148,7 +148,7 @@ jobs:
 
   publish:
     name: Publish GitHub release
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/tags/pruebas-')
     needs: packages
     runs-on: ubuntu-22.04
     steps:
