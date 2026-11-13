@@ -70,12 +70,16 @@ class _DirectoryParser(HTMLParser):
             name = re.sub(r",\s*" + re.escape(province) + r"$", "", name, flags=re.I)
         municipality = ""
         province_value = ""
-        for item in self.current_paragraphs:
+        province_index = -1
+        for index, item in enumerate(self.current_paragraphs):
             match = POSTAL_RE.match(item)
             if match and not municipality:
                 municipality = match.group(1).strip()
             if item.casefold() in PROVINCES:
                 province_value = item
+                province_index = index
+        if not municipality and province_index > 0:
+            municipality = self.current_paragraphs[province_index - 1].strip()
         if name and municipality and province_value:
             self.records.append({
                 "name": name,
