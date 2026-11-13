@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from html.parser import HTMLParser
 from pathlib import Path
@@ -123,18 +124,27 @@ def load_centres(force: bool = False) -> list[dict[str, str]]:
     """Load all official centres, refreshing a local cache when possible."""
     cached = _read_cache()
     if cached and not force:
-        return cached
+        try:
+            if time.time() - CACHE_FILE.stat().st_mtime < 7 * 24 * 60 * 60:
+                return cached
+        except OSError:
+            pass
 
-    _, first_html = _download_page(1)
-    first_records, last_page = _parse_page(first_html)
-    all_records = list(first_records)
-    if last_page > 1:
-        with ThreadPoolExecutor(max_workers=8) as pool:
-            futures = [pool.submit(_download_page, page) for page in range(2, last_page + 1)]
-            for future in as_completed(futures):
-                page, html = future.result()
-                records, _ = _parse_page(html)
-                all_records.extend(records)
+    try:
+        _, first_html = _download_page(1)
+        first_records, last_page = _parse_page(first_html)
+        all_records = list(first_records)
+        if last_page > 1:
+            with ThreadPoolExecutor(max_workers=8) as pool:
+                futures = [pool.submit(_download_page, page) for page in range(2, last_page + 1)]
+                for future in as_completed(futures):
+                    page, html = future.result()
+                    records, _ = _parse_page(html)
+                    all_records.extend(records)
+    except Exception:
+        if cached:
+            return cached
+        raise
 
     unique: dict[tuple[str, str], dict[str, str]] = {}
     for item in all_records:
