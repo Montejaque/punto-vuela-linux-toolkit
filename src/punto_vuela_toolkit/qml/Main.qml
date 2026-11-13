@@ -46,6 +46,7 @@ ApplicationWindow {
     property var filteredCatalogItems: catalogItems.filter(item => catalogCategory === "Todas" || item.category === catalogCategory)
     property string selectedCategory: "Todas"
     property string selectedAppName: ""
+    property var selectedHomeApp: null
     property var puntoVuelaTools: []
     property var toolkitRelease: ({})
     property bool puntoVuelaLoading: false
@@ -394,7 +395,13 @@ ApplicationWindow {
                             Repeater {
                                 model:visibleFeaturedApps
                                 delegate:Rectangle {
-                                    Layout.fillWidth:true; Layout.preferredHeight:216; radius:16; color:panel; border.color:panelBorder
+                                    id:homeAppCard
+                                    Layout.fillWidth:true; Layout.preferredHeight:232; radius:19
+                                    color:homeCardHover.containsMouse?(darkTheme?"#3A424D":"#FFFDF5"):panel
+                                    border.color:homeCardHover.containsMouse?accent:panelBorder
+                                    Behavior on color { ColorAnimation { duration:170 } }
+                                    Behavior on border.color { ColorAnimation { duration:170 } }
+                                    MouseArea { id:homeCardHover; anchors.fill:parent; hoverEnabled:true; z:-1; onClicked:{selectedHomeApp=modelData;appDetailDialog.open()} }
                                     ColumnLayout {
                                         anchors.fill:parent; anchors.margins:15; spacing:8
                                         RowLayout {
@@ -414,9 +421,9 @@ ApplicationWindow {
                                             Layout.fillWidth:true
                                             Text { text:modelData.tag;color:accent;font.pixelSize:9;font.bold:true }
                                             Item { Layout.fillWidth:true }
-                                            Button { text:"Ficha";onClicked:{selectedAppName=modelData.title;appDetailDialog.open()} }
-                                            Button { text:"Abrir";onClicked:Qt.openUrlExternally(modelData.url) }
-                                            Button { visible:!!modelData.downloadUrl; text:"Instalar"; onClicked:appImageManager.installPuntoVuelaTool(modelData.repository) }
+                                            Button { text:"Detalles";onClicked:{selectedHomeApp=modelData;appDetailDialog.open()};background:Rectangle { radius:9;color:darkTheme?"#414A55":"#F0F1F3";border.color:panelBorder };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:10;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                            Button { text:"Repositorio";onClicked:Qt.openUrlExternally(modelData.url);background:Rectangle { radius:9;color:"transparent";border.color:panelBorder };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:10;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                            Button { visible:!!modelData.downloadUrl;text:"Instalar";onClicked:appImageManager.installPuntoVuelaTool(modelData.repository);background:Rectangle { radius:9;color:accent };contentItem:Text { text:parent.text;color:"#202226";font.pixelSize:10;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
                                         }
                                     }
                                 }
