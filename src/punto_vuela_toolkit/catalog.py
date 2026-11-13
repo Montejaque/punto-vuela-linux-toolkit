@@ -111,6 +111,53 @@ class AppImageCatalog:
                 break
         return results
 
+    def discover_public_github_tools(self, force: bool = False) -> list[dict[str, Any]]:
+        """List public, non-archived Montejaque repos with an installable AppImage release."""
+        cache = self.cache_file.with_name("punto-vuela-public-tools.json")
+        if not force and cache.exists() and time.time() - cache.stat().st_mtime < 21600:
+            try:
+                cached = json.loads(cache.read_text(encoding="utf-8"))
+                if isinstance(cached, list): return cached
+            except (OSError, ValueError): pass
+        repos_url = "https://api.github.com/users/Montejaque/repos?type=public&sort=updated&per_page=100"
+        repos = json.loads(self._request(repos_url).decode("utf-8"))
+        tools = []
+        for repo in repos if isinstance(repos, list) else []:
+            if repo.get("private") is not False or repo.get("archived") or repo.get("disabled"): continue
+            full_name = str(repo.get("full_name") or "")
+            if not full_name.startswith("Montejaque/") or full_name.endswith("/punto-vuela-linux-toolkit"): continue
+            try:
+                url = "https://api.github.com/repos/" + full_name + "/releases/latest"
+                release = json.loads(self._request(url).decode("utf-8"))
+            except Exception: continue
+            assets = [a for a in (release.get("assets") or []) if str(a.get("name", "")).lower().endswith(".appimage")]
+            x86 = [a for a in assets if re.search(r"(x86_64|amd64|x64)", str(a.get("name", "")), re.I)]
+            generic = [a for a in assets if not re.search(r"(aarch64|arm64|armv7|armhf|i386|i686)", str(a.get("name", "")), re.I)]
+            selected = x86 or generic
+            if not selected: continue
+            asset = selected[0]
+            name = str(repo.get("name") or full_name.split("/")[-1])
+            tools.append({"name":str(repo.get("description") or name.replace("-", " ").title()),
+                "repository":full_name, "repositoryUrl":str(repo.get("html_url") or ""),
+                "description":str(repo.get("description") or "Herramienta publicada por Montejaque."),
+                "category":"Herramientas Puntos Vuela", "kind":"Aplicación Linux",
+                "version":str(release.get("tag_name") or ""), "releaseName":str(release.get("name") or ""),
+                "publishedAt":str(release.get("published_at") or ""), "releaseUrl":str(release.get("html_url") or ""),
+                "downloadUrl":str(asset.get("browser_download_url") or ""), "assetName":str(asset.get("name") or ""),
+                "tag":"PUNTO VUELA", "source":"github-public"})
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        temp = cache.with_suffix(".part")
+        temp.write_text(json.dumps(tools, ensure_ascii=False), encoding="utf-8")
+        temp.replace(cache)
+        return tools
+
+    def latest_toolkit_release(self) -> dict[str, Any]:
+        url = "https://api.github.com/repos/Montejaque/punto-vuela-linux-toolkit/releases/latest"
+        try:
+            release = json.loads(self._request(url).decode("utf-8"))
+            return {"version":str(release.get("tag_name") or ""), "name":str(release.get("name") or "Puntos Vuela Toolkit"),
+                "publishedAt":str(release.get("published_at") or ""), "releaseUrl":str(release.get("html_url") or "")}
+        except Exception as exc: return {"error":str(exc)}
     def _download_result(self, name: str, url: str, filename: str | None = None) -> dict[str, Any]:
         path = self.manager.download(url, filename)
         try:
