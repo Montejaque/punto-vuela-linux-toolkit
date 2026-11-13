@@ -46,15 +46,23 @@ ApplicationWindow {
     property var filteredCatalogItems: catalogItems.filter(item => catalogCategory === "Todas" || item.category === catalogCategory)
     property string selectedCategory: "Todas"
     property string selectedAppName: ""
-    property var featuredApps: [
-        {title:"Codex",category:"Aplicaciones Punto Vuela",kind:"Asistente de código",desc:"Asistente de programación para trabajar con repositorios y tareas de desarrollo.",url:"https://github.com/Montejaque/chatgpt-installer-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/openai.png",tag:"PUNTO VUELA"},
-        {title:"Visual Studio Code",category:"Aplicaciones Punto Vuela",kind:"Editor",desc:"Editor de código extensible con instalador preparado para Linux sin root.",url:"https://github.com/Montejaque/vscode-installer-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/vscode.png",tag:"PUNTO VUELA"},
-        {title:"Antigravity",category:"Aplicaciones Punto Vuela",kind:"Herramienta",desc:"Instalación y mantenimiento de Antigravity en equipos Linux.",url:"https://github.com/Montejaque/antigravity-installer-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/simpleicons.org/google/4285F4",tag:"PUNTO VUELA"},
-        {title:"Claude Desktop",category:"Aplicaciones Punto Vuela",kind:"Aplicación",desc:"Instalador de Claude Desktop para entornos Linux.",url:"https://github.com/Montejaque/claude-desktop-linux",image:"https://cdn.jsdelivr.net/gh/homarr-labs/simpleicons.org/anthropic/D97757",tag:"PUNTO VUELA"},
-        {title:"Brother MFC-J5740DW",category:"Aplicaciones Punto Vuela",kind:"Controlador",desc:"Controlador y herramientas de escáner para la multifunción Brother.",url:"https://github.com/Montejaque/brother-mfc-j5740dw-sinroot",image:"https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/png/brother.png",tag:"PUNTO VUELA"}
-    ]
+    property var puntoVuelaTools: []
+    property var toolkitRelease: ({})
+    property bool puntoVuelaLoading: false
+    property string puntoVuelaStatus: "Consultando repositorios públicos de GitHub…"
+    property var featuredApps: puntoVuelaTools.map(item => ({
+        title:item.name, category:item.category, kind:item.kind,
+        desc:item.description, url:item.repositoryUrl, image:"", tag:"PUNTO VUELA",
+        version:item.version, releaseUrl:item.releaseUrl, downloadUrl:item.downloadUrl
+    }))
     property var allHomeApps: featuredApps.concat(catalogItems.map(item => ({title:item.name,category:item.category,kind:"AppImage oficial",desc:item.description||"Aplicación del catálogo oficial.",url:item.catalogUrl,image:item.iconUrl,tag:"CATÁLOGO OFICIAL",official:true})))
     property var visibleFeaturedApps: allHomeApps.filter(item => selectedCategory === "Todas" || item.category === selectedCategory)
+
+    Component.onCompleted: {
+        puntoVuelaLoading = true
+        appImageManager.loadPuntoVuelaTools()
+        appImageManager.loadToolkitRelease()
+    }
 
     function refreshCatalog() {
         catalogLoading = true
@@ -69,6 +77,13 @@ ApplicationWindow {
             emailStatus.color = result.ok ? "#62B47A" : "#D65A5A"
             if (result.ok) previewVisible = false
         }
+        function onPuntoVuelaToolsLoaded(payload) {
+            const result = JSON.parse(payload)
+            if (result.ok) puntoVuelaTools = result.items || []
+            puntoVuelaStatus = result.message || "Catálogo de GitHub actualizado."
+            puntoVuelaLoading = false
+        }
+        function onToolkitReleaseLoaded(payload) { toolkitRelease = JSON.parse(payload) }
         function onCatalogLoaded(payload) {
             const result = JSON.parse(payload)
             catalogItems = result.items || []
