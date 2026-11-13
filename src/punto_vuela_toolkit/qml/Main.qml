@@ -52,7 +52,7 @@ ApplicationWindow {
     property string puntoVuelaStatus: "Consultando repositorios públicos de GitHub…"
     property var featuredApps: puntoVuelaTools.map(item => ({
         title:item.name, category:item.category, kind:item.kind,
-        desc:item.description, url:item.repositoryUrl, image:"", tag:"PUNTO VUELA",
+        desc:item.description, url:item.repositoryUrl, repository:item.repository, image:"", tag:"PUNTO VUELA",
         version:item.version, releaseUrl:item.releaseUrl, downloadUrl:item.downloadUrl
     }))
     property var allHomeApps: featuredApps.concat(catalogItems.map(item => ({title:item.name,category:item.category,kind:"AppImage oficial",desc:item.description||"Aplicación del catálogo oficial.",url:item.catalogUrl,image:item.iconUrl,tag:"CATÁLOGO OFICIAL",official:true})))
@@ -379,7 +379,7 @@ ApplicationWindow {
                         Flow {
                             Layout.fillWidth:true; spacing:8
                             Repeater {
-                                model:["Todas","IA y desarrollo","Desarrollo","Sistema y periféricos"]
+                                model:["Todas","Herramientas Puntos Vuela","IA y desarrollo","Desarrollo","Sistema y periféricos"]
                                 delegate:Button { text:modelData; highlighted:selectedCategory===modelData; onClicked:selectedCategory=modelData }
                             }
                         }
@@ -410,6 +410,7 @@ ApplicationWindow {
                                             Item { Layout.fillWidth:true }
                                             Button { text:"Ficha";onClicked:{selectedAppName=modelData.title;appDetailDialog.open()} }
                                             Button { text:"Abrir";onClicked:Qt.openUrlExternally(modelData.url) }
+                                            Button { visible:!!modelData.downloadUrl; text:"Instalar"; onClicked:appImageManager.installPuntoVuelaTool(modelData.repository) }
                                         }
                                     }
                                 }
