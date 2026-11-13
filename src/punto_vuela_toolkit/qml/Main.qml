@@ -892,7 +892,7 @@ ApplicationWindow {
                                         formError.visible = false
                                         previewText.text =
                                             "SOLICITUD DE INCORPORACIÓN DE APLICACIÓN\n\n" +
-                                            "PUNTO VUELA\nCentro: " + puntoVuelaField.text.trim() + "\nMunicipio: " + municipioField.text.trim() + "\n\n" +
+                                            "PUNTO VUELA\nCentro: " + puntoVuelaField.currentText.trim() + "\nMunicipio: " + municipioField.text.trim() + "\nProvincia: " + provinciaField.text.trim() + "\n\n" +
                                             "PERSONA DE CONTACTO\nNombre: " + ailField.text.trim() + "\nTeléfono: " + telefonoField.text.trim() +
                                             "\nCorreo: " + correoField.text.trim() + "\n\n" +
                                             "APLICACIÓN\nNombre: " + softwareField.text.trim() + "\nEnlace: " + (enlaceField.text.trim() || "No indicado") +
