@@ -122,6 +122,23 @@ class AppImageBridge(QObject):
         worker.start()
 
     @Slot(str)
+    def installPuntoVuelaTool(self, repository: str) -> None:
+        def work() -> None:
+            try:
+                item = next((x for x in self.catalog.discover_public_github_tools() if x.get("repository") == repository), None)
+                if not item:
+                    raise RuntimeError("La herramienta ya no está disponible en los repositorios públicos.")
+                result = self.catalog._download_result(item["name"], item["downloadUrl"], item.get("assetName"))
+                desktop = self.manager.integrate(result["path"], item["name"])
+                result["desktopEntry"] = str(desktop)
+                result["message"] = item["name"] + " descargada e integrada en el menú de aplicaciones."
+                result["ok"] = True
+            except Exception as exc:
+                result = {"ok": False, "message": str(exc)}
+            self.catalogInstallFinished.emit(json.dumps(result, ensure_ascii=False))
+        self._spawn(work)
+
+    @Slot(str)
     def installCatalogApp(self, app_name: str) -> None:
         def work() -> None:
             try:
