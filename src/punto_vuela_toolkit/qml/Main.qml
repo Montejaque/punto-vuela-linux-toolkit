@@ -60,6 +60,7 @@ ApplicationWindow {
     property var visibleFeaturedApps: allHomeApps.filter(item => selectedCategory === "Todas" || item.category === selectedCategory)
 
     Component.onCompleted: {
+        refreshCatalog()
         puntoVuelaLoading = true
         appImageManager.loadPuntoVuelaTools()
         appImageManager.loadToolkitRelease()
@@ -196,7 +197,6 @@ ApplicationWindow {
         appSettings.savedThemeMode = mode
     }
     color: backgroundColor
-    Component.onCompleted: refreshCatalog()
 
     RowLayout {
         anchors.fill: parent
