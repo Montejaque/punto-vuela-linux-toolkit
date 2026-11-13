@@ -103,8 +103,9 @@ export default {
       return json({ok: false, message: "El servicio de correo aún no está configurado."}, 503);
     }
     try {
+      if (!env.RATE_LIMIT) return json({ok: false, message: "La protección antispam no está configurada."}, 503);
       const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-      if (env.RATE_LIMIT) {
+      {
         const key = "mail:" + ip;
         const current = Number(await env.RATE_LIMIT.get(key) || "0");
         if (current >= 5) return json({ok: false, message: "Se ha alcanzado el límite temporal de solicitudes. Inténtalo más tarde."}, 429);
