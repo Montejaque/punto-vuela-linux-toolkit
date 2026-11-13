@@ -9,7 +9,7 @@ WORKER_URL = "https://punto-vuela-mail.montejaque.workers.dev"
 
 
 def send_application_request(data: dict[str, str]) -> str:
-    required = ("center", "municipality", "contact", "phone", "reply_email", "application", "purpose")
+    required = ("center", "municipality", "province", "contact", "phone", "reply_email", "application", "purpose")
     missing = [field for field in required if not str(data.get(field, "")).strip()]
     if missing:
         raise ValueError("Faltan datos obligatorios en la solicitud.")
