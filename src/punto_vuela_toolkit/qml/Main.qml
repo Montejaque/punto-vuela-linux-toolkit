@@ -437,9 +437,12 @@ ApplicationWindow {
                                             Layout.fillWidth:true
                                             Text { text:modelData.tag;color:accent;font.pixelSize:9;font.bold:true }
                                             Item { Layout.fillWidth:true }
-                                            Button { text:"Detalles";onClicked:{selectedHomeApp=modelData;appDetailDialog.open()};background:Rectangle { radius:9;color:darkTheme?"#414A55":"#F0F1F3";border.color:panelBorder };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:10;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
-                                            Button { text:"Repositorio";onClicked:Qt.openUrlExternally(modelData.url);background:Rectangle { radius:9;color:"transparent";border.color:panelBorder };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:10;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
-                                            Button { visible:!!modelData.downloadUrl;text:"Instalar";onClicked:appImageManager.installPuntoVuelaTool(modelData.repository);background:Rectangle { radius:9;color:accent };contentItem:Text { text:parent.text;color:"#202226";font.pixelSize:10;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                            Button { text:"Detalles";onClicked: { selectedHomeApp = modelData; appDetailDialog.open() }
+                                                 background:Rectangle { radius:9;color:darkTheme?"#414A55":"#F0F1F3";border.color:panelBorder };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:10;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                            Button { text:"Repositorio";onClicked: Qt.openUrlExternally(modelData.url)
+                                                 background:Rectangle { radius:9;color:"transparent";border.color:panelBorder };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:10;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                            Button { visible:!!modelData.downloadUrl;text:"Instalar";onClicked: appImageManager.installPuntoVuelaTool(modelData.repository)
+                                                 background:Rectangle { radius:9;color:accent };contentItem:Text { text:parent.text;color:"#202226";font.pixelSize:10;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
                                         }
                                     }
                                 }
@@ -460,19 +463,29 @@ ApplicationWindow {
                                 RowLayout {
                                     Layout.fillWidth:true
                                     Rectangle { width:66;height:66;radius:17;color:"#FFFFFF";border.color:"#E8E8E8";Image { anchors.fill:parent;anchors.margins:9;source:selectedHomeApp?selectedHomeApp.image:"";asynchronous:true;fillMode:Image.PreserveAspectFit } }
-                                    ColumnLayout { Layout.fillWidth:true;spacing:4;Text { text:selectedHomeApp?selectedHomeApp.title:"Aplicación";color:primaryText;font.pixelSize:21;font.bold:true;wrapMode:Text.WordWrap;Layout.fillWidth:true };Text { text:selectedHomeApp?(selectedHomeApp.category+" · "+selectedHomeApp.kind):"";color:muted;font.pixelSize:11 } }
-                                    Button { text:"✕";onClicked:appDetailDialog.close();background:Rectangle { radius:10;color:darkTheme?"#414A55":"#F0F1F3" };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:15;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                    ColumnLayout { Layout.fillWidth:true; spacing:4
+                                         Text { text:selectedHomeApp ? selectedHomeApp.title : "Aplicación"; color:primaryText; font.pixelSize:21; font.bold:true; wrapMode:Text.WordWrap; Layout.fillWidth:true }
+                                         Text { text:selectedHomeApp?(selectedHomeApp.category+" · "+selectedHomeApp.kind):"";color:muted;font.pixelSize:11 } }
+                                    Button { text:"✕";onClicked: appDetailDialog.close()
+                                     background:Rectangle { radius:10;color:darkTheme?"#414A55":"#F0F1F3" };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:15;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
                                 }
                                 Rectangle { Layout.fillWidth:true;height:1;color:panelBorder }
                                 Text { text:selectedHomeApp?selectedHomeApp.desc:"";color:secondaryText;font.pixelSize:13;wrapMode:Text.WordWrap;Layout.fillWidth:true }
                                 GridLayout { Layout.fillWidth:true;columns:2;columnSpacing:18;rowSpacing:12
-                                    ColumnLayout { spacing:3;Text { text:"VERSIÓN";color:muted;font.pixelSize:9;font.bold:true };Text { text:selectedHomeApp?(selectedHomeApp.version||"Consultar repositorio"):"";color:primaryText;font.pixelSize:12 } }
-                                    ColumnLayout { spacing:3;Text { text:"ORIGEN";color:muted;font.pixelSize:9;font.bold:true };Text { text:selectedHomeApp?(selectedHomeApp.tag||"Puntos Vuela"):"";color:primaryText;font.pixelSize:12 } }
+                                    ColumnLayout { spacing:3
+                                         Text { text:"VERSIÓN"; color:muted; font.pixelSize:9; font.bold:true }
+                                         Text { text:selectedHomeApp?(selectedHomeApp.version||"Consultar repositorio"):"";color:primaryText;font.pixelSize:12 } }
+                                    ColumnLayout { spacing:3
+                                         Text { text:"ORIGEN"; color:muted; font.pixelSize:9; font.bold:true }
+                                         Text { text:selectedHomeApp?(selectedHomeApp.tag||"Puntos Vuela"):"";color:primaryText;font.pixelSize:12 } }
                                 }
                                 RowLayout { Layout.fillWidth:true;spacing:9
-                                    Button { text:"Ver repositorio";Layout.fillWidth:true;onClicked:if(selectedHomeApp)Qt.openUrlExternally(selectedHomeApp.url);background:Rectangle { radius:11;color:"transparent";border.color:panelBorder };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:11;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
-                                    Button { text:"Ver release";visible:!!(selectedHomeApp&&selectedHomeApp.releaseUrl);Layout.fillWidth:true;onClicked:if(selectedHomeApp)Qt.openUrlExternally(selectedHomeApp.releaseUrl);background:Rectangle { radius:11;color:darkTheme?"#414A55":"#F0F1F3" };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:11;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
-                                    Button { text:"Descargar e instalar";visible:!!(selectedHomeApp&&selectedHomeApp.downloadUrl);Layout.fillWidth:true;onClicked:{if(selectedHomeApp){appImageManager.installPuntoVuelaTool(selectedHomeApp.repository);appDetailDialog.close()}};background:Rectangle { radius:11;color:accent };contentItem:Text { text:parent.text;color:"#202226";font.pixelSize:11;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                    Button { text:"Ver repositorio";Layout.fillWidth:true;onClicked: { if (selectedHomeApp) Qt.openUrlExternally(selectedHomeApp.url) }
+                                     background:Rectangle { radius:11;color:"transparent";border.color:panelBorder };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:11;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                    Button { text:"Ver release";visible:!!(selectedHomeApp&&selectedHomeApp.releaseUrl);Layout.fillWidth:true;onClicked: { if (selectedHomeApp) Qt.openUrlExternally(selectedHomeApp.releaseUrl) }
+                                     background:Rectangle { radius:11;color:darkTheme?"#414A55":"#F0F1F3" };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:11;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                    Button { text:"Descargar e instalar";visible:!!(selectedHomeApp&&selectedHomeApp.downloadUrl);Layout.fillWidth:true;onClicked: { if (selectedHomeApp) { appImageManager.installPuntoVuelaTool(selectedHomeApp.repository); appDetailDialog.close() } }
+                                     background:Rectangle { radius:11;color:accent };contentItem:Text { text:parent.text;color:"#202226";font.pixelSize:11;font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
                                 }
                             }
                         }
@@ -593,8 +606,11 @@ ApplicationWindow {
                                 RowLayout {
                                     Layout.fillWidth:true
                                     Rectangle { width:62;height:62;radius:16;color:"#FFFFFF";border.color:"#E8E8E8";Image { anchors.fill:parent;anchors.margins:8;source:selectedCatalogApp?selectedCatalogApp.iconUrl:"";asynchronous:true;fillMode:Image.PreserveAspectFit } }
-                                    ColumnLayout { Layout.fillWidth:true;spacing:4;Text { text:selectedCatalogApp?selectedCatalogApp.name:"Ficha de aplicación";color:primaryText;font.pixelSize:20;font.bold:true;wrapMode:Text.WordWrap;Layout.fillWidth:true };Text { text:selectedCatalogApp?selectedCatalogApp.category:"";color:muted;font.pixelSize:11 } }
-                                    Button { text:"✕";onClicked:catalogDetailDialog.close();background:Rectangle { radius:10;color:darkTheme?"#414A55":"#F0F1F3" };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:15;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                    ColumnLayout { Layout.fillWidth:true; spacing:4
+                                         Text { text:selectedCatalogApp ? selectedCatalogApp.name : "Ficha de aplicación"; color:primaryText; font.pixelSize:20; font.bold:true; wrapMode:Text.WordWrap; Layout.fillWidth:true }
+                                         Text { text:selectedCatalogApp?selectedCatalogApp.category:"";color:muted;font.pixelSize:11 } }
+                                    Button { text:"✕";onClicked: catalogDetailDialog.close()
+                                     background:Rectangle { radius:10;color:darkTheme?"#414A55":"#F0F1F3" };contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:15;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
                                 }
                                 Rectangle { Layout.fillWidth:true;height:1;color:panelBorder }
                                 Text { text:selectedCatalogApp?(selectedCatalogApp.description||"El catálogo oficial no proporciona descripción para esta aplicación."):"";color:secondaryText;font.pixelSize:13;wrapMode:Text.WordWrap;Layout.fillWidth:true }
