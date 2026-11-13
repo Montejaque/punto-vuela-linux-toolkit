@@ -47,7 +47,7 @@ async function gmailToken(env) {
 }
 function buildMime(data) {
   const rows = [
-    ["Punto Vuela", data.center], ["Municipio", data.municipality],
+    ["Punto Vuela", data.center], ["Municipio", data.municipality], ["Provincia", data.province],
     ["Persona de contacto", data.contact], ["Teléfono", data.phone],
     ["Correo para la copia", data.reply_email], ["Aplicación", data.application],
     ["Enlace", data.url || "No indicado"], ["Distribución", data.distribution || "No indicada"],
@@ -108,7 +108,7 @@ export default {
         await env.RATE_LIMIT.put(key, String(current + 1), {expirationTtl: 3600});
       }
       const data = await request.json();
-      const required = ["center", "municipality", "contact", "phone", "reply_email", "application", "purpose"];
+      const required = ["center", "municipality", "province", "contact", "phone", "reply_email", "application", "purpose"];
       if (required.some(key => !String(data[key] || "").trim())) return json({ok: false, message: "Faltan campos obligatorios."}, 400);
       if (JSON.stringify(data).length > 16000) return json({ok: false, message: "La solicitud supera el tamaño permitido."}, 413);
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.reply_email)) return json({ok: false, message: "El correo de contacto no es válido."}, 400);
