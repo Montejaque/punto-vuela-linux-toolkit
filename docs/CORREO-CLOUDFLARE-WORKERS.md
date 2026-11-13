@@ -27,6 +27,24 @@ Requiere una cuenta Cloudflare y Node.js en un equipo administrador.
 7. Ejecuta `npx wrangler deploy`. Cloudflare asignará una URL HTTPS `https://punto-vuela-mail.<subdominio>.workers.dev`.
 8. Configura esa URL en `src/punto_vuela_toolkit/email_sender.py` (constante `WORKER_URL`) y publica una nueva AppImage.
 
+## Evitar la caducidad de 7 días del refresh token
+
+La caducidad de siete días no se corrige renovando el token desde el Worker: la impone Google cuando el proyecto OAuth es de tipo **External** y su estado de publicación es **Testing** y solicita permisos Gmail.
+
+Para el servicio de correo de producción:
+
+1. Abre Google Cloud Console y selecciona el proyecto OAuth que contiene el cliente usado por el Worker.
+2. En **Google Auth Platform → Audience** (o **OAuth consent screen**, según la interfaz), comprueba que el tipo de usuario es **External**.
+3. Cambia **Publishing status** de **Testing** a **In production** mediante **Publish app**.
+4. Comprueba que la aplicación, su página de inicio, política de privacidad, datos de contacto y los dominios autorizados están correctamente declarados.
+5. En **Data Access**, declara únicamente el alcance necesario: `https://www.googleapis.com/auth/gmail.send`.
+6. Revisa el **Verification Center**. Google puede exigir verificación para el alcance sensible antes de retirar las advertencias y permitir un uso público sin límites de usuarios.
+7. Una vez publicado, vuelve a autorizar la cuenta remitente con acceso sin conexión (`access_type=offline`) y genera un refresh token nuevo si el actual se emitió mientras el proyecto estaba en Testing. Actualiza `GOOGLE_REFRESH_TOKEN` como secreto del Worker; nunca lo incluyas en el repositorio.
+
+**Importante:** publicar la aplicación en producción elimina la caducidad automática de siete días asociada al modo Testing, pero no convierte el token en permanente. Google puede revocarlo por seguridad, inactividad prolongada, cambios de contraseña en ciertos casos o límites de tokens. El Worker debe tratar los errores de autorización y requerir una nueva autorización cuando corresponda.
+
+No se debe sustituir Gmail OAuth por una cuenta de servicio para una cuenta Gmail personal: las cuentas de servicio no pueden enviar como un buzón Gmail personal sin un entorno Google Workspace compatible con delegación de dominio.
+
 ## Seguridad y límites
 
 - Nunca introducir credenciales OAuth en la aplicación de escritorio ni en GitHub.
