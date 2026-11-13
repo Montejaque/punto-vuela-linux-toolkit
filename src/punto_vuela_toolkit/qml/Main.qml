@@ -41,6 +41,7 @@ ApplicationWindow {
     property bool puntoVuelaCentresLoading: false
     property bool dataProtectionRead: false
     property bool privacyPolicyRead: false
+    property bool termsAccepted: false
     property var appImageItems: []
     property var catalogItems: []
     property bool catalogLoading: false
@@ -203,6 +204,38 @@ ApplicationWindow {
             }
         }
     }
+    Dialog {
+        id: termsDialog
+        modal: true
+        title: "Términos y condiciones de uso"
+        width: Math.min(window.width - 48, 680)
+        height: Math.min(window.height - 48, 620)
+        anchors.centerIn: parent
+        standardButtons: Dialog.NoButton
+        contentItem: ColumnLayout {
+            spacing: 12
+            Label { Layout.fillWidth: true; text: "Condiciones de uso del formulario de propuestas"; font.bold: true; wrapMode: Text.WordWrap }
+            ScrollView {
+                Layout.fillWidth: true; Layout.fillHeight: true; clip: true
+                Label {
+                    width: parent.width; wrapMode: Text.WordWrap; color: secondaryText
+                    text: "1. Finalidad. Este formulario está destinado exclusivamente a los Agentes de Innovación Local de la red Puntos Vuela para remitir propuestas profesionales de aplicaciones y necesidades de los centros.\n\n2. Uso adecuado. La información facilitada debe ser veraz, pertinente y relacionada con la finalidad del formulario. No se deben enviar contraseñas, documentos de identidad, datos especialmente protegidos ni datos personales de terceras personas que no sean necesarios.\n\n3. Envío y destinatarios. Al enviar, la propuesta se transmite mediante una conexión HTTPS al servicio de correo y se remite al buzón indicado en la información de protección de datos. La dirección profesional facilitada recibe una copia.\n\n4. Disponibilidad. El servicio depende de proveedores tecnológicos externos y puede no estar disponible temporalmente. El envío solo se considera realizado cuando la aplicación confirma su recepción.\n\n5. Uso responsable. No se permite utilizar el formulario para spam, publicidad no solicitada, contenido ilícito o comunicaciones ajenas a su finalidad.\n\n6. Protección de datos. El tratamiento se rige por la información y política de privacidad mostradas en el formulario. La aceptación de estas condiciones no sustituye la base jurídica que corresponda al responsable del tratamiento."
+                }
+            }
+            Label {
+                Layout.fillWidth: true
+                text: "Texto provisional de condiciones de uso. Debe ser revisado y aprobado por el Consorcio Puntos Vuela antes de su publicación definitiva."
+                color: muted; wrapMode: Text.WordWrap; font.pixelSize: 11
+            }
+            RowLayout {
+                Layout.fillWidth: true
+                Item { Layout.fillWidth: true }
+                Button { text: "Cerrar"; onClicked: termsDialog.close() }
+                Button { text: "He leído y acepto"; highlighted: true; onClicked: { termsAccepted = true; termsDialog.close() } }
+            }
+        }
+    }
+
     function refreshAppImages() {
         appImageItems = JSON.parse(appImageManager.listAppImages())
     }
@@ -862,22 +895,54 @@ ApplicationWindow {
                                 }
                                 TextArea { id: motivoField; Layout.fillWidth: true; Layout.preferredHeight: 90; placeholderText: "Utilidad y necesidad que cubriría *"; wrapMode: TextEdit.Wrap }
                                 TextArea { id: observacionesField; Layout.fillWidth: true; Layout.preferredHeight: 64; placeholderText: "Observaciones (opcional)"; wrapMode: TextEdit.Wrap }
-                                RowLayout {
-                                    Layout.fillWidth: true
-                                    Button { text: "Protección de datos"; onClicked: dataProtectionDialog.open() }
-                                    Button { text: "Política de privacidad"; onClicked: privacyPolicyDialog.open() }
+                                TextField {
+                                    id: honeypotField
+                                    visible: false
+                                    enabled: false
+                                    width: 0; height: 0
+                                    opacity: 0
+                                    text: ""
+                                    placeholderText: "No rellenar"
                                 }
-                                CheckBox {
-                                    id: privacyAcknowledged
+
+                                Rectangle {
                                     Layout.fillWidth: true
-                                    text: "Confirmo que he leído la información de protección de datos y la política de privacidad."
-                                    checked: false
-                                    enabled: dataProtectionRead && privacyPolicyRead
-                                }
-                                Label {
-                                    Layout.fillWidth: true
-                                    text: dataProtectionRead && privacyPolicyRead ? "Ya has consultado ambos documentos. Marca la casilla para continuar." : "Abre y lee los dos documentos para habilitar la confirmación."
-                                    color: muted; wrapMode: Text.WordWrap; font.pixelSize: 11
+                                    radius: 10; color: panel; border.color: panelBorder
+                                    implicitHeight: legalColumn.implicitHeight + 24
+                                    ColumnLayout {
+                                        id: legalColumn
+                                        anchors.fill: parent; anchors.margins: 12; spacing: 9
+                                        Label { text: "INFORMACIÓN LEGAL Y ACEPTACIONES OBLIGATORIAS"; color: primaryText; font.bold: true; font.pixelSize: 12 }
+                                        RowLayout {
+                                            Layout.fillWidth: true
+                                            Button { text: "Protección de datos"; onClicked: dataProtectionDialog.open() }
+                                            Button { text: "Política de privacidad"; onClicked: privacyPolicyDialog.open() }
+                                            Button { text: "Términos y condiciones"; onClicked: termsDialog.open() }
+                                        }
+                                        CheckBox {
+                                            id: dataProtectionAcknowledged
+                                            Layout.fillWidth: true
+                                            text: "He leído la información sobre protección de datos."
+                                            enabled: dataProtectionRead
+                                        }
+                                        CheckBox {
+                                            id: privacyAcknowledged
+                                            Layout.fillWidth: true
+                                            text: "He leído la política de privacidad."
+                                            enabled: privacyPolicyRead
+                                        }
+                                        CheckBox {
+                                            id: termsAcknowledged
+                                            Layout.fillWidth: true
+                                            text: "He leído y acepto los términos y condiciones de uso."
+                                            enabled: termsAccepted
+                                        }
+                                        Label {
+                                            Layout.fillWidth: true
+                                            text: "Debes abrir los tres documentos y marcar sus casillas para continuar. Las condiciones de uso son provisionales y están pendientes de validación."
+                                            color: muted; wrapMode: Text.WordWrap; font.pixelSize: 11
+                                        }
+                                    }
                                 }
                                 Button {
                                     text: "Generar solicitud y vista previa"
@@ -886,7 +951,7 @@ ApplicationWindow {
                                             !telefonoField.text.trim() || !correoField.text.trim() || !softwareField.text.trim() || !motivoField.text.trim()) {
                                             formError.text = "Completa los campos obligatorios para continuar."; formError.visible = true; return
                                         }
-                                        if (!dataProtectionRead || !privacyPolicyRead || !privacyAcknowledged.checked) {
+                                        if (!dataProtectionRead || !privacyPolicyRead || !termsAccepted || !dataProtectionAcknowledged.checked || !privacyAcknowledged.checked || !termsAcknowledged.checked) {
                                             formError.text = "Debes confirmar que has leído la información de protección de datos."; formError.visible = true; return
                                         }
                                         formError.visible = false
@@ -921,8 +986,8 @@ ApplicationWindow {
                                     Button {
                                         text: "Enviar por WhatsApp"
                                         onClicked: {
-                                            if (!dataProtectionRead || !privacyPolicyRead || !privacyAcknowledged.checked) {
-                                                emailStatus.text = "Debes confirmar que has leído la información de protección de datos."; emailStatus.color = "#D65A5A"; return
+                                            if (!dataProtectionRead || !privacyPolicyRead || !termsAccepted || !dataProtectionAcknowledged.checked || !privacyAcknowledged.checked || !termsAcknowledged.checked) {
+                                                emailStatus.text = "Debes consultar y aceptar la información legal, la política de privacidad y los términos y condiciones."; emailStatus.color = "#D65A5A"; return
                                             }
                                             if (previewText.text.trim()) Qt.openUrlExternally("https://wa.me/34633402959?text=" + encodeURIComponent(previewText.text))
                                         }
@@ -941,7 +1006,7 @@ ApplicationWindow {
                                                 center:puntoVuelaField.currentText.trim(),municipality:municipioField.text.trim(),province:provinciaField.text.trim(),
                                                 contact:ailField.text.trim(),phone:telefonoField.text.trim(),reply_email:correoField.text.trim(),
                                                 application:softwareField.text.trim(),url:enlaceField.text.trim(),
-                                                distribution:distroField.currentText,purpose:motivoField.text.trim(),notes:observacionesField.text.trim()
+                                                distribution:distroField.currentText,purpose:motivoField.text.trim(),notes:observacionesField.text.trim(),data_protection_read:dataProtectionAcknowledged.checked,privacy_policy_read:privacyAcknowledged.checked,terms_accepted:termsAcknowledged.checked,website:honeypotField.text.trim()
                                             }
                                             emailSending = true
                                             emailStatus.text="Enviando email…"; emailStatus.color=secondaryText
