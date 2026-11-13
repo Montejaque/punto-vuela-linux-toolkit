@@ -52,7 +52,7 @@ ApplicationWindow {
     property string puntoVuelaStatus: "Consultando repositorios públicos de GitHub…"
     property var featuredApps: puntoVuelaTools.map(item => ({
         title:item.name, category:item.category, kind:item.kind,
-        desc:item.description, url:item.repositoryUrl, repository:item.repository, image:"", tag:"PUNTO VUELA",
+        desc:item.description, url:item.repositoryUrl, repository:item.repository, image:item.iconUrl||"", tag:"PUNTO VUELA",
         version:item.version, releaseUrl:item.releaseUrl, downloadUrl:item.downloadUrl
     }))
     property var allHomeApps: featuredApps.concat(catalogItems.map(item => ({title:item.name,category:item.category,kind:"AppImage oficial",desc:item.description||"Aplicación del catálogo oficial.",url:item.catalogUrl,image:item.iconUrl,tag:"CATÁLOGO OFICIAL",official:true})))
