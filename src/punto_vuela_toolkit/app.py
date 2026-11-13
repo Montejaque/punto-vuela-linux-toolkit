@@ -248,8 +248,64 @@ def load_interface() -> QQmlApplicationEngine:
     return engine
 
 
+def register_desktop_entry() -> None:
+    """Register the Toolkit in the current user's GNOME applications menu.
+
+    This is deliberately user-local: it works without root and does not modify
+    /usr/share/applications. When running as an AppImage, APPIMAGE points to
+    the persistent AppImage file rather than the temporary mount directory.
+    """
+    if os.environ.get("PUNTO_VUELA_DISABLE_MENU_INTEGRATION") == "1":
+        return
+    data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")).expanduser()
+    applications_dir = data_home / "applications"
+    icons_dir = data_home / "icons" / "hicolor" / "scalable" / "apps"
+    try:
+        applications_dir.mkdir(parents=True, exist_ok=True)
+        icons_dir.mkdir(parents=True, exist_ok=True)
+        icon_source = Path(__file__).parent / "assets" / "logo_toolkit.svg"
+        icon_target = icons_dir / "punto-vuela-linux-toolkit.svg"
+        if icon_source.is_file():
+            import shutil
+            if not icon_target.exists() or icon_source.read_bytes() != icon_target.read_bytes():
+                shutil.copy2(icon_source, icon_target)
+
+        executable = os.environ.get("APPIMAGE") or sys.executable
+        executable = str(Path(executable).expanduser().resolve())
+        # Desktop Entry Exec quoting: escape backslashes, quotes and percent signs.
+        quoted_exec = executable.replace("\\\\", "\\\\\\\\").replace('"', '\\\\"').replace("%", "%%")
+        desktop = applications_dir / "punto-vuela-linux-toolkit.desktop"
+        entry = (
+            "[Desktop Entry]\\n"
+            "Type=Application\\n"
+            "Name=Puntos Vuela Toolkit\\n"
+            "GenericName=Centro de software\\n"
+            "Comment=Herramientas y centro de software para Linux de Puntos Vuela\\n"
+            f'Exec="{quoted_exec}"\\n'
+            "TryExec=" + quoted_exec + "\\n"
+            "Icon=punto-vuela-linux-toolkit\\n"
+            "Terminal=false\\n"
+            "Categories=System;Utility;\\n"
+            "StartupNotify=true\\n"
+            "StartupWMClass=punto-vuela-linux-toolkit\\n"
+        )
+        temporary = desktop.with_suffix(".desktop.part")
+        temporary.write_text(entry, encoding="utf-8")
+        temporary.chmod(0o644)
+        os.replace(temporary, desktop)
+        import shutil
+        updater = shutil.which("update-desktop-database")
+        if updater:
+            subprocess.run([updater, str(applications_dir)], capture_output=True, timeout=10, check=False)
+    except (OSError, subprocess.SubprocessError):
+        # Menu integration must never prevent the application from opening.
+        return
+
+
 def main() -> None:
     smoke_test = "--smoke-test" in sys.argv[1:]
+    if not smoke_test:
+        register_desktop_entry()
     create_application()
     engine = load_interface()
     if smoke_test:
