@@ -273,21 +273,21 @@ def register_desktop_entry() -> None:
         executable = os.environ.get("APPIMAGE") or sys.executable
         executable = str(Path(executable).expanduser().resolve())
         # Desktop Entry Exec quoting: escape backslashes, quotes and percent signs.
-        quoted_exec = executable.replace("\\\\", "\\\\\\\\").replace('"', '\\\\"').replace("%", "%%")
+        quoted_exec = executable.replace("\\", "\\\\").replace('"', '\\\\"').replace("%", "%%")
         desktop = applications_dir / "punto-vuela-linux-toolkit.desktop"
         entry = (
-            "[Desktop Entry]\\n"
-            "Type=Application\\n"
-            "Name=Puntos Vuela Toolkit\\n"
-            "GenericName=Centro de software\\n"
-            "Comment=Herramientas y centro de software para Linux de Puntos Vuela\\n"
-            f'Exec="{quoted_exec}"\\n'
-            "TryExec=" + quoted_exec + "\\n"
-            "Icon=punto-vuela-linux-toolkit\\n"
-            "Terminal=false\\n"
-            "Categories=System;Utility;\\n"
-            "StartupNotify=true\\n"
-            "StartupWMClass=punto-vuela-linux-toolkit\\n"
+            "[Desktop Entry]\n"
+            "Type=Application\n"
+            "Name=Puntos Vuela Toolkit\n"
+            "GenericName=Centro de software\n"
+            "Comment=Herramientas y centro de software para Linux de Puntos Vuela\n"
+            f'Exec="{quoted_exec}"\n'
+            "TryExec=" + quoted_exec + "\n"
+            "Icon=punto-vuela-linux-toolkit\n"
+            "Terminal=false\n"
+            "Categories=System;Utility;\n"
+            "StartupNotify=true\n"
+            "StartupWMClass=punto-vuela-linux-toolkit\n"
         )
         temporary = desktop.with_suffix(".desktop.part")
         temporary.write_text(entry, encoding="utf-8")
