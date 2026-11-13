@@ -22,6 +22,8 @@ class AppImageBridge(QObject):
     """QML-facing API for local AppImages and the community catalogue."""
 
     catalogLoaded = Signal(str)
+    puntoVuelaToolsLoaded = Signal(str)
+    toolkitReleaseLoaded = Signal(str)
     catalogInstallFinished = Signal(str)
     appImageDownloadFinished = Signal(str)
     appImageUpdateCheckFinished = Signal(str)
@@ -63,6 +65,34 @@ class AppImageBridge(QObject):
             self.emailSent.emit(json.dumps(result, ensure_ascii=False))
         self._spawn(work)
 
+    @Slot()
+    def loadPuntoVuelaTools(self) -> None:
+        def work() -> None:
+            try:
+                items = self.catalog.discover_public_github_tools()
+                payload = {"ok": True, "items": items, "message": f"{len(items)} herramientas públicas encontradas en GitHub."}
+            except Exception as exc:
+                payload = {"ok": False, "items": [], "message": f"No se pudo consultar GitHub: {exc}"}
+            self.puntoVuelaToolsLoaded.emit(json.dumps(payload, ensure_ascii=False))
+        self._spawn(work)
+
+    @Slot()
+    def refreshPuntoVuelaTools(self) -> None:
+        def work() -> None:
+            try:
+                items = self.catalog.discover_public_github_tools(force=True)
+                payload = {"ok": True, "items": items, "message": f"Catálogo actualizado: {len(items)} herramientas públicas."}
+            except Exception as exc:
+                payload = {"ok": False, "items": [], "message": f"No se pudo actualizar GitHub: {exc}"}
+            self.puntoVuelaToolsLoaded.emit(json.dumps(payload, ensure_ascii=False))
+        self._spawn(work)
+
+    @Slot()
+    def loadToolkitRelease(self) -> None:
+        def work() -> None:
+            result = self.catalog.latest_toolkit_release()
+            self.toolkitReleaseLoaded.emit(json.dumps(result, ensure_ascii=False))
+        self._spawn(work)
     @Slot(str)
     def loadCatalog(self, query: str) -> None:
         def work() -> None:
