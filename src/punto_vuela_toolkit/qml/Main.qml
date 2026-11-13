@@ -224,7 +224,13 @@ ApplicationWindow {
             }
             Label {
                 Layout.fillWidth: true
-                text: "Texto provisional de condiciones de uso. Debe ser revisado y aprobado por el Consorcio Puntos Vuela antes de su publicación definitiva."
+                text: '<a href="https://github.com/Montejaque/punto-vuela-linux-toolkit/blob/main/terms.md">Abrir términos y condiciones completos</a>'
+                textFormat: Text.RichText; color: accent
+                onLinkActivated: Qt.openUrlExternally(link)
+            }
+            Label {
+                Layout.fillWidth: true
+                text: "Consulta el documento completo de condiciones de uso. Debe mantenerse alineado con las instrucciones oficiales del Consorcio."
                 color: muted; wrapMode: Text.WordWrap; font.pixelSize: 11
             }
             RowLayout {
