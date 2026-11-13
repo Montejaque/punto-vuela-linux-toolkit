@@ -945,7 +945,7 @@ ApplicationWindow {
                                         }
                                         Label {
                                             Layout.fillWidth: true
-                                            text: "Debes abrir los tres documentos y marcar sus casillas para continuar. Las condiciones de uso son provisionales y están pendientes de validación."
+                                            text: "Debes consultar la información de protección de datos, la política de privacidad y los términos y condiciones, y marcar las tres casillas."
                                             color: muted; wrapMode: Text.WordWrap; font.pixelSize: 11
                                         }
                                     }
@@ -958,7 +958,7 @@ ApplicationWindow {
                                             formError.text = "Completa los campos obligatorios para continuar."; formError.visible = true; return
                                         }
                                         if (!dataProtectionRead || !privacyPolicyRead || !termsAccepted || !dataProtectionAcknowledged.checked || !privacyAcknowledged.checked || !termsAcknowledged.checked) {
-                                            formError.text = "Debes confirmar que has leído la información de protección de datos."; formError.visible = true; return
+                                            formError.text = "Debes consultar y aceptar la información legal, la política de privacidad y los términos y condiciones."; formError.visible = true; return
                                         }
                                         formError.visible = false
                                         previewText.text =
