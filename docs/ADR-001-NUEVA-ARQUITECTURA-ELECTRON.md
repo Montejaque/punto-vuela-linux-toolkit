@@ -69,7 +69,7 @@ La rama Electron ya incorpora:
 - Pantallas de biblioteca, herramientas, directorio, contacto y ayuda.
 
 Pendiente antes de publicar:
-- Confirmar el resultado del workflow de AppImage en Ubuntu 20.04, incluido el smoke test del binario empaquetado.
+- Confirmar el resultado del workflow de AppImage sobre glibc 2.31, incluido el smoke test del binario empaquetado; completar prueba manual en Ubuntu 20.04 GNOME.
 - Ejecutar pruebas manuales en un equipo Ubuntu 20.04 con GNOME, especialmente doble clic, integración del menú y actualizaciones AppImageUpdate.
 - Desplegar/verificar Cloudflare Worker, secretos OAuth de Google y binding KV RATE_LIMIT; enviar una propuesta real de prueba y confirmar recepción.
 - Auditar contraste, navegación por teclado y lector de pantalla sobre el paquete final.
