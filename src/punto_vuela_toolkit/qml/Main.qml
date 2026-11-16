@@ -316,9 +316,9 @@ ApplicationWindow {
 
                 RowLayout {
                     Layout.fillWidth: true
-                    spacing: 12
+                    spacing: sidebarExpanded ? 12 : 0
                     Rectangle {
-                        width: sidebarExpanded ? 44 : 34; height: sidebarExpanded ? 44 : 34; radius: 12
+                        width: sidebarExpanded ? 44 : 28; height: sidebarExpanded ? 44 : 34; radius: 12
                         color: accent
                         Image { anchors.fill: parent; anchors.margins: 3; source: Qt.resolvedUrl("../assets/logo_toolkit.svg"); fillMode: Image.PreserveAspectFit; smooth: true; mipmap: true; asynchronous: true; sourceSize.width: 512; sourceSize.height: 512; visible: status === Image.Ready }
                     }
@@ -329,7 +329,7 @@ ApplicationWindow {
                         Text { text: "TOOLKIT"; color: "#51430A"; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
                     }
                     ToolButton {
-                        Layout.preferredWidth: 28
+                        Layout.preferredWidth: sidebarExpanded ? 28 : 24
                         Layout.preferredHeight: 34
                         Layout.alignment: Qt.AlignRight
                         text: sidebarExpanded ? "‹" : "☰"
@@ -362,7 +362,6 @@ ApplicationWindow {
                         }
                         Row {
                             anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: parent.left
                             x: sidebarExpanded ? 14 : (parent.width - width) / 2
                             spacing: sidebarExpanded ? 13 : 0
                             Text { text: modelData.glyph; color: activePage === modelData.name ? "#FFC400" : "#292F36"; font.pixelSize: 18; width: 24; horizontalAlignment: Text.AlignHCenter }
