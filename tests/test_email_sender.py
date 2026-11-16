@@ -60,5 +60,26 @@ class EmailSenderTests(unittest.TestCase):
             request.assert_not_called()
 
 
+    def test_health_check_returns_worker_configuration(self):
+        response = BytesIO(b'{"ok":true,"configured":true,"checks":{"rateLimitKv":true}}')
+        response.status = 200
+        with patch.object(email_sender, "urlopen", return_value=response):
+            result = email_sender.check_mail_service()
+        self.assertTrue(result["ok"])
+        self.assertTrue(result["checks"]["rateLimitKv"])
+        self.assertEqual(result["http_status"], 200)
+
+    def test_health_check_preserves_missing_configuration_diagnostics(self):
+        error = HTTPError(
+            email_sender.WORKER_URL + "/health", 503, "Service unavailable", {},
+            BytesIO(b'{"ok":false,"checks":{"googleRefreshToken":false},"message":"Falta un secreto."}')
+        )
+        with patch.object(email_sender, "urlopen", side_effect=error):
+            result = email_sender.check_mail_service()
+        self.assertFalse(result["ok"])
+        self.assertFalse(result["checks"]["googleRefreshToken"])
+        self.assertEqual(result["http_status"], 503)
+
+
 if __name__ == "__main__":
     unittest.main()
