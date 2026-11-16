@@ -48,8 +48,8 @@ jobs:
       - name: Generar icono de aplicación
         run: |
           mkdir -p desktop-electron/build
-          rsvg-convert -w 512 -h 512 desktop-electron/public/assets/app-icon.svg -o desktop-electron/public/assets/app-icon.png
-          cp desktop-electron/public/assets/app-icon.png desktop-electron/build/icon.png
+          rsvg-convert -w 512 -h 512 desktop-electron/public/assets/logo_toolkit.svg -o desktop-electron/public/assets/logo_toolkit.png
+          cp desktop-electron/public/assets/logo_toolkit.png desktop-electron/build/icon.png
       - name: Comprobar TypeScript
         working-directory: desktop-electron
         run: npm run typecheck
