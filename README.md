@@ -51,7 +51,7 @@ MIT para el código de este proyecto. El logotipo y otros recursos de marca pert
 
 El formulario de contacto utiliza un servicio HTTPS desplegado en Cloudflare Workers. El Worker envía las solicitudes mediante Gmail API desde la cuenta corporativa y mantiene las credenciales OAuth exclusivamente en los secretos de Cloudflare. La AppImage no contiene contraseñas ni tokens.
 
-La configuración y el despliegue se documentan en [docs/CORREO-CLOUDFLARE-WORKERS.md](docs/CORREO-CLOUDFLARE-WORKERS.md). Antes de publicar una versión funcional, hay que desplegar el Worker, configurar los secretos de Google y sustituir la URL provisional en `src/punto_vuela_toolkit/email_sender.py`. Hasta entonces, el envío mostrará que el servicio está pendiente de activación.
+La configuración y el despliegue se documentan en [docs/CORREO-CLOUDFLARE-WORKERS.md](docs/CORREO-CLOUDFLARE-WORKERS.md). El formulario incluye una comprobación de salud del Worker que informa de la presencia de los secretos OAuth y del binding KV sin revelar sus valores. Antes de considerar operativo el envío, hay que desplegar la versión actualizada del Worker, configurar los secretos de Google y comprobar `/health`. El correo solo se considera enviado cuando Gmail API confirma la operación.
 
 
 ## Ejecutar la AppImage en Ubuntu
