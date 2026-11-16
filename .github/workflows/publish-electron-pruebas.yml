@@ -6,12 +6,12 @@ on:
       release_tag:
         description: "Etiqueta de la release"
         required: true
-        default: "pruebas-81"
+        default: "pruebas-82"
         type: string
       source_ref:
         description: "Commit o rama que se va a compilar"
         required: true
-        default: "feced0ea29a1dd72f772b69dafd19bd365346e56"
+        default: "f4e1146b86e75be2fecd385d831ca5529f8520ca"
         type: string
 
 permissions:
@@ -33,7 +33,7 @@ jobs:
             libgtk-3-0 libnss3 libasound2 libxss1 libxtst6 libgbm1 \
             libxkbcommon0 libatspi2.0-0 libdrm2 libx11-xcb1 libxcb-dri3-0 \
             libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libxrender1 \
-            libxshmfence1 dbus
+            libxshmfence1 dbus librsvg2-bin
       - name: Descargar código fuente seleccionado
         uses: actions/checkout@v4
         with:
@@ -45,6 +45,11 @@ jobs:
       - name: Instalar dependencias
         working-directory: desktop-electron
         run: npm install
+      - name: Generar icono de aplicación
+        run: |
+          mkdir -p desktop-electron/build
+          rsvg-convert -w 512 -h 512 desktop-electron/public/assets/app-icon.svg -o desktop-electron/public/assets/app-icon.png
+          cp desktop-electron/public/assets/app-icon.png desktop-electron/build/icon.png
       - name: Comprobar TypeScript
         working-directory: desktop-electron
         run: npm run typecheck
