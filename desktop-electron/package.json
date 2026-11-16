@@ -31,12 +31,26 @@
   "build": {
     "appId": "es.puntosvuela.toolkit",
     "productName": "Puntos Vuela Toolkit",
-    "directories": { "output": "release" },
-    "files": ["dist/**", "dist-electron/**", "package.json"],
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "dist-electron/**",
+      "package.json"
+    ],
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "category": "Utility",
       "artifactName": "Puntos_Vuela_Toolkit-Electron-${arch}.${ext}"
-    }
-  }
+    },
+    "publish": []
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Montejaque/punto-vuela-linux-toolkit.git"
+  },
+  "author": "Punto Vuela Montejaque"
 }
