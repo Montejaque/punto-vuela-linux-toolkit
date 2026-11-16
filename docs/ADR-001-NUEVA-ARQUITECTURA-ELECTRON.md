@@ -1,6 +1,6 @@
 # ADR-001: Nueva interfaz de escritorio con Electron
 
-- Estado: propuesta aceptada para prototipo
+- Estado: migración funcional en curso; pendiente validación final y publicación
 - Fecha: 2026-11-16
 - Rama: `rewrite/electron-desktop`
 - Versiones anteriores: se conservan sin modificar (`pruebas-80` y anteriores)
@@ -56,3 +56,24 @@ Evaluar **Electron + React + TypeScript + Vite** como nueva interfaz, con estas 
 - **Seguridad IPC**: API pequeña, validación en main y renderer sin Node.
 - **Compatibilidad glibc**: compilar en entorno con glibc 2.31 o más antiguo y ejecutar prueba real en Ubuntu 20.04.
 - **Correo**: no simular éxito; requiere despliegue del Worker y prueba real con cuenta autorizada.
+
+## Estado de implementación (16-11-2026)
+
+La rama Electron ya incorpora:
+- Proceso principal con IPC de lista permitida; el renderer no tiene acceso Node directo.
+- Feed AppImage Community con caché, búsqueda, categorías, ficha, licencia y evaluación del requisito glibc frente a Ubuntu 20.04.
+- Descarga HTTPS, comprobación ELF, almacenamiento por usuario, permisos, lanzamiento, lanzadores .desktop, eliminación y actualización delegada a AppImageUpdate con verificación SHA-256 del actualizador.
+- Descubrimiento de Releases públicas de repositorios Montejaque y descarga de AppImages x86_64.
+- Directorio de centros desde puntosvuela.es y precarga de datos públicos de contacto en el formulario.
+- Formulario de propuestas con campos obligatorios, motivo, observaciones y aceptaciones legales; envío a Cloudflare Worker y confirmación basada en respuesta HTTP/Gmail del servicio.
+- Pantallas de biblioteca, herramientas, directorio, contacto y ayuda.
+
+Pendiente antes de publicar:
+- Confirmar el resultado del workflow de AppImage en Ubuntu 20.04, incluido el smoke test del binario empaquetado.
+- Ejecutar pruebas manuales en un equipo Ubuntu 20.04 con GNOME, especialmente doble clic, integración del menú y actualizaciones AppImageUpdate.
+- Desplegar/verificar Cloudflare Worker, secretos OAuth de Google y binding KV RATE_LIMIT; enviar una propuesta real de prueba y confirmar recepción.
+- Auditar contraste, navegación por teclado y lector de pantalla sobre el paquete final.
+- Revisar y fijar dependencias npm mediante lockfile y resolver avisos relevantes de auditoría.
+- Actualizar documentación y publicar una nueva Release sin reemplazar las anteriores.
+
+La implementación no debe considerarse Release hasta completar las validaciones anteriores.
