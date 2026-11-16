@@ -38,7 +38,10 @@ ApplicationWindow {
     property bool previewVisible: false
     property bool emailSending: false
     property var puntoVuelaCentres: []
+    property var filteredPuntoVuelaCentres: []
     property bool puntoVuelaCentresLoading: false
+    property string selectedCentreSlug: ""
+    property bool centreDetailsLoading: false
     property bool dataProtectionRead: false
     property bool privacyPolicyRead: false
     property bool termsAccepted: false
@@ -89,11 +92,34 @@ ApplicationWindow {
         function onPuntoVuelaCentresLoaded(payload) {
             const result = JSON.parse(payload)
             puntoVuelaCentres = result.items || []
+            filteredPuntoVuelaCentres = puntoVuelaCentres
             puntoVuelaCentresLoading = false
             if (!result.ok) {
                 emailStatus.text = result.message || "No se pudo cargar el directorio de centros."
                 emailStatus.color = "#D65A5A"
             }
+        }
+        function onPuntoVuelaCentreDetailsLoaded(payload) {
+            const result = JSON.parse(payload)
+            if (result.slug !== selectedCentreSlug) return
+            centreDetailsLoading = false
+            if (!result.ok) {
+                centreDetailsStatus.text = (result.message || "No se pudieron consultar los datos públicos del centro.") + " Puedes completarlos manualmente."
+                centreDetailsStatus.color = "#D65A5A"
+                return
+            }
+            const details = result.details || {}
+            ailField.text = details.ail || ""
+            telefonoField.text = details.phone || ""
+            correoField.text = details.email || ""
+            const missing = []
+            if (!details.ail) missing.push("AIL")
+            if (!details.phone) missing.push("teléfono")
+            if (!details.email) missing.push("correo")
+            centreDetailsStatus.text = missing.length
+                ? "Datos cargados desde la ficha oficial. No publicados: " + missing.join(", ") + ". Puedes completar esos campos manualmente."
+                : "Datos del AIL, teléfono y correo cargados desde la ficha oficial de Puntos Vuela."
+            centreDetailsStatus.color = secondaryText
         }
         function onPuntoVuelaToolsLoaded(payload) {
             const result = JSON.parse(payload)
@@ -242,6 +268,24 @@ ApplicationWindow {
         }
     }
 
+    function selectPuntoVuelaCentre(item) {
+        if (!item) return
+        selectedCentreSlug = item.slug || ""
+        municipioField.text = item.municipality || ""
+        provinciaField.text = item.province || ""
+        ailField.text = ""
+        telefonoField.text = ""
+        correoField.text = ""
+        if (!selectedCentreSlug) {
+            centreDetailsStatus.text = "La ficha del centro no está enlazada en el directorio. Completa los datos manualmente."
+            centreDetailsStatus.color = "#D65A5A"
+            return
+        }
+        centreDetailsLoading = true
+        centreDetailsStatus.text = "Consultando la ficha pública de Puntos Vuela…"
+        centreDetailsStatus.color = secondaryText
+        appImageManager.loadPuntoVuelaCentreDetails(selectedCentreSlug)
+    }
     function refreshAppImages() {
         appImageItems = JSON.parse(appImageManager.listAppImages())
     }
@@ -860,30 +904,41 @@ ApplicationWindow {
                                 Text { text: "Datos del centro y del/de la AIL"; color: primaryText; font.pixelSize: 15; font.bold: true }
                                 GridLayout {
                                     Layout.fillWidth: true; columns: width > 680 ? 2 : 1; columnSpacing: 12; rowSpacing: 9
+                                    TextField {
+                                        id: centreSearchField
+                                        Layout.fillWidth: true
+                                        Layout.columnSpan: 2
+                                        placeholderText: "Buscar centro por nombre, municipio o provincia…"
+                                        enabled: !puntoVuelaCentresLoading && puntoVuelaCentres.length > 0
+                                        onTextChanged: {
+                                            const query = text.trim().toLocaleLowerCase()
+                                            filteredPuntoVuelaCentres = query.length
+                                                ? puntoVuelaCentres.filter(item => (item.name + " " + item.municipality + " " + item.province).toLocaleLowerCase().includes(query))
+                                                : puntoVuelaCentres
+                                            puntoVuelaField.currentIndex = -1
+                                        }
+                                    }
                                     ComboBox {
                                         id: puntoVuelaField
                                         Layout.fillWidth: true
-                                        model: puntoVuelaCentres
+                                        Layout.columnSpan: 2
+                                        model: filteredPuntoVuelaCentres
                                         textRole: "name"
-                                        valueRole: "name"
-                                        editable: true
-                                        enabled: !puntoVuelaCentresLoading && puntoVuelaCentres.length > 0
+                                        enabled: !puntoVuelaCentresLoading && filteredPuntoVuelaCentres.length > 0
                                         displayText: currentIndex >= 0 ? currentText : (puntoVuelaCentresLoading ? "Cargando centros oficiales…" : "Selecciona tu Punto Vuela *")
                                         onActivated: {
-                                            if (currentIndex >= 0 && currentIndex < puntoVuelaCentres.length) {
-                                                municipioField.text = puntoVuelaCentres[currentIndex].municipality
-                                                provinciaField.text = puntoVuelaCentres[currentIndex].province
-                                            }
+                                            if (index >= 0 && index < filteredPuntoVuelaCentres.length)
+                                                selectPuntoVuelaCentre(filteredPuntoVuelaCentres[index])
                                         }
-                                        onAccepted: {
-                                            const query = editText.trim().toLocaleLowerCase()
-                                            const index = puntoVuelaCentres.findIndex(item => item.name.toLocaleLowerCase() === query)
-                                            if (index >= 0) {
-                                                currentIndex = index
-                                                municipioField.text = puntoVuelaCentres[index].municipality
-                                                provinciaField.text = puntoVuelaCentres[index].province
-                                            }
-                                        }
+                                    }
+                                    Label {
+                                        id: centreDetailsStatus
+                                        Layout.fillWidth: true
+                                        Layout.columnSpan: 2
+                                        text: "Al seleccionar el centro se cargarán los datos profesionales publicados del/de la AIL."
+                                        color: muted
+                                        wrapMode: Text.WordWrap
+                                        font.pixelSize: 10
                                     }
                                     TextField { id: municipioField; Layout.fillWidth: true; placeholderText: "Municipio"; readOnly: true }
                                     TextField { id: provinciaField; Layout.fillWidth: true; placeholderText: "Provincia"; readOnly: true }
@@ -921,27 +976,35 @@ ApplicationWindow {
                                         Label { text: "INFORMACIÓN LEGAL Y ACEPTACIONES OBLIGATORIAS"; color: primaryText; font.bold: true; font.pixelSize: 12 }
                                         RowLayout {
                                             Layout.fillWidth: true
-                                            Button { text: "Protección de datos"; onClicked: dataProtectionDialog.open() }
-                                            Button { text: "Política de privacidad"; onClicked: privacyPolicyDialog.open() }
-                                            Button { text: "Términos y condiciones"; onClicked: termsDialog.open() }
+                                            Button { text: "Protección de datos y privacidad"; onClicked: Qt.openUrlExternally("https://toolkit.javigallego.es/privacy") }
+                                            Button { text: "Términos y condiciones"; onClicked: Qt.openUrlExternally("https://toolkit.javigallego.es/terms") }
                                         }
                                         CheckBox {
                                             id: dataProtectionAcknowledged
                                             Layout.fillWidth: true
-                                            text: "He leído la información sobre protección de datos."
-                                            enabled: dataProtectionRead
+                                            contentItem: Label {
+                                                text: 'He leído la <a href="https://toolkit.javigallego.es/privacy">información sobre protección de datos</a>.'
+                                                textFormat: Text.RichText; color: secondaryText; wrapMode: Text.WordWrap
+                                                onLinkActivated: Qt.openUrlExternally(link)
+                                            }
                                         }
                                         CheckBox {
                                             id: privacyAcknowledged
                                             Layout.fillWidth: true
-                                            text: "He leído la política de privacidad."
-                                            enabled: privacyPolicyRead
+                                            contentItem: Label {
+                                                text: 'He leído la <a href="https://toolkit.javigallego.es/privacy">política de privacidad</a>.'
+                                                textFormat: Text.RichText; color: secondaryText; wrapMode: Text.WordWrap
+                                                onLinkActivated: Qt.openUrlExternally(link)
+                                            }
                                         }
                                         CheckBox {
                                             id: termsAcknowledged
                                             Layout.fillWidth: true
-                                            text: "He leído y acepto los términos y condiciones de uso."
-                                            enabled: termsAccepted
+                                            contentItem: Label {
+                                                text: 'He leído y acepto los <a href="https://toolkit.javigallego.es/terms">términos y condiciones de uso</a>.'
+                                                textFormat: Text.RichText; color: secondaryText; wrapMode: Text.WordWrap
+                                                onLinkActivated: Qt.openUrlExternally(link)
+                                            }
                                         }
                                         Label {
                                             Layout.fillWidth: true
@@ -957,7 +1020,7 @@ ApplicationWindow {
                                             !telefonoField.text.trim() || !correoField.text.trim() || !softwareField.text.trim() || !motivoField.text.trim()) {
                                             formError.text = "Completa los campos obligatorios para continuar."; formError.visible = true; return
                                         }
-                                        if (!dataProtectionRead || !privacyPolicyRead || !termsAccepted || !dataProtectionAcknowledged.checked || !privacyAcknowledged.checked || !termsAcknowledged.checked) {
+                                        if (!dataProtectionAcknowledged.checked || !privacyAcknowledged.checked || !termsAcknowledged.checked) {
                                             formError.text = "Debes consultar y aceptar la información legal, la política de privacidad y los términos y condiciones."; formError.visible = true; return
                                         }
                                         formError.visible = false
@@ -992,7 +1055,7 @@ ApplicationWindow {
                                     Button {
                                         text: "Enviar por WhatsApp"
                                         onClicked: {
-                                            if (!dataProtectionRead || !privacyPolicyRead || !termsAccepted || !dataProtectionAcknowledged.checked || !privacyAcknowledged.checked || !termsAcknowledged.checked) {
+                                            if (!dataProtectionAcknowledged.checked || !privacyAcknowledged.checked || !termsAcknowledged.checked) {
                                                 emailStatus.text = "Debes consultar y aceptar la información legal, la política de privacidad y los términos y condiciones."; emailStatus.color = "#D65A5A"; return
                                             }
                                             if (previewText.text.trim()) Qt.openUrlExternally("https://wa.me/34633402959?text=" + encodeURIComponent(previewText.text))
@@ -1005,7 +1068,7 @@ ApplicationWindow {
                                             if(puntoVuelaField.currentIndex < 0 || !municipioField.text.trim() || !provinciaField.text.trim() || !ailField.text.trim() || !telefonoField.text.trim() || !correoField.text.trim() || !softwareField.text.trim() || !motivoField.text.trim()) {
                                                 emailStatus.text="Completa los campos obligatorios antes de enviar."; emailStatus.color="#D65A5A"; return
                                             }
-                                            if (!dataProtectionRead || !privacyPolicyRead || !privacyAcknowledged.checked) {
+                                            if (!dataProtectionAcknowledged.checked || !privacyAcknowledged.checked || !termsAcknowledged.checked) {
                                                 emailStatus.text="Debes confirmar que has leído la información de protección de datos."; emailStatus.color="#D65A5A"; return
                                             }
                                             const payload={
