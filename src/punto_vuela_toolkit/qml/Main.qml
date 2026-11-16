@@ -196,8 +196,8 @@ ApplicationWindow {
         id: dataProtectionDialog
         modal: true
         title: "Información sobre protección de datos"
-        width: Math.min(window.width - 48, 680)
-        height: Math.min(window.height - 48, 620)
+        width: Math.min(window.width - rem(3), rem(42.5))
+        height: Math.min(window.height - rem(3), rem(38.75))
         anchors.centerIn: parent
         standardButtons: Dialog.NoButton
         contentItem: ColumnLayout {
@@ -224,8 +224,8 @@ ApplicationWindow {
         id: privacyPolicyDialog
         modal: true
         title: "Política de privacidad"
-        width: Math.min(window.width - 48, 680)
-        height: Math.min(window.height - 48, 620)
+        width: Math.min(window.width - rem(3), rem(42.5))
+        height: Math.min(window.height - rem(3), rem(38.75))
         anchors.centerIn: parent
         standardButtons: Dialog.NoButton
         contentItem: ColumnLayout {
@@ -256,8 +256,8 @@ ApplicationWindow {
         id: termsDialog
         modal: true
         title: "Términos y condiciones de uso"
-        width: Math.min(window.width - 48, 680)
-        height: Math.min(window.height - 48, 620)
+        width: Math.min(window.width - rem(3), rem(42.5))
+        height: Math.min(window.height - rem(3), rem(38.75))
         anchors.centerIn: parent
         standardButtons: Dialog.NoButton
         contentItem: ColumnLayout {
@@ -597,7 +597,7 @@ ApplicationWindow {
                             id:appDetailDialog
                             modal:true
                             anchors.centerIn:Overlay.overlay
-                            width:Math.min(window.width-48,600)
+                            width:Math.min(window.width-rem(3),rem(37.5))
                             padding:rem(0)
                             closePolicy:Popup.CloseOnEscape|Popup.CloseOnPressOutside
                             background:Rectangle { radius:rem(1.375);color:panel;border.color:panelBorder;Rectangle { anchors.top:parent.top;anchors.left:parent.left;anchors.right:parent.right;height:rem(0.3125);radius:rem(0.1875);color:accent } }
@@ -723,7 +723,7 @@ ApplicationWindow {
                             ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
                             model:filteredCatalogItems
                             delegate:Rectangle {
-                                width:officialCatalogGrid.cellWidth-12;height:rem(13.375)
+                                width:officialCatalogGrid.cellWidth-rem(0.75);height:rem(13.375)
                                 radius:rem(1);color:panel;border.color:panelBorder
                                 ColumnLayout {
                                     anchors.fill:parent;anchors.margins:rem(0.8125);spacing:rem(0.4375)
@@ -755,7 +755,7 @@ ApplicationWindow {
                             id:catalogDetailDialog
                             modal:true
                             anchors.centerIn:Overlay.overlay
-                            width:Math.min(window.width-48,620)
+                            width:Math.min(window.width-rem(3),620)
                             padding:rem(0)
                             closePolicy:Popup.CloseOnEscape|Popup.CloseOnPressOutside
                             background:Rectangle { radius:rem(1.375);color:panel;border.color:panelBorder;Rectangle { anchors.top:parent.top;anchors.left:parent.left;anchors.right:parent.right;height:rem(0.3125);radius:rem(0.1875);color:accent } }
@@ -799,7 +799,7 @@ ApplicationWindow {
                         Text { Layout.fillWidth: true; text: "Descarga aplicaciones desde enlaces HTTPS. Se guardan en tu carpeta personal y reciben permisos de ejecución automáticamente."; color: secondaryText; font.pixelSize: rem(0.75); wrapMode: Text.WordWrap }
                         Rectangle {
                             Layout.fillWidth: true; radius: rem(0.875); color: panel; border.color: panelBorder
-                            implicitHeight: downloadForm.implicitHeight + 30
+                            implicitHeight: downloadForm.implicitHeight + rem(1.875)
                             ColumnLayout {
                                 id: downloadForm
                                 anchors.fill: parent; anchors.margins: rem(1); spacing: rem(0.625)
@@ -832,7 +832,7 @@ ApplicationWindow {
                         Text { id: appImageStatus; Layout.fillWidth: true; color: secondaryText; wrapMode: Text.WordWrap; font.pixelSize: rem(0.75) }
                         ListView {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: Math.max(150, appImageItems.length * 100)
+                            Layout.preferredHeight: Math.max(rem(9.375), appImageItems.length * rem(6.25))
                             interactive: false
                             model: appImageItems
                             spacing: rem(0.5)
@@ -925,7 +925,7 @@ ApplicationWindow {
                             ]
                             delegate: Rectangle {
                                 Layout.fillWidth: true; radius: rem(0.75); color: panel; border.color: panelBorder
-                                implicitHeight: helpText.implicitHeight + 30
+                                implicitHeight: helpText.implicitHeight + rem(1.875)
                                 ColumnLayout {
                                     id: helpText
                                     anchors.fill: parent; anchors.margins: rem(0.9375); spacing: rem(0.375)
@@ -952,7 +952,7 @@ ApplicationWindow {
 
                         Rectangle {
                             Layout.fillWidth: true; radius: rem(1); color: panel; border.color: panelBorder
-                            implicitHeight: requestForm.implicitHeight + 36
+                            implicitHeight: requestForm.implicitHeight + rem(2.25)
                             ColumnLayout {
                                 id: requestForm
                                 anchors.fill: parent; anchors.margins: rem(1.125); spacing: rem(0.75)
