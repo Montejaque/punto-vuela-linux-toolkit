@@ -12,6 +12,7 @@ ApplicationWindow {
     visible: true
     title: "Puntos Vuela Toolkit"
     property string activePage: "Inicio"
+    property bool sidebarExpanded: true
     property color accent: "#FAD100"
     property string themeMode: appSettings.savedThemeMode
     property bool darkTheme: themeMode === "dark" || (themeMode === "system" && systemPalette.window.hslLightness < 0.5)
@@ -304,33 +305,45 @@ ApplicationWindow {
         spacing: 0
 
         Rectangle {
-            Layout.preferredWidth: 238
+            Layout.preferredWidth: sidebarExpanded ? 238 : 76
             Layout.fillHeight: true
             color: sidebarColor
 
             ColumnLayout {
                 anchors.fill: parent
-                anchors.margins: 20
+                anchors.margins: sidebarExpanded ? 20 : 8
                 spacing: 18
 
                 RowLayout {
                     Layout.fillWidth: true
                     spacing: 12
                     Rectangle {
-                        width: 44; height: 44; radius: 14
+                        width: sidebarExpanded ? 44 : 34; height: sidebarExpanded ? 44 : 34; radius: 12
                         color: accent
                         Image { anchors.fill: parent; anchors.margins: 3; source: Qt.resolvedUrl("../assets/logo_toolkit.svg"); fillMode: Image.PreserveAspectFit; smooth: true; mipmap: true; asynchronous: true; sourceSize.width: 512; sourceSize.height: 512; visible: status === Image.Ready }
                     }
                     Column {
+                        visible: sidebarExpanded
                         spacing: 2
                         Text { text: "PUNTOS VUELA"; color: "#202226"; font.pixelSize: 13; font.bold: true; font.letterSpacing: 1.2 }
                         Text { text: "TOOLKIT"; color: "#51430A"; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
+                    }
+                    ToolButton {
+                        Layout.preferredWidth: 28
+                        Layout.preferredHeight: 34
+                        Layout.alignment: Qt.AlignRight
+                        text: sidebarExpanded ? "‹" : "☰"
+                        font.pixelSize: 20
+                        palette.buttonText: "#202226"
+                        ToolTip.visible: hovered
+                        ToolTip.text: sidebarExpanded ? "Contraer menú" : "Expandir menú"
+                        onClicked: sidebarExpanded = !sidebarExpanded
                     }
                 }
 
                 Rectangle { Layout.fillWidth: true; height: 1; color: "#E0AD00" }
 
-                Text { text: "ESPACIO DE TRABAJO"; color: "#665400"; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
+                Text { visible: sidebarExpanded; text: "ESPACIO DE TRABAJO"; color: "#665400"; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
                 Repeater {
                     model: [
                         {name:"Inicio", glyph:"⌂"},
@@ -350,29 +363,29 @@ ApplicationWindow {
                         Row {
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
-                            anchors.leftMargin: 14
-                            spacing: 13
-                            Text { text: modelData.glyph; color: activePage === modelData.name ? "#FFC400" : "#292F36"; font.pixelSize: 18; width: 18; horizontalAlignment: Text.AlignHCenter }
-                            Text { text: modelData.name; color: activePage === modelData.name ? "#FFFFFF" : "#292F36"; font.pixelSize: 13; font.weight: activePage === modelData.name ? Font.DemiBold : Font.Normal }
+                            x: sidebarExpanded ? 14 : (parent.width - width) / 2
+                            spacing: sidebarExpanded ? 13 : 0
+                            Text { text: modelData.glyph; color: activePage === modelData.name ? "#FFC400" : "#292F36"; font.pixelSize: 18; width: 24; horizontalAlignment: Text.AlignHCenter }
+                            Text { visible: sidebarExpanded; text: modelData.name; color: activePage === modelData.name ? "#FFFFFF" : "#292F36"; font.pixelSize: 13; font.weight: activePage === modelData.name ? Font.DemiBold : Font.Normal; elide: Text.ElideRight; width: 142 }
                         }
                         MouseArea { anchors.fill: parent; onClicked: activePage = modelData.name; cursorShape: Qt.PointingHandCursor }
                     }
                 }
 
                 Item { Layout.fillHeight: true }
-                Text { text: "SISTEMA"; color: "#665400"; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
+                Text { visible: sidebarExpanded; text: "SISTEMA"; color: "#665400"; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1.1 }
                 Repeater {
                     model: ["Ayuda"]
                     delegate: Text {
                         Layout.fillWidth: true
-                        text: "  ◦   " + modelData
+                        text: sidebarExpanded ? "  ◦   " + modelData : "◦"
                         color: activePage === modelData ? "#292F36" : "#292F36"
                         font.pixelSize: 13
                         padding: 10
                         MouseArea { anchors.fill: parent; onClicked: activePage = modelData; cursorShape: Qt.PointingHandCursor }
                     }
                 }
-                Text { text: "VERSIÓN 0.1.0 · PREVIEW"; color: "#665400"; font.pixelSize: 9; Layout.bottomMargin: 4 }
+                Text { visible: sidebarExpanded; text: "VERSIÓN 0.1.0 · PREVIEW"; color: "#665400"; font.pixelSize: 9; Layout.bottomMargin: 4 }
             }
         }
 
@@ -963,8 +976,29 @@ ApplicationWindow {
                                     TextField { id: enlaceField; Layout.fillWidth: true; placeholderText: "Web oficial o descarga" }
                                     ComboBox { id: distroField; Layout.fillWidth: true; model: ["Ubuntu", "Debian", "Linux Mint", "Fedora", "Otra distribución", "Cualquier distribución"] }
                                 }
-                                TextArea { id: motivoField; Layout.fillWidth: true; Layout.preferredHeight: 90; placeholderText: "Utilidad y necesidad que cubriría *"; wrapMode: TextEdit.Wrap }
-                                TextArea { id: observacionesField; Layout.fillWidth: true; Layout.preferredHeight: 64; placeholderText: "Observaciones (opcional)"; wrapMode: TextEdit.Wrap }
+                                TextArea {
+                                    id: motivoField
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 104
+                                    visible: true
+                                    placeholderText: "Motivo: utilidad y necesidad que cubriría la aplicación *"
+                                    placeholderTextColor: muted
+                                    color: primaryText
+                                    wrapMode: TextEdit.Wrap
+                                    selectByMouse: true
+                                    background: Rectangle { color: searchColor; border.color: panelBorder; radius: 8 }
+                                }
+                                TextArea {
+                                    id: observacionesField
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 76
+                                    placeholderText: "Observaciones adicionales (opcional)"
+                                    placeholderTextColor: muted
+                                    color: primaryText
+                                    wrapMode: TextEdit.Wrap
+                                    selectByMouse: true
+                                    background: Rectangle { color: searchColor; border.color: panelBorder; radius: 8 }
+                                }
                                 TextField {
                                     id: honeypotField
                                     visible: false
@@ -991,28 +1025,28 @@ ApplicationWindow {
                                         CheckBox {
                                             id: dataProtectionAcknowledged
                                             Layout.fillWidth: true
+                                            enabled: true
                                             contentItem: Label {
-                                                text: 'He leído la <a href="https://toolkit.javigallego.es/privacy">información sobre protección de datos</a>.'
-                                                textFormat: Text.RichText; color: secondaryText; wrapMode: Text.WordWrap
-                                                onLinkActivated: Qt.openUrlExternally(link)
+                                                text: "He leído la información sobre protección de datos (consulta el botón correspondiente)."
+                                                textFormat: Text.PlainText; color: primaryText; opacity: 1; wrapMode: Text.WordWrap; font.pixelSize: 12
                                             }
                                         }
                                         CheckBox {
                                             id: privacyAcknowledged
                                             Layout.fillWidth: true
+                                            enabled: true
                                             contentItem: Label {
-                                                text: 'He leído la <a href="https://toolkit.javigallego.es/privacy">política de privacidad</a>.'
-                                                textFormat: Text.RichText; color: secondaryText; wrapMode: Text.WordWrap
-                                                onLinkActivated: Qt.openUrlExternally(link)
+                                                text: "He leído la política de privacidad (consulta el documento completo)."
+                                                textFormat: Text.PlainText; color: primaryText; opacity: 1; wrapMode: Text.WordWrap; font.pixelSize: 12
                                             }
                                         }
                                         CheckBox {
                                             id: termsAcknowledged
                                             Layout.fillWidth: true
+                                            enabled: true
                                             contentItem: Label {
-                                                text: 'He leído y acepto los <a href="https://toolkit.javigallego.es/terms">términos y condiciones de uso</a>.'
-                                                textFormat: Text.RichText; color: secondaryText; wrapMode: Text.WordWrap
-                                                onLinkActivated: Qt.openUrlExternally(link)
+                                                text: "He leído y acepto los términos y condiciones de uso (consulta el documento completo)."
+                                                textFormat: Text.PlainText; color: primaryText; opacity: 1; wrapMode: Text.WordWrap; font.pixelSize: 12
                                             }
                                         }
                                         Label {
