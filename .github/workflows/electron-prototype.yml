@@ -20,13 +20,13 @@ jobs:
   build:
     timeout-minutes: 30
     runs-on: ubuntu-22.04
-    container: ubuntu:20.04
+    container: debian:bullseye-slim
     steps:
-      - name: Install Ubuntu 20.04 build and runtime dependencies
+      - name: Install glibc 2.31 build and runtime dependencies
         run: |
           export DEBIAN_FRONTEND=noninteractive
-          sed -i -E 's#https?://(archive|security).ubuntu.com/ubuntu#http://old-releases.ubuntu.com/ubuntu#g' /etc/apt/sources.list
-          apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=25 update
+          sed -i -e 's#deb.debian.org/debian#archive.debian.org/debian#g' -e 's#security.debian.org/debian-security#archive.debian.org/debian-security#g' /etc/apt/sources.list
+          apt-get -o Acquire::Check-Valid-Until=false -o Acquire::Retries=1 -o Acquire::http::Timeout=25 update
           apt-get install -y ca-certificates curl git xz-utils libfuse2 xvfb             libgtk-3-0 libnss3 libasound2 libxss1 libxtst6 libgbm1             libxkbcommon0 libatspi2.0-0 libdrm2 libx11-xcb1 libxcb-dri3-0             libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libxrender1             libxshmfence1
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,7 +46,7 @@ jobs:
       - name: Package AppImage
         working-directory: desktop-electron
         run: npm run dist:appimage
-      - name: Smoke test packaged AppImage on Ubuntu 20.04
+      - name: Smoke test packaged AppImage on glibc 2.31 (Ubuntu 20.04 baseline)
         working-directory: desktop-electron
         shell: bash
         run: |
@@ -64,10 +64,10 @@ jobs:
             echo "Se han detectado errores de bibliotecas o arranque."
             exit 1
           fi
-      - name: Upload Ubuntu 20.04 AppImage
+      - name: Upload glibc 2.31 compatible AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: puntos-vuela-toolkit-electron-ubuntu2004-x86_64
+          name: puntos-vuela-toolkit-electron-glibc231-x86_64
           path: desktop-electron/release/*.AppImage
           if-no-files-found: error
           retention-days: 30
