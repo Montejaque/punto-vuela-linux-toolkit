@@ -96,7 +96,27 @@ export async function api(method:string,args:any={}):Promise<any>{
     case "apps.update": {const p=managedPath(args.path);await updaterInstall();const check=await updateCheck(p);if(!check.supported)throw new Error(check.message);if(!check.available)return {updated:false,message:check.message};const result=await new Promise<any>((resolve,reject)=>{const child=spawn(path.join(DATA,"tools","appimageupdatetool-x86_64.AppImage"),["--overwrite",p]);let out="";child.stdout.on("data",d=>out+=d);child.stderr.on("data",d=>out+=d);child.on("error",reject);child.on("close",code=>code===0?resolve({updated:true,message:out||"AppImage actualizada."}):reject(new Error(out||"Error al actualizar.")));});await fs.access(p);return result;}
     case "tools.openExternal": {const u=new URL(args.url);if(u.protocol!=="https:")throw new Error("Solo se pueden abrir enlaces HTTPS.");await shell.openExternal(u.href);return {ok:true};}
     case "mail.send": {const response=await fetch(MAIL,{method:"POST",headers:{"content-type":"application/json","accept":"application/json"},body:JSON.stringify(args.data),signal:AbortSignal.timeout(30000)});const result=await response.json().catch(()=>({ok:false,message:"Respuesta no válida del servicio de correo."}));if(!response.ok||!result.ok)throw new Error(result.message||"No se pudo enviar la solicitud.");return result;}
-    case "centres.list": {const html=await (await fetch("https://puntosvuela.es/centros",{headers:{"user-agent":UA},signal:AbortSignal.timeout(30000)})).text();const matches=[...html.matchAll(/<h[2-6][^>]*>\s*<a[^>]*href=["']([^"']*\/centros\/([^"'/?#]+))["'][^>]*>(.*?)<\/a>\s*<\/h[2-6]>([\s\S]*?)(?=<h[2-6]|$)/gi)];const clean=(s:string)=>s.replace(/<[^>]*>/g," ").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/\s+/g," ").trim();return matches.map(m=>({name:clean(m[3]),slug:m[2],details:clean(m[4]),url:"https://puntosvuela.es/centros/"+m[2]})).filter(x=>x.name);}
+    case "centres.list": {
+      const cacheFile=path.join(CACHE,"centres.json");
+      const rows=await cachedJson(cacheFile,7*24*3600*1000,async()=>{
+        const load=async(page:number)=>{const url=page===1?"https://puntosvuela.es/centros":`https://puntosvuela.es/centros?page=${page}`;const response=await fetch(url,{headers:{"user-agent":UA},signal:AbortSignal.timeout(30000)});if(!response.ok)throw new Error("Error consultando el directorio de centros.");return response.text();};
+        const first=await load(1);const last=Math.max(1,...[...first.matchAll(/[?&]page=(\\d+)/g)].map(m=>Number(m[1])));
+        const pages=[first,...await Promise.all(Array.from({length:Math.max(0,last-1)},(_,i)=>load(i+2)))];
+        const result=new Map<string,any>();
+        for(const html of pages){const matches=[...html.matchAll(/<h[2-6][^>]*>\\s*<a[^>]*href=["']([^"']*\\/centros\\/([^"'/?#]+))["'][^>]*>(.*?)<\\/a>\\s*<\\/h[2-6]>([\\s\\S]*?)(?=<h[2-6]|$)/gi)];
+          for(const m of matches){const clean=(s:string)=>s.replace(/<[^>]*>/g," ").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/\\s+/g," ").trim();const name=clean(m[3]),slug=m[2],details=clean(m[4]);if(name)result.set(slug,{name,slug,details,url:"https://puntosvuela.es/centros/"+slug});}
+        }return [...result.values()];
+      });return rows;
+    }
+    case "centres.details": {
+      const slug=String(args.slug||"").replace(/^\\/+|\\/+$/g,"");if(!/^[\\w-]+$/u.test(slug))throw new Error("Ficha de centro no válida.");
+      const response=await fetch("https://puntosvuela.es/centros/"+encodeURIComponent(slug),{headers:{"user-agent":UA},signal:AbortSignal.timeout(30000)});if(!response.ok)throw new Error("No se pudo abrir la ficha del centro.");const html=await response.text();
+      const text=html.replace(/<(script|style|noscript)[\\s\\S]*?<\\/\\1>/gi," ").replace(/<[^>]*>/g," ").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/\\s+/g," ");
+      const contact=text.match(/Información de contacto\\s+(.*?)\\s+Agentes de innovación local/i);const ail=text.match(/Agentes de innovación local\\s+(.+?)(?:\\s+Horario de apertura|\\s+Verificar disponibilidad|\\s+Te estamos esperando)/i);
+      if(!contact||!ail)throw new Error("La ficha no contiene datos de contacto reconocibles.");
+      const emails=[...contact[1].matchAll(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}/gi)].map(m=>m[0]);const phones=[...contact[1].matchAll(/(?<!\\d)(?:\\+34[\\s.-]?)?[6789](?:[\\s()./-]*\\d){8}(?!\\d)/g)].map(m=>m[0].replace(/\\s+/g," ").trim());
+      return {slug,ail:ail[1].trim(),phone:[...new Set(phones)].join(" / "),email:emails[0]||"",sourceUrl:"https://puntosvuela.es/centros/"+encodeURIComponent(slug)};
+    }
     case "app.info": return {version:app.getVersion(),platform:process.platform,appImagesDirectory:APP_DIR};
     default: throw new Error("Operación no reconocida.");
   }
