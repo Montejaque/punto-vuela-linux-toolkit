@@ -64,14 +64,18 @@ function buildMime(data) {
   const html = '<!doctype html><html lang="es"><meta charset="utf-8"><body style="margin:0;padding:28px 12px;background:#f2f4f7;font-family:Arial,Helvetica,sans-serif;color:#202833">' +
     '<table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td align="center">' +
     '<table role="presentation" width="640" cellspacing="0" cellpadding="0" style="max-width:640px;background:#fff;border-radius:16px;overflow:hidden">' +
-    '<tr><td style="background:#303740;border-top:6px solid #FAD100;padding:25px 30px"><div style="font-size:11px;letter-spacing:2px;color:#d9dee5;font-weight:bold">PUNTO VUELA</div>' +
-    '<div style="font-size:23px;line-height:1.3;color:#fff;font-weight:bold;margin-top:5px">Solicitud de incorporación de aplicación</div></td></tr>' +
+    '<tr><td style="background:#303740;border-top:6px solid #F3D54E;padding:22px 30px"><table role="presentation" cellspacing="0" cellpadding="0"><tr>' +
+    '<td style="vertical-align:middle;padding-right:16px"><img src="cid:pv-toolkit-logo" width="66" height="66" alt="Puntos Vuela Toolkit" style="display:block;width:66px;height:66px;border-radius:12px;background:#F3D54E"></td>' +
+    '<td style="vertical-align:middle"><div style="font-size:11px;letter-spacing:2px;color:#d9dee5;font-weight:bold">PUNTOS VUELA</div>' +
+    '<div style="font-size:23px;line-height:1.3;color:#fff;font-weight:bold;margin-top:5px">Solicitud de incorporación de aplicación</div></td></tr></table></td></tr>' +
     '<tr><td style="padding:25px 30px 12px;font-size:14px;line-height:1.6">Se ha recibido una propuesta desde Punto Vuela Linux Toolkit.</td></tr>' +
     '<tr><td style="padding:8px 22px 26px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0">' + table + "</table></td></tr>" +
-    '<tr><td style="padding:18px 30px;background:#f7f8fa;color:#788392;font-size:11px;line-height:1.5">Mensaje generado automáticamente por Punto Vuela Linux Toolkit.</td></tr>' +
+    '<tr><td style="padding:18px 30px;background:#f7f8fa;color:#788392;font-size:11px;line-height:1.5">Mensaje generado automáticamente por Puntos Vuela Toolkit.</td></tr>' +
     "</table></td></tr></table></body></html>";
   const text = rows.map(([label, value]) => label + ": " + String(value ?? "")).join("\n");
-  const boundary = "pvtoolkit_" + crypto.randomUUID().replace(/-/g, "");
+  const alternative = "pv-alt-" + crypto.randomUUID().replace(/-/g, "");
+  const related = "pv-related-" + crypto.randomUUID().replace(/-/g, "");
+  const logoBase64 = "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAwIDMwMDAiPjxyZWN0IHdpZHRoPSIzMDAwIiBoZWlnaHQ9IjMwMDAiIGZpbGw9IiNGM0Q1NEUiLz48cGF0aCBmaWxsPSIjMDAwMDAwIiBkPSJtNDgzIDUxNC43M2MwIDEuMTUgMTU4LjIxIDQzOC4zOCAzNTEuNTEgOTcxLjExIDE5My4zIDUzMi43MyAzNTQuMzkgOTc1LjcyIDM1Ny4yNyA5ODQuOTJsNS43NSAxNS41MyAyOTkuNzMtMS4xNSAyOTkuNzQtMS43MiAzNjAuMTQtOTgzLjc3IDM2MC4xNC05ODMuNzctMjk4LjU5LTEuNzNjLTE2NC41My0wLjU3LTMwMC4zMS0wLjU3LTMwMC44OCAwLjU4LTEuMTUgMS4xNS03My4wNiAyNTcuNzMtMTU5Ljk0IDU3MS4yN2wtMTU3LjA1IDU2OC45OC0zOC41NSAzMTMuNTRjLTIwLjcxIDE3Mi41OS0zNy45NyAzMTYuOTktMzcuOTcgMzIwLjQ1IDAgNC4wMi01LjE4IDcuNDctMTEuNSA3LjQ3LTYuMzMgMC0xMS41MS0yLjg3LTExLjUxLTYuMzIgMC0zLjQ2LTE2LjY4LTE0Ni4xMy0zNy40LTMxNy41N2wtMzcuOTctMzExLjgyLTE3MC44Ni01NzMuNTgtMTcwLjg3LTU3NC4xNWgtMzAwLjMxYy0xNjUuNjggMC0zMDAuODggMS4xNS0zMDAuODggMS43M3oiLz48L3N2Zz4=";
   return [
     "From: Punto Vuela Linux Toolkit <" + SENDER + ">",
     "To: " + RECIPIENT,
@@ -79,19 +83,30 @@ function buildMime(data) {
     "Reply-To: " + data.reply_email,
     "Subject: =?UTF-8?B?" + btoa(unescape(encodeURIComponent("Solicitud de aplicación"))) + "?=",
     "MIME-Version: 1.0",
-    'Content-Type: multipart/alternative; boundary="' + boundary + '"',
+    'Content-Type: multipart/related; boundary="' + related + '"',
     "",
-    "--" + boundary,
+    "--" + related,
+    'Content-Type: multipart/alternative; boundary="' + alternative + '"',
+    "",
+    "--" + alternative,
     "Content-Type: text/plain; charset=UTF-8",
     "Content-Transfer-Encoding: base64",
     "",
     btoa(unescape(encodeURIComponent(text))),
-    "--" + boundary,
+    "--" + alternative,
     "Content-Type: text/html; charset=UTF-8",
     "Content-Transfer-Encoding: base64",
     "",
     btoa(unescape(encodeURIComponent(html))),
-    "--" + boundary + "--",
+    "--" + alternative + "--",
+    "--" + related,
+    'Content-Type: image/svg+xml; name="logo_toolkit.svg"',
+    "Content-Transfer-Encoding: base64",
+    "Content-ID: <pv-toolkit-logo>",
+    'Content-Disposition: inline; filename="logo_toolkit.svg"',
+    "",
+    logoBase64,
+    "--" + related + "--",
     "",
   ].join("\r\n");
 }
