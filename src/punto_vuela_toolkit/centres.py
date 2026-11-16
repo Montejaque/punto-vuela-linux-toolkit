@@ -15,7 +15,7 @@ PROVINCES = {
     "huelva", "jaén", "málaga", "sevilla",
 }
 CACHE_FILE = Path.home() / ".cache" / "punto-vuela-toolkit" / "centros.json"
-POSTAL_RE = re.compile(r"^(.+?)\\s*\\((\\d{5})\\)\\s*$")
+POSTAL_RE = re.compile(r"^(.+?)\s*\((\d{5})\)\s*$")
 
 
 class _DirectoryParser(HTMLParser):
@@ -60,7 +60,7 @@ class _DirectoryParser(HTMLParser):
 
     @staticmethod
     def _clean(value: str) -> str:
-        return re.sub(r"\\s+", " ", value).strip()
+        return re.sub(r"\s+", " ", value).strip()
 
     def _finish_paragraph(self) -> None:
         if self.paragraph is not None:
@@ -77,7 +77,7 @@ class _DirectoryParser(HTMLParser):
             return
         name = self.current_name
         for province in PROVINCES:
-            name = re.sub(r",\\s*" + re.escape(province) + r"$", "", name, flags=re.I)
+            name = re.sub(r",\s*" + re.escape(province) + r"$", "", name, flags=re.I)
         municipality = ""
         province_value = ""
         province_index = -1
@@ -125,7 +125,7 @@ class _PlainTextParser(HTMLParser):
 
     def handle_data(self, data: str) -> None:
         if not self.ignored:
-            value = re.sub(r"\\s+", " ", data).strip()
+            value = re.sub(r"\s+", " ", data).strip()
             if value:
                 self.parts.append(value)
 
@@ -141,7 +141,7 @@ def _parse_page(html: str) -> tuple[list[dict[str, str]], int]:
     parser = _DirectoryParser()
     parser.feed(html)
     records = parser.finish()
-    page_numbers = [int(n) for n in re.findall(r"[?&]page=(\\d+)", html)]
+    page_numbers = [int(n) for n in re.findall(r"[?&]page=(\d+)", html)]
     return records, max(page_numbers, default=1)
 
 
@@ -210,23 +210,23 @@ def load_centre_details(slug: str) -> dict[str, str]:
     parser.feed(html)
     text = " ".join(parser.parts)
     contact_match = re.search(
-        r"Información de contacto\\s+(.*?)\\s+Agentes de innovación local",
+        r"Información de contacto\s+(.*?)\s+Agentes de innovación local",
         text, flags=re.I,
     )
     ail_match = re.search(
-        r"Agentes de innovación local\\s+(.+?)(?:\\s+Horario de apertura|\\s+Verificar disponibilidad|\\s+Te estamos esperando)",
+        r"Agentes de innovación local\s+(.+?)(?:\s+Horario de apertura|\s+Verificar disponibilidad|\s+Te estamos esperando)",
         text, flags=re.I,
     )
     if not contact_match or not ail_match:
         raise RuntimeError("La ficha oficial no contiene los datos de contacto y del AIL en un formato reconocible.")
 
     contact_section = contact_match.group(1)
-    ail_name = re.sub(r"\\s+", " ", ail_match.group(1)).strip()
-    ail_name = re.split(r"\\s+(?:Guadalinfo|Punto Vuela)\\b", ail_name, maxsplit=1, flags=re.I)[0].strip()
+    ail_name = re.sub(r"\s+", " ", ail_match.group(1)).strip()
+    ail_name = re.split(r"\s+(?:Guadalinfo|Punto Vuela)\b", ail_name, maxsplit=1, flags=re.I)[0].strip()
 
-    emails = re.findall(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}", contact_section, flags=re.I)
-    phones = re.findall(r"(?<!\\d)(?:\\+34[\\s.-]?)?[6789](?:[\\s()./-]*\\d){8}(?!\\d)", contact_section)
-    phone = " / ".join(dict.fromkeys(re.sub(r"\\s+", " ", value).strip() for value in phones))
+    emails = re.findall(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", contact_section, flags=re.I)
+    phones = re.findall(r"(?<!\d)(?:\+34[\s.-]?)?[6789](?:[\s()./-]*\d){8}(?!\d)", contact_section)
+    phone = " / ".join(dict.fromkeys(re.sub(r"\s+", " ", value).strip() for value in phones))
     email = emails[0] if emails else ""
 
     return {
