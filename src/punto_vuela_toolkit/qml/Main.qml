@@ -41,6 +41,7 @@ ApplicationWindow {
     property var filteredPuntoVuelaCentres: []
     property bool puntoVuelaCentresLoading: false
     property string selectedCentreSlug: ""
+    property string selectedCentreSourceUrl: ""
     property bool centreDetailsLoading: false
     property bool dataProtectionRead: false
     property bool privacyPolicyRead: false
@@ -109,6 +110,7 @@ ApplicationWindow {
                 return
             }
             const details = result.details || {}
+            selectedCentreSourceUrl = details.source_url || ""
             ailField.text = details.ail || ""
             telefonoField.text = details.phone || ""
             correoField.text = details.email || ""
@@ -118,7 +120,7 @@ ApplicationWindow {
             if (!details.email) missing.push("correo")
             centreDetailsStatus.text = missing.length
                 ? "Datos cargados desde la ficha oficial. No publicados: " + missing.join(", ") + ". Puedes completar esos campos manualmente."
-                : "Datos del AIL, teléfono y correo cargados desde la ficha oficial de Puntos Vuela."
+                : "Nombre del AIL y datos de contacto del centro cargados desde la ficha oficial."
             centreDetailsStatus.color = secondaryText
         }
         function onPuntoVuelaToolsLoaded(payload) {
@@ -271,6 +273,7 @@ ApplicationWindow {
     function selectPuntoVuelaCentre(item) {
         if (!item) return
         selectedCentreSlug = item.slug || ""
+        selectedCentreSourceUrl = ""
         municipioField.text = item.municipality || ""
         provinciaField.text = item.province || ""
         ailField.text = ""
@@ -921,7 +924,7 @@ ApplicationWindow {
                                     ComboBox {
                                         id: puntoVuelaField
                                         Layout.fillWidth: true
-                                        Layout.columnSpan: 2
+                                        Layout.columnSpan: parent.columns
                                         model: filteredPuntoVuelaCentres
                                         textRole: "name"
                                         enabled: !puntoVuelaCentresLoading && filteredPuntoVuelaCentres.length > 0
@@ -935,10 +938,16 @@ ApplicationWindow {
                                         id: centreDetailsStatus
                                         Layout.fillWidth: true
                                         Layout.columnSpan: 2
-                                        text: "Al seleccionar el centro se cargarán los datos profesionales publicados del/de la AIL."
+                                        text: "Al seleccionar el centro se consultará su ficha oficial y se completarán los datos públicos del AIL y del centro."
                                         color: muted
                                         wrapMode: Text.WordWrap
                                         font.pixelSize: 10
+                                    }
+                                    Button {
+                                        Layout.columnSpan: parent.columns
+                                        visible: selectedCentreSourceUrl.length > 0
+                                        text: "Ver ficha oficial en puntosvuela.es"
+                                        onClicked: Qt.openUrlExternally(selectedCentreSourceUrl)
                                     }
                                     TextField { id: municipioField; Layout.fillWidth: true; placeholderText: "Municipio"; readOnly: true }
                                     TextField { id: provinciaField; Layout.fillWidth: true; placeholderText: "Provincia"; readOnly: true }
