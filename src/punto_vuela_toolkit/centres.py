@@ -148,7 +148,7 @@ def _parse_page(html: str) -> tuple[list[dict[str, str]], int]:
 def _read_cache() -> list[dict[str, str]]:
     try:
         data = json.loads(CACHE_FILE.read_text(encoding="utf-8"))
-        if isinstance(data, list) and len(data) >= 100:
+        if isinstance(data, list) and len(data) >= 100 and all(isinstance(item, dict) and "slug" in item for item in data):
             return data
     except (OSError, ValueError):
         pass
@@ -196,6 +196,23 @@ def load_centres(force: bool = False) -> list[dict[str, str]]:
     return result
 
 
+def _parse_centre_details(html: str, slug: str) -> dict[str, str]:
+    parser = _PlainTextParser()
+    parser.feed(html)
+    text = " ".join(parser.parts)
+    contact_match = re.search(r"Información de contacto\s+(.*?)\s+Agentes de innovación local", text, flags=re.I)
+    ail_match = re.search(r"Agentes de innovación local\s+(.+?)(?:\s+Horario de apertura|\s+Verificar disponibilidad|\s+Te estamos esperando)", text, flags=re.I)
+    if not contact_match or not ail_match:
+        raise RuntimeError("La ficha oficial no contiene los datos de contacto y del AIL en un formato reconocible.")
+    contact_section = contact_match.group(1)
+    ail_name = re.sub(r"\s+", " ", ail_match.group(1)).strip()
+    ail_name = re.split(r"\s+(?:Guadalinfo|Punto Vuela)\b", ail_name, maxsplit=1, flags=re.I)[0].strip()
+    emails = re.findall(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", contact_section, flags=re.I)
+    phones = re.findall(r"(?<!\d)(?:\+34[\s.-]?)?[6789](?:[\s()./-]*\d){8}(?!\d)", contact_section)
+    phone = " / ".join(dict.fromkeys(re.sub(r"\s+", " ", value).strip() for value in phones))
+    return {"slug": slug, "ail": ail_name, "phone": phone, "email": emails[0] if emails else "", "source_url": f"{BASE_URL}/{quote(slug)}"}
+
+
 def load_centre_details(slug: str) -> dict[str, str]:
     """Fetch public AIL/contact details from the selected official centre page."""
     clean_slug = re.sub(r"[^a-zA-Z0-9-]", "", slug or "")
@@ -205,34 +222,4 @@ def load_centre_details(slug: str) -> dict[str, str]:
     request = Request(url, headers={"User-Agent": "PuntoVuelaToolkit/1.1 (official-centre-contact-prefill)"})
     with urlopen(request, timeout=20) as response:
         html = response.read().decode("utf-8", errors="replace")
-
-    parser = _PlainTextParser()
-    parser.feed(html)
-    text = " ".join(parser.parts)
-    contact_match = re.search(
-        r"Información de contacto\s+(.*?)\s+Agentes de innovación local",
-        text, flags=re.I,
-    )
-    ail_match = re.search(
-        r"Agentes de innovación local\s+(.+?)(?:\s+Horario de apertura|\s+Verificar disponibilidad|\s+Te estamos esperando)",
-        text, flags=re.I,
-    )
-    if not contact_match or not ail_match:
-        raise RuntimeError("La ficha oficial no contiene los datos de contacto y del AIL en un formato reconocible.")
-
-    contact_section = contact_match.group(1)
-    ail_name = re.sub(r"\s+", " ", ail_match.group(1)).strip()
-    ail_name = re.split(r"\s+(?:Guadalinfo|Punto Vuela)\b", ail_name, maxsplit=1, flags=re.I)[0].strip()
-
-    emails = re.findall(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", contact_section, flags=re.I)
-    phones = re.findall(r"(?<!\d)(?:\+34[\s.-]?)?[6789](?:[\s()./-]*\d){8}(?!\d)", contact_section)
-    phone = " / ".join(dict.fromkeys(re.sub(r"\s+", " ", value).strip() for value in phones))
-    email = emails[0] if emails else ""
-
-    return {
-        "slug": clean_slug,
-        "ail": ail_name,
-        "phone": phone,
-        "email": email,
-        "source_url": url,
-    }
+    return _parse_centre_details(html, clean_slug)
