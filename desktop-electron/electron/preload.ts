@@ -1,6 +1,8 @@
-import { contextBridge } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 
-contextBridge.exposeInMainWorld("puntoVuela", Object.freeze({
+const api = Object.freeze({
   platform: process.platform,
-  version: "0.2.0-preview"
-}));
+  version: "0.3.0",
+  invoke: (method: string, args?: unknown) => ipcRenderer.invoke("pv:invoke", method, args)
+});
+contextBridge.exposeInMainWorld("puntoVuela", api);
