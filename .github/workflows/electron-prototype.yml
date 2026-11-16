@@ -1,4 +1,4 @@
-name: Electron prototype
+name: Electron Linux AppImage
 
 on:
   push:
@@ -19,16 +19,25 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-22.04
+    container: ubuntu:20.04
     steps:
+      - name: Install Ubuntu 20.04 build and runtime dependencies
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get update
+          apt-get install -y ca-certificates curl git xz-utils libfuse2 xvfb             libgtk-3-0 libnss3 libasound2 libxss1 libxtst6 libgbm1             libxkbcommon0 libatspi2.0-0 libdrm2 libx11-xcb1 libxcb-dri3-0             libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libxrender1             libxshmfence1
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
+          cache-dependency-path: desktop-electron/package-lock.json
       - name: Install dependencies
         working-directory: desktop-electron
-        run: npm install
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install --package-lock-only && npm ci; fi
       - name: TypeScript checks
         working-directory: desktop-electron
         run: npm run typecheck
@@ -37,13 +46,29 @@ jobs:
         run: npm run build
       - name: Package AppImage
         working-directory: desktop-electron
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: npm run dist:appimage
-      - name: Upload prototype AppImage
+      - name: Smoke test packaged AppImage on Ubuntu 20.04
+        working-directory: desktop-electron
+        shell: bash
+        run: |
+          chmod +x release/*.AppImage
+          set +e
+          timeout 20s xvfb-run -a ./release/*.AppImage --appimage-extract-and-run --no-sandbox > /tmp/pv-electron-smoke.log 2>&1
+          code=$?
+          set -e
+          cat /tmp/pv-electron-smoke.log
+          if [ "$code" -ne 124 ] && [ "$code" -ne 0 ]; then
+            echo "La AppImage no ha superado el arranque de prueba (código $code)."
+            exit "$code"
+          fi
+          if grep -Eqi "error while loading shared libraries|GLIBC_[0-9.]+ not found|FATAL" /tmp/pv-electron-smoke.log; then
+            echo "Se han detectado errores de bibliotecas o arranque."
+            exit 1
+          fi
+      - name: Upload Ubuntu 20.04 AppImage
         uses: actions/upload-artifact@v4
         with:
-          name: puntos-vuela-toolkit-electron-prototype
+          name: puntos-vuela-toolkit-electron-ubuntu2004-x86_64
           path: desktop-electron/release/*.AppImage
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 30
