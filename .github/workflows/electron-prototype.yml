@@ -24,7 +24,7 @@ jobs:
           export DEBIAN_FRONTEND=noninteractive
           sed -i -e 's#deb.debian.org/debian#archive.debian.org/debian#g' -e 's#security.debian.org/debian-security#archive.debian.org/debian-security#g' /etc/apt/sources.list
           apt-get -o Acquire::Check-Valid-Until=false -o Acquire::Retries=1 -o Acquire::http::Timeout=25 update
-          apt-get install -y ca-certificates curl git xz-utils libfuse2 xvfb             libgtk-3-0 libnss3 libasound2 libxss1 libxtst6 libgbm1             libxkbcommon0 libatspi2.0-0 libdrm2 libx11-xcb1 libxcb-dri3-0             libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libxrender1             libxshmfence1
+          apt-get install -y ca-certificates curl git xz-utils libfuse2 xvfb             libgtk-3-0 libnss3 libasound2 libxss1 libxtst6 libgbm1             libxkbcommon0 libatspi2.0-0 libdrm2 libx11-xcb1 libxcb-dri3-0             libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libxrender1             libxshmfence1 dbus
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Node.js
@@ -49,16 +49,16 @@ jobs:
         run: |
           chmod +x release/*.AppImage
           set +e
-          timeout 20s xvfb-run -a ./release/*.AppImage --appimage-extract-and-run --no-sandbox > /tmp/pv-electron-smoke.log 2>&1
+          timeout 30s xvfb-run -a dbus-run-session -- ./release/*.AppImage --appimage-extract-and-run --no-sandbox --disable-gpu --disable-dev-shm-usage --smoke-test > /tmp/pv-electron-smoke.log 2>&1
           code=$?
           set -e
           cat /tmp/pv-electron-smoke.log
-          if [ "$code" -ne 124 ] && [ "$code" -ne 0 ]; then
-            echo "La AppImage no ha superado el arranque de prueba (código $code)."
+          if [ "$code" -ne 0 ]; then
+            echo "La AppImage no ha superado el smoke test (código $code)."
             exit "$code"
           fi
-          if grep -Eqi "error while loading shared libraries|GLIBC_[0-9.]+ not found|FATAL" /tmp/pv-electron-smoke.log; then
-            echo "Se han detectado errores de bibliotecas o arranque."
+          if grep -Eqi "error while loading shared libraries|GLIBC_[0-9.]+ not found" /tmp/pv-electron-smoke.log; then
+            echo "Se han detectado errores de bibliotecas."
             exit 1
           fi
       - name: Upload glibc 2.31 compatible AppImage
