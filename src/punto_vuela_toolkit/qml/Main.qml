@@ -1037,9 +1037,9 @@ ApplicationWindow {
                                             id: dataProtectionAcknowledged
                                             Layout.fillWidth: true
                                             spacing: rem(0.625)
-                                            implicitHeight: Math.max(indicator.implicitHeight, legalLabel.implicitHeight) + rem(0.5)
+                                            implicitHeight: Math.max(dataProtectionIndicator.implicitHeight, dataProtectionLabel.implicitHeight) + rem(0.5)
                                             indicator: Rectangle {
-                                                id: indicator
+                                                id: dataProtectionIndicator
                                                 implicitWidth: rem(1.25); implicitHeight: rem(1.25)
                                                 x: 0; y: (parent.height - height) / 2
                                                 radius: rem(0.25)
@@ -1052,7 +1052,7 @@ ApplicationWindow {
                                             checked: dataProtectionRead
                                             onClicked: { if (!dataProtectionRead) dataProtectionDialog.open() }
                                             contentItem: Label {
-                                                id: legalLabel
+                                                id: dataProtectionLabel
                                                 text: "He leído la información sobre protección de datos (consulta el botón correspondiente)."
                                                 textFormat: Text.PlainText
                                                 color: primaryText
@@ -1068,9 +1068,9 @@ ApplicationWindow {
                                             id: privacyAcknowledged
                                             Layout.fillWidth: true
                                             spacing: rem(0.625)
-                                            implicitHeight: Math.max(indicator.implicitHeight, legalLabel.implicitHeight) + rem(0.5)
+                                            implicitHeight: Math.max(privacyIndicator.implicitHeight, privacyLabel.implicitHeight) + rem(0.5)
                                             indicator: Rectangle {
-                                                id: indicator
+                                                id: privacyIndicator
                                                 implicitWidth: rem(1.25); implicitHeight: rem(1.25)
                                                 x: 0; y: (parent.height - height) / 2
                                                 radius: rem(0.25)
@@ -1083,7 +1083,7 @@ ApplicationWindow {
                                             checked: privacyPolicyRead
                                             onClicked: { if (!privacyPolicyRead) privacyPolicyDialog.open() }
                                             contentItem: Label {
-                                                id: legalLabel
+                                                id: privacyLabel
                                                 text: "He leído la política de privacidad (consulta el documento completo)."
                                                 textFormat: Text.PlainText
                                                 color: primaryText
@@ -1099,9 +1099,9 @@ ApplicationWindow {
                                             id: termsAcknowledged
                                             Layout.fillWidth: true
                                             spacing: rem(0.625)
-                                            implicitHeight: Math.max(indicator.implicitHeight, legalLabel.implicitHeight) + rem(0.5)
+                                            implicitHeight: Math.max(termsIndicator.implicitHeight, termsLabel.implicitHeight) + rem(0.5)
                                             indicator: Rectangle {
-                                                id: indicator
+                                                id: termsIndicator
                                                 implicitWidth: rem(1.25); implicitHeight: rem(1.25)
                                                 x: 0; y: (parent.height - height) / 2
                                                 radius: rem(0.25)
@@ -1114,7 +1114,7 @@ ApplicationWindow {
                                             checked: termsAccepted
                                             onClicked: { if (!termsAccepted) termsDialog.open() }
                                             contentItem: Label {
-                                                id: legalLabel
+                                                id: termsLabel
                                                 text: "He leído y acepto los términos y condiciones de uso (consulta el documento completo)."
                                                 textFormat: Text.PlainText
                                                 color: primaryText
@@ -1203,7 +1203,7 @@ ApplicationWindow {
                                         }
                                     }
                                 }
-                                Text { id: emailStatus; Accessible.role: Accessible.Status; id: emailStatus; text: "Al pulsar «Enviar correo», la propuesta se envía al buzón corporativo y se remite una copia a tu dirección. La aplicación confirmará el resultado."; color: muted; font.pixelSize: rem(0.625); wrapMode: Text.WordWrap }
+                                Text { id: emailStatus; Accessible.role: Accessible.Status; text: "Al pulsar «Enviar correo», la propuesta se envía al buzón corporativo y se remite una copia a tu dirección. La aplicación confirmará el resultado."; color: muted; font.pixelSize: rem(0.625); wrapMode: Text.WordWrap }
                             }
                         }
                         Rectangle {
