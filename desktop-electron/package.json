@@ -1,15 +1,16 @@
 {
   "name": "puntos-vuela-toolkit",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "description": "Nueva edición de escritorio de Puntos Vuela Toolkit",
+  "description": "Centro de aplicaciones AppImage y herramientas Punto Vuela para Linux",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "concurrently -k \"vite --host 127.0.0.1\" \"wait-on tcp:127.0.0.1:5173 && electron .\"",
     "build": "tsc --noEmit && vite build && tsc -p electron/tsconfig.json",
     "start": "electron .",
     "dist:appimage": "npm run build && electron-builder --linux AppImage --x64",
-    "typecheck": "tsc --noEmit --pretty false && tsc -p electron/tsconfig.json --noEmit"
+    "typecheck": "tsc --noEmit --pretty false && tsc -p electron/tsconfig.json --noEmit",
+    "test": "npm run typecheck"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
