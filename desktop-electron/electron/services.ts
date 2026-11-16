@@ -104,7 +104,7 @@ export async function api(method:string,args:any={}):Promise<any>{
         const pages=[first,...await Promise.all(Array.from({length:Math.max(0,last-1)},(_,i)=>load(i+2)))];
         const result=new Map<string,any>();
         for(const html of pages){const matches=[...html.matchAll(/<h[2-6][^>]*>\\s*<a[^>]*href=["']([^"']*\\/centros\\/([^"'/?#]+))["'][^>]*>(.*?)<\\/a>\\s*<\\/h[2-6]>([\\s\\S]*?)(?=<h[2-6]|$)/gi)];
-          for(const m of matches){const clean=(s:string)=>s.replace(/<[^>]*>/g," ").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/\\s+/g," ").trim();const name=clean(m[3]),slug=m[2],details=clean(m[4]);if(name)result.set(slug,{name,slug,details,url:"https://puntosvuela.es/centros/"+slug});}
+          for(const m of matches){const clean=(s:string)=>s.replace(/<[^>]*>/g," ").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/\\s+/g," ").trim();const name=clean(m[3]),slug=m[2],details=clean(m[4]);const paragraphs=[...m[4].matchAll(/<p[^>]*>([\\s\\S]*?)<\\/p>/gi)].map(p=>clean(p[1]));const postal=paragraphs.find(p=>/\\(\\d{5}\\)/.test(p))||"";const municipality=postal?postal.replace(/\\s*\\(\\d{5}\\)\\s*/,"").trim():"";const province=paragraphs.find(p=>["almería","cádiz","córdoba","granada","huelva","jaén","málaga","sevilla"].includes(p.toLocaleLowerCase("es")))||"";if(name)result.set(slug,{name,slug,details,municipality,province:province?province[0].toLocaleUpperCase("es")+province.slice(1):"",url:"https://puntosvuela.es/centros/"+slug});}
         }return [...result.values()];
       });return rows;
     }
