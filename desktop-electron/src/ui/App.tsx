@@ -17,7 +17,7 @@ export default function App(){
  const [loading,setLoading]=useState(false),[message,setMessage]=useState(""),[error,setError]=useState(false),[busy,setBusy]=useState("");
  const [form,setForm]=useState({center:"",municipality:"",province:"Málaga",contact:"",phone:"",reply_email:"",application:"",url:"",distribution:"",purpose:"",notes:"",data_protection_read:false,privacy_policy_read:false,terms_accepted:false,website:""});
  const active=nav.find(x=>x.id===section)!;
- const categories=useMemo(()=>["Todas",...Array.from(new Set(items.flatMap(x=>[x.category,...(x as any).categories||[]])).values()).filter(Boolean).sort((a,b)=>a.localeCompare(b,"es"))],[items]);
+ const categories=useMemo(()=>["Todas",...Array.from(new Set(items.flatMap(x=>[x.category,...((x as any).categories||[])])).values()).filter(Boolean).sort((a,b)=>a.localeCompare(b,"es"))],[items]);
  const filtered=useMemo(()=>items.filter(x=>(category==="Todas"||x.category===category||(x as any).categories?.includes(category))&&[x.name,x.description,x.author,x.category].join(" ").toLocaleLowerCase("es").includes(query.toLocaleLowerCase("es"))),[items,category,query]);
  const notify=(text:string,isError=false)=>{setMessage(text);setError(isError);};
  const invoke=async(method:string,args:any={})=>{setBusy(method);try{return await window.puntoVuela.invoke(method,args);}finally{setBusy("");}};
