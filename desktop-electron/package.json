@@ -45,7 +45,8 @@
         "AppImage"
       ],
       "category": "Utility",
-      "artifactName": "Puntos_Vuela_Toolkit-Electron-${arch}.${ext}"
+      "artifactName": "Puntos_Vuela_Toolkit-Electron-${arch}.${ext}",
+      "icon": "build/icon.png"
     },
     "publish": []
   },
