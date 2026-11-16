@@ -27,12 +27,18 @@ def send_application_request(data: dict[str, str]) -> str:
             result = json.loads(response.read().decode("utf-8"))
     except HTTPError as exc:
         try:
-            result = json.loads(exc.read().decode("utf-8"))
-            raise RuntimeError(result.get("message", "No se pudo enviar la solicitud.")) from exc
-        except json.JSONDecodeError:
-            raise RuntimeError("El servicio de correo no está disponible.") from exc
+            body = exc.read().decode("utf-8", errors="replace")
+            result = json.loads(body) if body else {}
+            message = result.get("message") or "El servicio ha rechazado la solicitud."
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            message = "El servicio de correo no ha devuelto una respuesta válida."
+        raise RuntimeError(f"{message} (HTTP {exc.code}).") from exc
     except (URLError, TimeoutError) as exc:
-        raise RuntimeError("No se puede conectar con el servicio seguro de correo.") from exc
-    if not result.get("ok"):
-        raise RuntimeError(result.get("message", "No se pudo enviar la solicitud."))
+        reason = getattr(exc, "reason", exc)
+        raise RuntimeError(f"No se puede conectar con el servicio seguro de correo: {reason}") from exc
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise RuntimeError("El servicio de correo ha devuelto una respuesta ilegible.") from exc
+    if not isinstance(result, dict) or not result.get("ok"):
+        message = result.get("message", "No se pudo enviar la solicitud.") if isinstance(result, dict) else "Respuesta inesperada del servicio de correo."
+        raise RuntimeError(message)
     return result.get("message", "Solicitud enviada correctamente.")
