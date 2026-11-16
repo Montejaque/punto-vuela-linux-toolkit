@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AppWindow, BookOpen, Boxes, CheckCircle2, ChevronDown, CircleHelp, Download, ExternalLink, FileText, FolderCheck, Grid2X2, Home, Mail, Moon, RefreshCw, Search, ShieldCheck, Sun, Wrench, Trash2, Play, Settings2, MapPin, AlertCircle } from "lucide-react";
 
 type Section = "home"|"catalog"|"installed"|"tools"|"centres"|"contact"|"help";
-type Item = {name:string;description:string;category:string;author?:string;license?:string;glibc?:string;compatibleUbuntu20?:boolean;compatibility?:string;downloadUrl?:string;repository?:string;catalogUrl?:string;iconUrl?:string;version?:string;releaseUrl?:string;assetName?:string;path?:string;size?:number;executable?:boolean;modified?:string;slug?:string;url?:string;details?:string};
+type Item = {name:string;description:string;category:string;author?:string;license?:string;glibc?:string;compatibleUbuntu20?:boolean;compatibility?:string;downloadUrl?:string;repository?:string;repositoryUrl?:string;catalogUrl?:string;iconUrl?:string;version?:string;releaseUrl?:string;assetName?:string;path?:string;size?:number;executable?:boolean;modified?:string;slug?:string;url?:string;details?:string};
 declare global { interface Window { puntoVuela: {platform:string;version:string;invoke:(method:string,args?:any)=>Promise<any>}; } }
 
 const nav:{id:Section;label:string;icon:any;group:string}[]=[
