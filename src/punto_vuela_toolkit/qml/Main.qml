@@ -218,7 +218,7 @@ ApplicationWindow {
             }
             Label {
                 Layout.fillWidth: true
-                text: '<a href="https://github.com/Montejaque/punto-vuela-linux-toolkit/blob/main/privacy.md">Abrir política de privacidad completa</a>'
+                text: '<a href="https://toolkit.javigallego.es/privacy">Abrir política de privacidad completa</a>'
                 textFormat: Text.RichText; color: accent
                 onLinkActivated: Qt.openUrlExternally(link)
             }
@@ -250,7 +250,7 @@ ApplicationWindow {
             }
             Label {
                 Layout.fillWidth: true
-                text: '<a href="https://github.com/Montejaque/punto-vuela-linux-toolkit/blob/main/terms.md">Abrir términos y condiciones completos</a>'
+                text: '<a href="https://toolkit.javigallego.es/terms">Abrir términos y condiciones completos</a>'
                 textFormat: Text.RichText; color: accent
                 onLinkActivated: Qt.openUrlExternally(link)
             }
@@ -907,7 +907,7 @@ ApplicationWindow {
                                     TextField {
                                         id: centreSearchField
                                         Layout.fillWidth: true
-                                        Layout.columnSpan: 2
+                                        Layout.columnSpan: parent.columns
                                         placeholderText: "Buscar centro por nombre, municipio o provincia…"
                                         enabled: !puntoVuelaCentresLoading && puntoVuelaCentres.length > 0
                                         onTextChanged: {
