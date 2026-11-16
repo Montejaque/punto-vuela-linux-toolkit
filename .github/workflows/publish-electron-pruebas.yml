@@ -11,7 +11,7 @@ on:
       source_ref:
         description: "Commit o rama que se va a compilar"
         required: true
-        default: "6cb2afbca73e2ca518ab8db95420220f81200040"
+        default: "feced0ea29a1dd72f772b69dafd19bd365346e56"
         type: string
 
 permissions:
