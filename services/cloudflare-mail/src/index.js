@@ -164,7 +164,10 @@ export default {
       return json({ok: true, message: "Solicitud enviada a " + RECIPIENT + ". Se ha enviado una copia a " + data.reply_email + "."});
     } catch (error) {
       console.error("Mail worker error", String(error));
-      return json({ok: false, message: "No se ha podido enviar la solicitud. Inténtalo de nuevo más tarde."}, 500);
+      const message = error instanceof Error
+        ? error.message
+        : "No se ha podido enviar la solicitud. Inténtalo de nuevo más tarde.";
+      return json({ok: false, message}, 500);
     }
   },
 };
