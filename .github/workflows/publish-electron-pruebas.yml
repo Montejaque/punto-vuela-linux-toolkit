@@ -1,0 +1,116 @@
+name: Publicar AppImage Electron de pruebas
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Etiqueta de la release"
+        required: true
+        default: "pruebas-81"
+        type: string
+      source_ref:
+        description: "Commit o rama que se va a compilar"
+        required: true
+        default: "6cb2afbca73e2ca518ab8db95420220f81200040"
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Compilar y probar AppImage
+    timeout-minutes: 30
+    runs-on: ubuntu-22.04
+    container: debian:bullseye-slim
+    steps:
+      - name: Instalar dependencias de compilación y ejecución
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          sed -i -e 's#deb.debian.org/debian#archive.debian.org/debian#g' -e 's#security.debian.org/debian-security#archive.debian.org/debian-security#g' /etc/apt/sources.list
+          apt-get -o Acquire::Check-Valid-Until=false -o Acquire::Retries=1 -o Acquire::http::Timeout=25 update
+          apt-get install -y ca-certificates curl git xz-utils libfuse2 xvfb \
+            libgtk-3-0 libnss3 libasound2 libxss1 libxtst6 libgbm1 \
+            libxkbcommon0 libatspi2.0-0 libdrm2 libx11-xcb1 libxcb-dri3-0 \
+            libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libxrender1 \
+            libxshmfence1 dbus
+      - name: Descargar código fuente seleccionado
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_ref }}
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+      - name: Instalar dependencias
+        working-directory: desktop-electron
+        run: npm install
+      - name: Comprobar TypeScript
+        working-directory: desktop-electron
+        run: npm run typecheck
+      - name: Compilar aplicación
+        working-directory: desktop-electron
+        run: npm run build
+      - name: Generar AppImage
+        working-directory: desktop-electron
+        run: npm run dist:appimage
+      - name: Probar AppImage sobre glibc 2.31
+        working-directory: desktop-electron
+        shell: bash
+        run: |
+          chmod +x release/*.AppImage
+          set +e
+          timeout 30s xvfb-run -a dbus-run-session -- ./release/*.AppImage --appimage-extract-and-run --no-sandbox --disable-gpu --disable-dev-shm-usage --smoke-test > /tmp/pv-electron-smoke.log 2>&1
+          code=$?
+          set -e
+          cat /tmp/pv-electron-smoke.log
+          if [ "$code" -ne 0 ]; then
+            echo "La AppImage no ha superado el smoke test (código $code)."
+            exit "$code"
+          fi
+          if grep -Eqi "error while loading shared libraries|GLIBC_[0-9.]+ not found" /tmp/pv-electron-smoke.log; then
+            echo "Se han detectado errores de bibliotecas."
+            exit 1
+          fi
+      - name: Guardar AppImage validada
+        uses: actions/upload-artifact@v4
+        with:
+          name: puntos-vuela-toolkit-electron-glibc231-x86_64
+          path: desktop-electron/release/*.AppImage
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    name: Crear release de GitHub
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Validar etiqueta de publicación
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^pruebas-[0-9]+$ ]]; then
+            echo "La etiqueta debe tener el formato pruebas-N."
+            exit 1
+          fi
+      - name: Descargar AppImage validada
+        uses: actions/download-artifact@v4
+        with:
+          name: puntos-vuela-toolkit-electron-glibc231-x86_64
+      - name: Generar suma SHA256
+        run: |
+          APPIMAGE="$(find . -maxdepth 1 -type f -name '*.AppImage' -print -quit)"
+          test -n "$APPIMAGE"
+          sha256sum "$APPIMAGE" > SHA256SUMS
+      - name: Crear release de pruebas y adjuntar archivos
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          target_commitish: ${{ inputs.source_ref }}
+          name: Puntos Vuela Toolkit ${{ inputs.release_tag }} · Electron
+          prerelease: true
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            *.AppImage
+            SHA256SUMS
