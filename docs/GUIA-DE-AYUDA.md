@@ -100,3 +100,14 @@ Para consultas sobre el funcionamiento del Toolkit, incidencias o sugerencias, u
 
 **Punto Vuela Linux Toolkit** · Guía de ayuda  
 Colores de marca: #F3D54E · Antracita · Blanco · Tipografía de interfaz: Inter
+
+
+## 12. Formulario de propuestas y datos del centro
+
+En **Contacto e información** puedes localizar el centro con el buscador por nombre, municipio o provincia y seleccionarlo en el desplegable. Al elegirlo, el Toolkit consulta la ficha pública de ese centro en [puntosvuela.es](https://puntosvuela.es/centros) y completa automáticamente el nombre del/de la AIL, teléfono y correo profesional cuando esos datos estén publicados.
+
+Los campos siguen siendo editables para corregir datos o completar información que no figure en la ficha. Si la web oficial no está disponible, el formulario conserva el centro seleccionado y permite introducir los datos manualmente.
+
+Las casillas de información de protección de datos y privacidad enlazan con [la política de privacidad de Toolkit](https://toolkit.javigallego.es/privacy). La aceptación de condiciones enlaza con [los términos y condiciones](https://toolkit.javigallego.es/terms). Es necesario abrir y revisar las páginas y marcar las tres casillas antes de generar o enviar la solicitud.
+
+Los datos de contacto se consultan en tiempo real al seleccionar el centro; el Toolkit no mantiene una copia propia del directorio de AIL. La información puede cambiar cuando se actualice la ficha oficial.
