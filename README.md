@@ -69,3 +69,18 @@ chmod +x ~/Descargas/Puntos_Vuela_Toolkit-x86_64.AppImage
 ```
 
 Después de conceder el permiso, la AppImage se puede iniciar con doble clic. No requiere instalar paquetes ni permisos de administrador.
+
+
+## Revisión visual y funcional Electron 0.4.0
+
+La rama de migración incorpora una revisión de la interfaz y del flujo de propuestas:
+
+- Logotipo oficial de Puntos Vuela Toolkit integrado como recurso local de la aplicación.
+- Portada y cabeceras de sección con composición visual, fondos decorativos y animaciones CSS respetando la preferencia de movimiento reducido del sistema.
+- Filtro de categorías con selector principal y accesos rápidos.
+- Tarjetas de aplicaciones con iconografía, fallback visual y ficha modal con información ampliada.
+- Vista previa editable de propuestas antes del envío, con selección entre correo electrónico y WhatsApp.
+- WhatsApp abre una conversación preparada; el usuario confirma el envío desde WhatsApp.
+- El correo incluye el contenido revisado y el Worker incorpora el logotipo oficial como imagen MIME en línea.
+
+La actualización del Worker debe desplegarse en Cloudflare para que el nuevo diseño del correo llegue a producción. La AppImage de esta revisión debe superar CI y las pruebas manuales en Ubuntu 20.04 antes de publicarse.
