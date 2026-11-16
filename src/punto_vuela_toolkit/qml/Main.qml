@@ -422,6 +422,7 @@ ApplicationWindow {
                         id: globalSearch
                         Layout.preferredWidth: rem(16.875)
                         placeholderText: "Buscar aplicaciones..."
+                        Accessible.name: "Buscar aplicaciones en todas las secciones"
                         onAccepted: {
                             catalogSearch.text = text
                             activePage = "Catálogo AppImage"
@@ -698,10 +699,12 @@ ApplicationWindow {
                         GridView {
                             id:officialCatalogGrid
                             Layout.fillWidth:true
-                            Layout.preferredHeight:Math.max(rem(22.5),Math.ceil(filteredCatalogItems.length/3)*rem(14.75))
+                            Layout.preferredHeight:Math.min(rem(42),Math.max(rem(14.5),Math.ceil(filteredCatalogItems.length/3)*rem(14.75)))
                             cellWidth:width/3
                             cellHeight:rem(14.75)
-                            interactive:false
+                            interactive:true
+                            clip:true
+                            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
                             model:filteredCatalogItems
                             delegate:Rectangle {
                                 width:officialCatalogGrid.cellWidth-12;height:rem(13.375)
