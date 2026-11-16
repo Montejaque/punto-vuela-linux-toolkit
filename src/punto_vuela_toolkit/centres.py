@@ -217,7 +217,7 @@ def _parse_centre_details(html: str, slug: str) -> dict[str, str]:
 def load_centre_details(slug: str) -> dict[str, str]:
     """Fetch public AIL/contact details from the selected official centre page."""
     clean_slug = unquote(slug or "").strip("/")
-    if not re.fullmatch(r"[\\w-]+", clean_slug, flags=re.UNICODE):
+    if not re.fullmatch(r"[\w-]+", clean_slug, flags=re.UNICODE):
         raise ValueError("Este centro no tiene una ficha pública identificable en el directorio oficial.")
     url = f"{BASE_URL}/{quote(clean_slug)}"
     request = Request(url, headers={"User-Agent": "PuntoVuelaToolkit/1.1 (official-centre-contact-prefill)"})
