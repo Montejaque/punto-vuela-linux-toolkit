@@ -84,3 +84,8 @@ La rama de migración incorpora una revisión de la interfaz y del flujo de prop
 - El correo incluye el contenido revisado y el Worker incorpora el logotipo oficial como imagen MIME en línea.
 
 La actualización del Worker debe desplegarse en Cloudflare para que el nuevo diseño del correo llegue a producción. La AppImage de esta revisión debe superar CI y las pruebas manuales en Ubuntu 20.04 antes de publicarse.
+
+
+### Modos de apariencia
+
+La interfaz permite elegir entre **Claro**, **Oscuro** y **Sistema** desde el selector de apariencia de la barra superior. La selección queda guardada para los siguientes inicios; el modo Sistema sigue los cambios de apariencia del escritorio mientras la aplicación está abierta. El selector incluye estados activos, etiquetas accesibles y adaptación a pantallas pequeñas.
