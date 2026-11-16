@@ -4,7 +4,7 @@ Centro de software para Linux con identidad Punto Vuela. Reúne las herramientas
 
 ## Objetivos
 
-- Interfaz de escritorio moderna con PySide6 y QML.
+- Nueva interfaz de escritorio Electron + React + TypeScript; la edición PySide6/QML anterior se conserva como referencia de migración y para mantener las Releases históricas.
 - Distribución x86_64 en AppImage, DEB y RPM.
 - Instalación y gestión en el espacio del usuario, sin requerir privilegios root para las funciones propias.
 - Catálogo Punto Vuela con enlaces a los proyectos oficiales.
