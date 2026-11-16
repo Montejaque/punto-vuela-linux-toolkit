@@ -12,7 +12,7 @@ function json(data, status = 200) {
     headers: {
       "content-type": "application/json; charset=utf-8",
       "access-control-allow-origin": ALLOWED_ORIGIN,
-      "access-control-allow-methods": "POST, OPTIONS",
+      "access-control-allow-methods": "GET, POST, OPTIONS",
       "access-control-allow-headers": "content-type",
       "cache-control": "no-store",
     },
@@ -42,7 +42,15 @@ async function gmailToken(env) {
     body,
   });
   const data = await response.json();
-  if (!response.ok || !data.access_token) throw new Error("No se pudo autorizar Gmail.");
+  if (!response.ok || !data.access_token) {
+    if (data.error === "invalid_grant") {
+      throw new Error("La autorización de Google ha caducado o ha sido revocada. Renueva el refresh token de Gmail en Cloudflare.");
+    }
+    if (data.error === "invalid_client") {
+      throw new Error("Las credenciales OAuth de Google no son válidas. Revisa GOOGLE_CLIENT_ID y GOOGLE_CLIENT_SECRET en Cloudflare.");
+    }
+    throw new Error("Google no ha autorizado el envío. Revisa el cliente OAuth y el refresh token configurados en Cloudflare.");
+  }
   return data.access_token;
 }
 function buildMime(data) {
@@ -97,6 +105,25 @@ function buildMime(data) {
 }
 export default {
   async fetch(request, env) {
+    const url = new URL(request.url);
+    if (request.method === "GET" && url.pathname === "/health") {
+      const checks = {
+        googleClientId: Boolean(env.GOOGLE_CLIENT_ID),
+        googleClientSecret: Boolean(env.GOOGLE_CLIENT_SECRET),
+        googleRefreshToken: Boolean(env.GOOGLE_REFRESH_TOKEN),
+        rateLimitKv: Boolean(env.RATE_LIMIT),
+      };
+      const configured = Object.values(checks).every(Boolean);
+      return json({
+        ok: configured,
+        service: "punto-vuela-mail",
+        configured,
+        checks,
+        message: configured
+          ? "El servicio y la protección antispam están configurados."
+          : "Falta configuración en Cloudflare. Consulta los indicadores de comprobación.",
+      }, configured ? 200 : 503);
+    }
     if (request.method === "OPTIONS") return json({ok: true});
     if (request.method !== "POST") return json({ok: false, message: "Método no permitido."}, 405);
     if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_REFRESH_TOKEN) {
@@ -104,13 +131,6 @@ export default {
     }
     try {
       if (!env.RATE_LIMIT) return json({ok: false, message: "La protección antispam no está configurada."}, 503);
-      const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-      {
-        const key = "mail:" + ip;
-        const current = Number(await env.RATE_LIMIT.get(key) || "0");
-        if (current >= 5) return json({ok: false, message: "Se ha alcanzado el límite temporal de solicitudes. Inténtalo más tarde."}, 429);
-        await env.RATE_LIMIT.put(key, String(current + 1), {expirationTtl: 3600});
-      }
       const data = await request.json();
       // Honeypot: silently accept bot submissions without forwarding email.
       if (String(data.website || "").trim()) return json({ok: true, message: "Solicitud recibida."});
@@ -119,6 +139,12 @@ export default {
       if (data.data_protection_read !== true || data.privacy_policy_read !== true || data.terms_accepted !== true) return json({ok: false, message: "Debes consultar y aceptar la información legal y los términos antes de enviar."}, 400);
       if (JSON.stringify(data).length > 16000) return json({ok: false, message: "La solicitud supera el tamaño permitido."}, 413);
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.reply_email)) return json({ok: false, message: "El correo de contacto no es válido."}, 400);
+      // Only valid submissions consume the per-IP quota.
+      const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+      const key = "mail:" + ip;
+      const current = Number(await env.RATE_LIMIT.get("mail:" + ip) || "0");
+      if (current >= 5) return json({ok: false, message: "Se ha alcanzado el límite temporal de solicitudes. Inténtalo más tarde."}, 429);
+      await env.RATE_LIMIT.put(key, String(current + 1), {expirationTtl: 3600});
       const token = await gmailToken(env);
       const raw = b64url(buildMime(data));
       const sent = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
@@ -129,12 +155,19 @@ export default {
       if (!sent.ok) {
         const detail = await sent.text();
         console.error("Gmail API error", sent.status, detail.slice(0, 500));
-        return json({ok: false, message: "Gmail no ha podido enviar la solicitud. Contacta con soporte."}, 502);
+        let message = "Gmail no ha podido enviar la solicitud. Revisa la configuración de Gmail API.";
+        if (sent.status === 401) message = "Google ha rechazado la autorización de Gmail. Renueva el refresh token en Cloudflare.";
+        else if (sent.status === 403) message = "Gmail API no permite el envío. Comprueba que la API está habilitada y que el token incluye gmail.send.";
+        else if (sent.status === 429) message = "Google ha limitado temporalmente los envíos. Inténtalo más tarde.";
+        return json({ok: false, message}, 502);
       }
       return json({ok: true, message: "Solicitud enviada a " + RECIPIENT + ". Se ha enviado una copia a " + data.reply_email + "."});
     } catch (error) {
       console.error("Mail worker error", String(error));
-      return json({ok: false, message: "No se ha podido enviar la solicitud. Inténtalo de nuevo más tarde."}, 500);
+      const message = error instanceof Error
+        ? error.message
+        : "No se ha podido enviar la solicitud. Inténtalo de nuevo más tarde.";
+      return json({ok: false, message}, 500);
     }
   },
 };

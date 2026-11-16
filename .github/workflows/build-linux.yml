@@ -44,6 +44,8 @@ jobs:
         run: bash packaging/fetch-brand-assets.sh
       - name: Validate Python syntax
         run: python -m compileall -q src tests
+      - name: Validate Cloudflare mail Worker syntax
+        run: node --check services/cloudflare-mail/src/index.js
       - name: Run unit tests
         env:
           PYTHONPATH: src

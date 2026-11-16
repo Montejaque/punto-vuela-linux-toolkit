@@ -27,12 +27,47 @@ def send_application_request(data: dict[str, str]) -> str:
             result = json.loads(response.read().decode("utf-8"))
     except HTTPError as exc:
         try:
-            result = json.loads(exc.read().decode("utf-8"))
-            raise RuntimeError(result.get("message", "No se pudo enviar la solicitud.")) from exc
-        except json.JSONDecodeError:
-            raise RuntimeError("El servicio de correo no está disponible.") from exc
+            body = exc.read().decode("utf-8", errors="replace")
+            result = json.loads(body) if body else {}
+            message = result.get("message") or "El servicio ha rechazado la solicitud."
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            message = "El servicio de correo no ha devuelto una respuesta válida."
+        raise RuntimeError(f"{message} (HTTP {exc.code}).") from exc
     except (URLError, TimeoutError) as exc:
-        raise RuntimeError("No se puede conectar con el servicio seguro de correo.") from exc
-    if not result.get("ok"):
-        raise RuntimeError(result.get("message", "No se pudo enviar la solicitud."))
+        reason = getattr(exc, "reason", exc)
+        raise RuntimeError(f"No se puede conectar con el servicio seguro de correo: {reason}") from exc
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+        raise RuntimeError("El servicio de correo ha devuelto una respuesta ilegible.") from exc
+    if not isinstance(result, dict) or not result.get("ok"):
+        message = result.get("message", "No se pudo enviar la solicitud.") if isinstance(result, dict) else "Respuesta inesperada del servicio de correo."
+        raise RuntimeError(message)
     return result.get("message", "Solicitud enviada correctamente.")
+
+def check_mail_service() -> dict[str, object]:
+    """Return a safe configuration status from the Worker health endpoint."""
+    request = Request(
+        WORKER_URL.rstrip("/") + "/health",
+        headers={"Accept": "application/json"},
+        method="GET",
+    )
+    try:
+        with urlopen(request, timeout=10) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+            payload["http_status"] = response.status
+            return payload
+    except HTTPError as exc:
+        try:
+            payload = json.loads(exc.read().decode("utf-8", errors="replace"))
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            payload = {"ok": False, "message": "El servicio de correo no ha devuelto un diagnóstico válido."}
+        payload["http_status"] = exc.code
+        return payload
+    except (URLError, TimeoutError) as exc:
+        reason = getattr(exc, "reason", exc)
+        return {
+            "ok": False,
+            "message": f"No se puede conectar con el servicio de correo: {reason}",
+            "http_status": None,
+        }
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return {"ok": False, "message": "El servicio de correo ha devuelto una respuesta ilegible.", "http_status": None}

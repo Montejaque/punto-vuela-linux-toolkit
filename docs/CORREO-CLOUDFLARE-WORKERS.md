@@ -46,7 +46,15 @@ npx wrangler deploy
 - `npx wrangler deploy` publica el Worker definido en `wrangler.toml`, incluido el enlace KV `RATE_LIMIT`.
 - Si los secretos ya están configurados en ese Worker, se conservan al desplegar una nueva versión. No vuelvas a introducirlos salvo que falten o haya que rotarlos.
 
-Al terminar, Wrangler debe mostrar el nombre del Worker y su URL. Haz una prueba real de envío y otra de límite: tras cinco solicitudes desde la misma IP dentro de una hora, las siguientes deben recibir HTTP 429. No hagas estas pruebas con datos personales reales.
+Al terminar, Wrangler debe mostrar el nombre del Worker y su URL. Comprueba primero el estado del servicio y que los cuatro requisitos aparecen como configurados:
+
+```bash
+curl -i https://punto-vuela-mail.<subdominio>.workers.dev/health
+```
+
+El endpoint `/health` solo informa de si existen los secretos OAuth y el binding KV; nunca devuelve sus valores. Si responde HTTP 503, revisa el indicador que aparece como `false` en el JSON y corrige la configuración de Cloudflare antes de probar el formulario.
+
+Después haz una prueba real de envío y otra de límite: tras cinco solicitudes válidas desde la misma IP dentro de una hora, las siguientes deben recibir HTTP 429. No hagas estas pruebas con datos personales reales. Los errores de Google se muestran ahora con mensajes diferenciados para autorización caducada, credenciales OAuth incorrectas, permisos de Gmail API o cuota excedida.
 
 ## Evitar la caducidad de 7 días del refresh token
 

@@ -13,7 +13,7 @@ from PySide6.QtQml import QQmlApplicationEngine
 
 from .appimages import AppImageManager
 from .catalog import AppImageCatalog
-from .email_sender import send_application_request
+from .email_sender import check_mail_service, send_application_request
 from .centres import load_centres, load_centre_details
 
 APP_NAME = "Puntos Vuela Toolkit"
@@ -31,6 +31,7 @@ class AppImageBridge(QObject):
     appImageUpdateCheckFinished = Signal(str)
     appImageUpdated = Signal(str)
     emailSent = Signal(str)
+    mailServiceChecked = Signal(str)
     puntoVuelaCentresLoaded = Signal(str)
     puntoVuelaCentreDetailsLoaded = Signal(str)
 
@@ -78,6 +79,16 @@ class AppImageBridge(QObject):
                 payload = {"ok": False, "details": {}, "slug": slug, "message": str(exc)}
             self.puntoVuelaCentreDetailsLoaded.emit(json.dumps(payload, ensure_ascii=False))
         self._spawn(work)
+    @Slot()
+    def checkMailService(self) -> None:
+        def work() -> None:
+            try:
+                result = check_mail_service()
+            except Exception as exc:
+                result = {"ok": False, "message": str(exc), "http_status": None}
+            self.mailServiceChecked.emit(json.dumps(result, ensure_ascii=False))
+        self._spawn(work)
+
     @Slot(str)
     def sendApplicationRequest(self, payload: str) -> None:
         def work() -> None:
