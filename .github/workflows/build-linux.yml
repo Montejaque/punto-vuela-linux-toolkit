@@ -7,6 +7,13 @@ on:
     tags: ["v*", "pruebas-*"]
   pull_request:
     branches: ["main"]
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "packaging/**"
+      - "pyproject.toml"
+      - "requirements.txt"
+      - ".github/workflows/build-linux.yml"
 
 permissions:
   contents: write
