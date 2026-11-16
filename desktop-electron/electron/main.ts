@@ -16,6 +16,9 @@ function createWindow(): void {
     }
   });
   window.once("ready-to-show", () => window.show());
+  window.webContents.once("did-finish-load", () => {
+    if (process.argv.includes("--smoke-test")) setTimeout(() => app.exit(0), 750);
+  });
   window.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("https://")) void shell.openExternal(url);
     return { action: "deny" };
