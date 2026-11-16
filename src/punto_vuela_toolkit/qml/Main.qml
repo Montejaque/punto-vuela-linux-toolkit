@@ -194,7 +194,7 @@ ApplicationWindow {
                     text: "Finalidad: recibir, revisar y responder a propuestas profesionales de los AIL de los centros Puntos Vuela.\n\nDatos: centro, municipio, datos profesionales de contacto, aplicación propuesta, enlace, distribución, necesidad y observaciones.\n\nDestinatario: las propuestas se remiten a montejaque@puntosvuela.es. El correo indicado por el AIL recibe una copia.\n\nProveedores: Cloudflare Workers y Gmail API. La aplicación no mantiene una base de datos propia de propuestas ni crea expedientes; el contenido queda en los buzones de correo.\n\nMantenimiento técnico y gestión operativa del buzón: Francisco Javier Gallego Orellana, AIL del Punto Vuela de Montejaque.\n\nNo incluyas contraseñas, documentos de identidad ni datos personales innecesarios."
                 }
             }
-            Label { Layout.fillWidth: true; text: "La base jurídica aplicable es la que corresponda a las funciones del Consorcio y debe estar documentada por este."; color: muted; wrapMode: Text.WordWrap; font.pixelSize: rem(0.6875) }
+            Label { Layout.fillWidth: true; text: "La base jurídica aplicable es la que corresponda a las funciones del Consorcio y debe estar documentada por este."; color: muted; wrapMode: Text.WordWrap; font.pixelSize: rem(0.75) }
             RowLayout {
                 Layout.fillWidth: true
                 Item { Layout.fillWidth: true }
@@ -263,7 +263,7 @@ ApplicationWindow {
             Label {
                 Layout.fillWidth: true
                 text: "Consulta el documento completo de condiciones de uso. Debe mantenerse alineado con las instrucciones oficiales del Consorcio."
-                color: muted; wrapMode: Text.WordWrap; font.pixelSize: rem(0.6875)
+                color: muted; wrapMode: Text.WordWrap; font.pixelSize: rem(0.75)
             }
             RowLayout {
                 Layout.fillWidth: true
@@ -302,6 +302,15 @@ ApplicationWindow {
         appSettings.savedThemeMode = mode
     }
     color: backgroundColor
+    palette.window: backgroundColor
+    palette.base: searchColor
+    palette.alternateBase: panel
+    palette.text: primaryText
+    palette.windowText: primaryText
+    palette.button: panel
+    palette.buttonText: primaryText
+    palette.highlight: accent
+    palette.highlightedText: "#202226"
 
     RowLayout {
         anchors.fill: parent
@@ -329,7 +338,7 @@ ApplicationWindow {
                         visible: sidebarExpanded
                         spacing: rem(0.125)
                         Text { text: "PUNTOS VUELA"; color: "#202226"; font.pixelSize: rem(0.8125); font.bold: true; font.letterSpacing: rem(0.075) }
-                        Text { text: "TOOLKIT"; color: "#51430A"; font.pixelSize: rem(0.625); font.bold: true; font.letterSpacing: rem(0.06875) }
+                        Text { text: "TOOLKIT"; color: "#51430A"; font.pixelSize: rem(0.75); font.bold: true; font.letterSpacing: rem(0.06875) }
                     }
                     ToolButton {
                         Layout.preferredWidth: sidebarExpanded ? 28 : 24
@@ -346,7 +355,7 @@ ApplicationWindow {
 
                 Rectangle { Layout.fillWidth: true; height: rem(0.0625); color: "#E0AD00" }
 
-                Text { visible: sidebarExpanded; text: "ESPACIO DE TRABAJO"; color: "#665400"; font.pixelSize: rem(0.625); font.bold: true; font.letterSpacing: rem(0.06875) }
+                Text { visible: sidebarExpanded; text: "ESPACIO DE TRABAJO"; color: "#665400"; font.pixelSize: rem(0.75); font.bold: true; font.letterSpacing: rem(0.06875) }
                 Repeater {
                     model: [
                         {name:"Inicio", glyph:"⌂"},
@@ -375,7 +384,7 @@ ApplicationWindow {
                 }
 
                 Item { Layout.fillHeight: true }
-                Text { visible: sidebarExpanded; text: "SISTEMA"; color: "#665400"; font.pixelSize: rem(0.625); font.bold: true; font.letterSpacing: rem(0.06875) }
+                Text { visible: sidebarExpanded; text: "SISTEMA"; color: "#665400"; font.pixelSize: rem(0.75); font.bold: true; font.letterSpacing: rem(0.06875) }
                 Repeater {
                     model: ["Ayuda"]
                     delegate: Text {
@@ -387,7 +396,7 @@ ApplicationWindow {
                         MouseArea { anchors.fill: parent; onClicked: activePage = modelData; cursorShape: Qt.PointingHandCursor }
                     }
                 }
-                Text { visible: sidebarExpanded; text: "VERSIÓN 0.1.0 · PREVIEW"; color: "#665400"; font.pixelSize: rem(0.5625); Layout.bottomMargin: 4 }
+                Text { visible: sidebarExpanded; text: "VERSIÓN 0.1.0 · PREVIEW"; color: "#665400"; font.pixelSize: rem(0.75); Layout.bottomMargin: rem(0.25) }
             }
         }
 
@@ -461,7 +470,7 @@ ApplicationWindow {
                                 anchors.fill:parent; anchors.margins:rem(1.75); spacing:rem(1.5)
                                 ColumnLayout {
                                     Layout.fillWidth:true; spacing:rem(0.75)
-                                    Text { text:"PUNTO VUELA · SOFTWARE HUB"; color:darkTheme?"#FAD100":"#76601B"; font.pixelSize:rem(0.625); font.bold:true; font.letterSpacing:rem(0.10625) }
+                                    Text { text:"PUNTO VUELA · SOFTWARE HUB"; color:darkTheme?"#FAD100":"#76601B"; font.pixelSize: rem(0.75); font.bold:true; font.letterSpacing:rem(0.10625) }
                                     Text { text:"Todo tu software Linux.\nEn un solo lugar."; color:darkTheme?"#FFFFFF":"#202226"; font.pixelSize:rem(1.8125); font.bold:true }
                                     Text { text:"Descubre herramientas, aplicaciones y utilidades seleccionadas para tu entorno de trabajo."; color:darkTheme?"#D3D0C7":"#55504A"; font.pixelSize:rem(0.8125); wrapMode:Text.WordWrap; Layout.fillWidth:true }
                                     Button { text:"Explorar aplicaciones  →"; onClicked:activePage="Catálogo AppImage" }
@@ -491,7 +500,7 @@ ApplicationWindow {
                             Layout.fillWidth:true
                             Text { text:"Aplicaciones destacadas"; color:primaryText; font.pixelSize:rem(1.1875); font.bold:true }
                             Item { Layout.fillWidth:true }
-                            Text { text:allHomeApps.length+" herramientas"; color:muted; font.pixelSize:rem(0.6875) }
+                            Text { text:allHomeApps.length+" herramientas"; color:muted; font.pixelSize: rem(0.75) }
                         }
                         Flow {
                             Layout.fillWidth:true; spacing:rem(0.5)
@@ -502,10 +511,10 @@ ApplicationWindow {
                         }
                         RowLayout {
                             Layout.fillWidth:true
-                            Text { text:puntoVuelaStatus; color:muted; font.pixelSize:rem(0.625); Layout.fillWidth:true; wrapMode:Text.WordWrap }
+                            Text { text:puntoVuelaStatus; color:muted; font.pixelSize: rem(0.75); Layout.fillWidth:true; wrapMode:Text.WordWrap }
                             Button { text:"Actualizar repositorios"; enabled:!puntoVuelaLoading; onClicked:{puntoVuelaLoading=true;appImageManager.refreshPuntoVuelaTools()} }
                         }
-                        Text { visible:!!toolkitRelease.version; text:"Puntos Vuela Toolkit · Última versión: "+(toolkitRelease.version||""); color:secondaryText; font.pixelSize:rem(0.625) }
+                        Text { visible:!!toolkitRelease.version; text:"Puntos Vuela Toolkit · Última versión: "+(toolkitRelease.version||""); color:secondaryText; font.pixelSize: rem(0.75) }
                         GridLayout {
                             Layout.fillWidth:true; columns:width>850?3:2; columnSpacing:rem(0.875); rowSpacing:rem(0.875)
                             Repeater {
@@ -528,10 +537,10 @@ ApplicationWindow {
                                             Text {
                                                 text:modelData.official?"CATÁLOGO APPIMAGE":"PUNTO VUELA MONTEJAQUE"
                                                 color:modelData.official?"#FFFFFF":"#202226"
-                                                font.pixelSize:rem(0.6875);font.bold:true;font.letterSpacing:rem(0.0625)
+                                                font.pixelSize: rem(0.75);font.bold:true;font.letterSpacing:rem(0.0625)
                                                 Layout.fillWidth:true
                                             }
-                                            Text { text:modelData.official?"COMUNIDAD":"DESARROLLO LOCAL";color:modelData.official?"#D8DEE6":"#51430A";font.pixelSize:rem(0.5);font.bold:true }
+                                            Text { text:modelData.official?"COMUNIDAD":"DESARROLLO LOCAL";color:modelData.official?"#D8DEE6":"#51430A";font.pixelSize: rem(0.75);font.bold:true }
                                         }
                                     }
                                     ColumnLayout {
@@ -545,23 +554,23 @@ ApplicationWindow {
                                             ColumnLayout {
                                                 Layout.fillWidth:true;spacing:rem(0.1875)
                                                 Text { text:modelData.title;color:primaryText;font.pixelSize:rem(0.875);font.bold:true;Layout.fillWidth:true;elide:Text.ElideRight }
-                                                Text { text:modelData.category;color:muted;font.pixelSize:rem(0.625) }
+                                                Text { text:modelData.category;color:muted;font.pixelSize: rem(0.75) }
                                             }
                                         }
-                                        Text { text:modelData.desc;color:secondaryText;font.pixelSize:rem(0.6875);wrapMode:Text.WordWrap;Layout.fillWidth:true;Layout.fillHeight:true }
+                                        Text { text:modelData.desc;color:secondaryText;font.pixelSize: rem(0.75);wrapMode:Text.WordWrap;Layout.fillWidth:true;Layout.fillHeight:true }
                                         RowLayout {
                                             Layout.fillWidth:true
-                                            Text { text:modelData.tag;color:accent;font.pixelSize:rem(0.5625);font.bold:true }
+                                            Text { text:modelData.tag;color:accent;font.pixelSize: rem(0.75);font.bold:true }
                                             Item { Layout.fillWidth:true }
                                             Button { text:"Detalles";onClicked: { selectedHomeApp = modelData; appDetailDialog.open() }
                                                  background:Rectangle { radius:rem(0.5625);color:darkTheme?"#414A55":"#F0F1F3";border.color:panelBorder }
-                                                 contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:rem(0.625);font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                                 contentItem:Text { text:parent.text;color:primaryText;font.pixelSize: rem(0.75);font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
                                             Button { text:"Repositorio";onClicked: Qt.openUrlExternally(modelData.url)
                                                  background:Rectangle { radius:rem(0.5625);color:"transparent";border.color:panelBorder }
-                                                 contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:rem(0.625);font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                                 contentItem:Text { text:parent.text;color:primaryText;font.pixelSize: rem(0.75);font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
                                             Button { visible:!!modelData.downloadUrl;text:"Instalar";onClicked: appImageManager.installPuntoVuelaTool(modelData.repository)
                                                  background:Rectangle { radius:rem(0.5625);color:accent }
-                                                 contentItem:Text { text:parent.text;color:"#202226";font.pixelSize:rem(0.625);font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                                 contentItem:Text { text:parent.text;color:"#202226";font.pixelSize: rem(0.75);font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
                                         }
                                     }
                                 }
@@ -584,7 +593,7 @@ ApplicationWindow {
                                     Rectangle { width:rem(4.125);height:rem(4.125);radius:rem(1.0625);color:"#FFFFFF";border.color:"#E8E8E8";Image { anchors.fill:parent;anchors.margins:rem(0.5625);source:selectedHomeApp?selectedHomeApp.image:"";asynchronous:true;fillMode:Image.PreserveAspectFit } }
                                     ColumnLayout { Layout.fillWidth:true; spacing:rem(0.25)
                                          Text { text:selectedHomeApp ? selectedHomeApp.title : "Aplicación"; color:primaryText; font.pixelSize:rem(1.3125); font.bold:true; wrapMode:Text.WordWrap; Layout.fillWidth:true }
-                                         Text { text:selectedHomeApp?(selectedHomeApp.category+" · "+selectedHomeApp.kind):"";color:muted;font.pixelSize:rem(0.6875) } }
+                                         Text { text:selectedHomeApp?(selectedHomeApp.category+" · "+selectedHomeApp.kind):"";color:muted;font.pixelSize: rem(0.75) } }
                                     Button { text:"✕";onClicked: appDetailDialog.close()
                                      background:Rectangle { radius:rem(0.625);color:darkTheme?"#414A55":"#F0F1F3" }
                                      contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:rem(0.9375);horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
@@ -593,22 +602,22 @@ ApplicationWindow {
                                 Text { text:selectedHomeApp?selectedHomeApp.desc:"";color:secondaryText;font.pixelSize:rem(0.8125);wrapMode:Text.WordWrap;Layout.fillWidth:true }
                                 GridLayout { Layout.fillWidth:true;columns:2;columnSpacing:rem(1.125);rowSpacing:rem(0.75)
                                     ColumnLayout { spacing:rem(0.1875)
-                                         Text { text:"VERSIÓN"; color:muted; font.pixelSize:rem(0.5625); font.bold:true }
+                                         Text { text:"VERSIÓN"; color:muted; font.pixelSize: rem(0.75); font.bold:true }
                                          Text { text:selectedHomeApp?(selectedHomeApp.version||"Consultar repositorio"):"";color:primaryText;font.pixelSize:rem(0.75) } }
                                     ColumnLayout { spacing:rem(0.1875)
-                                         Text { text:"ORIGEN"; color:muted; font.pixelSize:rem(0.5625); font.bold:true }
+                                         Text { text:"ORIGEN"; color:muted; font.pixelSize: rem(0.75); font.bold:true }
                                          Text { text:selectedHomeApp?(selectedHomeApp.tag||"Puntos Vuela"):"";color:primaryText;font.pixelSize:rem(0.75) } }
                                 }
                                 RowLayout { Layout.fillWidth:true;spacing:rem(0.5625)
                                     Button { text:"Ver repositorio";Layout.fillWidth:true;onClicked: { if (selectedHomeApp) Qt.openUrlExternally(selectedHomeApp.url) }
                                      background:Rectangle { radius:rem(0.6875);color:"transparent";border.color:panelBorder }
-                                     contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:rem(0.6875);font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                     contentItem:Text { text:parent.text;color:primaryText;font.pixelSize: rem(0.75);font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
                                     Button { text:"Ver release";visible:!!(selectedHomeApp&&selectedHomeApp.releaseUrl);Layout.fillWidth:true;onClicked: { if (selectedHomeApp) Qt.openUrlExternally(selectedHomeApp.releaseUrl) }
                                      background:Rectangle { radius:rem(0.6875);color:darkTheme?"#414A55":"#F0F1F3" }
-                                     contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:rem(0.6875);font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                     contentItem:Text { text:parent.text;color:primaryText;font.pixelSize: rem(0.75);font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
                                     Button { text:"Descargar e instalar";visible:!!(selectedHomeApp&&selectedHomeApp.downloadUrl);Layout.fillWidth:true;onClicked: { if (selectedHomeApp) { appImageManager.installPuntoVuelaTool(selectedHomeApp.repository); appDetailDialog.close() } }
                                      background:Rectangle { radius:rem(0.6875);color:accent }
-                                     contentItem:Text { text:parent.text;color:"#202226";font.pixelSize:rem(0.6875);font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
+                                     contentItem:Text { text:parent.text;color:"#202226";font.pixelSize: rem(0.75);font.bold:true;horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
                                 }
                             }
                         }
@@ -626,7 +635,7 @@ ApplicationWindow {
                                     Column {
                                         anchors.fill: parent; anchors.margins: rem(0.875); spacing: rem(0.4375)
                                         Text { text: modelData.title; color: primaryText; font.pixelSize: rem(0.8125); font.bold: true }
-                                        Text { text: modelData.desc; color: muted; font.pixelSize: rem(0.6875) }
+                                        Text { text: modelData.desc; color: muted; font.pixelSize: rem(0.75) }
                                     }
                                     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: Qt.openUrlExternally(modelData.url) }
                                 }
@@ -668,7 +677,7 @@ ApplicationWindow {
                             id: catalogStatus
                             Layout.fillWidth: true
                             text: catalogLoading ? "Cargando catálogo…" : "El catálogo se cargará al abrir esta sección."
-                            color: accent; font.pixelSize: rem(0.6875); wrapMode: Text.WordWrap
+                            color: accent; font.pixelSize: rem(0.75); wrapMode: Text.WordWrap
                         }
                         RowLayout {
                             Layout.fillWidth: true
@@ -709,11 +718,11 @@ ApplicationWindow {
                                         ColumnLayout {
                                             Layout.fillWidth:true;spacing:rem(0.1875)
                                             Text { text:modelData.name;color:primaryText;font.pixelSize:rem(0.75);font.bold:true;wrapMode:Text.WordWrap;maximumLineCount:2;Layout.fillWidth:true }
-                                            Text { text:modelData.category;color:accent;font.pixelSize:rem(0.5625) }
+                                            Text { text:modelData.category;color:accent;font.pixelSize: rem(0.75) }
                                         }
                                     }
-                                    Text { text:modelData.description||"Aplicación publicada en el catálogo oficial AppImage.";color:secondaryText;font.pixelSize:rem(0.625);wrapMode:Text.WordWrap;maximumLineCount:3;elide:Text.ElideRight;Layout.fillWidth:true;Layout.fillHeight:true }
-                                    Text { text:modelData.compatibility;color:modelData.compatibleUbuntu20?"#62B47A":"#D65A5A";font.pixelSize:rem(0.5625);wrapMode:Text.WordWrap;Layout.fillWidth:true }
+                                    Text { text:modelData.description||"Aplicación publicada en el catálogo oficial AppImage.";color:secondaryText;font.pixelSize: rem(0.75);wrapMode:Text.WordWrap;maximumLineCount:3;elide:Text.ElideRight;Layout.fillWidth:true;Layout.fillHeight:true }
+                                    Text { text:modelData.compatibility;color:modelData.compatibleUbuntu20?"#62B47A":"#D65A5A";font.pixelSize: rem(0.75);wrapMode:Text.WordWrap;Layout.fillWidth:true }
                                     RowLayout {
                                         Layout.fillWidth:true
                                         Button { text:"Ficha";onClicked:{selectedCatalogApp=modelData;catalogDetailDialog.open()} }
@@ -740,7 +749,7 @@ ApplicationWindow {
                                     Rectangle { width:rem(3.875);height:rem(3.875);radius:rem(1);color:"#FFFFFF";border.color:"#E8E8E8";Image { anchors.fill:parent;anchors.margins:rem(0.5);source:selectedCatalogApp?selectedCatalogApp.iconUrl:"";asynchronous:true;fillMode:Image.PreserveAspectFit } }
                                     ColumnLayout { Layout.fillWidth:true; spacing:rem(0.25)
                                          Text { text:selectedCatalogApp ? selectedCatalogApp.name : "Ficha de aplicación"; color:primaryText; font.pixelSize:rem(1.25); font.bold:true; wrapMode:Text.WordWrap; Layout.fillWidth:true }
-                                         Text { text:selectedCatalogApp?selectedCatalogApp.category:"";color:muted;font.pixelSize:rem(0.6875) } }
+                                         Text { text:selectedCatalogApp?selectedCatalogApp.category:"";color:muted;font.pixelSize: rem(0.75) } }
                                     Button { text:"✕";onClicked: catalogDetailDialog.close()
                                      background:Rectangle { radius:rem(0.625);color:darkTheme?"#414A55":"#F0F1F3" }
                                      contentItem:Text { text:parent.text;color:primaryText;font.pixelSize:rem(0.9375);horizontalAlignment:Text.AlignHCenter;verticalAlignment:Text.AlignVCenter } }
@@ -759,7 +768,7 @@ ApplicationWindow {
                                 }
                             }
                         }
-                        Text { Layout.fillWidth:true;text:"Catálogo oficial: appimage.github.io/feed.json. Las aplicaciones se descargan desde los enlaces publicados por sus autores y se integran en el menú del usuario, sin permisos de administrador. Las actualizaciones dependen de que la AppImage incluya metadatos compatibles con AppImageUpdate.";color:muted;font.pixelSize:rem(0.625);wrapMode:Text.WordWrap }
+                        Text { Layout.fillWidth:true;text:"Catálogo oficial: appimage.github.io/feed.json. Las aplicaciones se descargan desde los enlaces publicados por sus autores y se integran en el menú del usuario, sin permisos de administrador. Las actualizaciones dependen de que la AppImage incluya metadatos compatibles con AppImageUpdate.";color:muted;font.pixelSize: rem(0.75);wrapMode:Text.WordWrap }
                     }
 
                     ColumnLayout {
@@ -801,7 +810,7 @@ ApplicationWindow {
                             Item { Layout.fillWidth: true }
                             Button { text: "Actualizar lista"; onClicked: refreshAppImages() }
                         }
-                        Text { id: appImageStatus; Layout.fillWidth: true; color: secondaryText; wrapMode: Text.WordWrap; font.pixelSize: rem(0.6875) }
+                        Text { id: appImageStatus; Layout.fillWidth: true; color: secondaryText; wrapMode: Text.WordWrap; font.pixelSize: rem(0.75) }
                         ListView {
                             Layout.fillWidth: true
                             Layout.preferredHeight: Math.max(150, appImageItems.length * 100)
@@ -816,7 +825,7 @@ ApplicationWindow {
                                     ColumnLayout {
                                         Layout.fillWidth: true; spacing: rem(0.25)
                                         Text { text: modelData.name; color: primaryText; font.pixelSize: rem(0.75); font.bold: true; elide: Text.ElideMiddle; Layout.fillWidth: true }
-                                        Text { text: modelData.executable ? "Permisos de ejecución activos" : "Sin permisos de ejecución"; color: muted; font.pixelSize: rem(0.625) }
+                                        Text { text: modelData.executable ? "Permisos de ejecución activos" : "Sin permisos de ejecución"; color: muted; font.pixelSize: rem(0.75) }
                                     }
                                     Button {
                                         text: "Abrir"
@@ -868,7 +877,7 @@ ApplicationWindow {
                                 }
                             }
                         }
-                        Text { Layout.fillWidth: true; text: "La comprobación requiere información de actualización compatible dentro de la AppImage. Si no encuentra AppImageUpdate, el Toolkit descarga el actualizador oficial en tu perfil y verifica su SHA-256; no necesita root. Si no existe esa información, consulta la web del desarrollador y descarga la nueva versión manualmente."; color: muted; font.pixelSize: rem(0.6875); wrapMode: Text.WordWrap }
+                        Text { Layout.fillWidth: true; text: "La comprobación requiere información de actualización compatible dentro de la AppImage. Si no encuentra AppImageUpdate, el Toolkit descarga el actualizador oficial en tu perfil y verifica su SHA-256; no necesita root. Si no existe esa información, consulta la web del desarrollador y descarga la nueva versión manualmente."; color: muted; font.pixelSize: rem(0.75); wrapMode: Text.WordWrap }
                         Component.onCompleted: refreshAppImages()
                     }
 
@@ -902,11 +911,11 @@ ApplicationWindow {
                                     id: helpText
                                     anchors.fill: parent; anchors.margins: rem(0.9375); spacing: rem(0.375)
                                     Text { text: modelData.title; color: primaryText; font.pixelSize: rem(0.8125); font.bold: true }
-                                    Text { text: modelData.body; color: secondaryText; font.pixelSize: rem(0.6875); wrapMode: Text.WordWrap; Layout.fillWidth: true }
+                                    Text { text: modelData.body; color: secondaryText; font.pixelSize: rem(0.75); wrapMode: Text.WordWrap; Layout.fillWidth: true }
                                 }
                             }
                         }
-                        Text { Layout.fillWidth: true; text: "Guía completa: docs/GUIA-DE-AYUDA.md en el repositorio."; color: muted; font.pixelSize: rem(0.625); wrapMode: Text.WordWrap }
+                        Text { Layout.fillWidth: true; text: "Guía completa: docs/GUIA-DE-AYUDA.md en el repositorio."; color: muted; font.pixelSize: rem(0.75); wrapMode: Text.WordWrap }
                     }
 
                     ColumnLayout {
@@ -965,7 +974,7 @@ ApplicationWindow {
                                         text: "Al seleccionar el centro se consultará su ficha oficial y se completarán los datos públicos del AIL y del centro."
                                         color: muted
                                         wrapMode: Text.WordWrap
-                                        font.pixelSize: rem(0.625)
+                                        font.pixelSize: rem(0.75)
                                     }
                                     Button {
                                         Layout.columnSpan: parent.columns
@@ -1059,7 +1068,7 @@ ApplicationWindow {
                                                 opacity: 1
                                                 wrapMode: Text.WordWrap
                                                 verticalAlignment: Text.AlignVCenter
-                                                leftPadding: rem(1.625)
+                                                leftPadding: rem(0.25)
                                                 rightPadding: rem(0.5)
                                                 font.pixelSize: rem(0.8125)
                                             }
@@ -1129,7 +1138,7 @@ ApplicationWindow {
                                         Label {
                                             Layout.fillWidth: true
                                             text: "Debes consultar la información de protección de datos, la política de privacidad y los términos y condiciones, y marcar las tres casillas."
-                                            color: muted; wrapMode: Text.WordWrap; font.pixelSize: rem(0.6875)
+                                            color: muted; wrapMode: Text.WordWrap; font.pixelSize: rem(0.75)
                                         }
                                     }
                                 }
@@ -1155,7 +1164,7 @@ ApplicationWindow {
                                         previewVisible = true
                                     }
                                 }
-                                Text { id: formError; Accessible.role: Accessible.AlertMessage; visible: false; color: "#D65A5A"; font.pixelSize: rem(0.6875); wrapMode: Text.WordWrap }
+                                Text { id: formError; Accessible.role: Accessible.AlertMessage; visible: false; color: "#D65A5A"; font.pixelSize: rem(0.75); wrapMode: Text.WordWrap }
                             }
                         }
                         Rectangle {
@@ -1203,7 +1212,7 @@ ApplicationWindow {
                                         }
                                     }
                                 }
-                                Text { id: emailStatus; Accessible.role: Accessible.Status; text: "Al pulsar «Enviar correo», la propuesta se envía al buzón corporativo y se remite una copia a tu dirección. La aplicación confirmará el resultado."; color: muted; font.pixelSize: rem(0.625); wrapMode: Text.WordWrap }
+                                Text { id: emailStatus; Accessible.role: Accessible.Status; text: "Al pulsar «Enviar correo», la propuesta se envía al buzón corporativo y se remite una copia a tu dirección. La aplicación confirmará el resultado."; color: muted; font.pixelSize: rem(0.75); wrapMode: Text.WordWrap }
                             }
                         }
                         Rectangle {
@@ -1219,8 +1228,8 @@ ApplicationWindow {
                                     Text { text: "Desarrollo y mantenimiento"; color: primaryText; font.pixelSize: rem(1); font.bold: true }
                                     Text { text: "Punto Vuela Montejaque"; color: secondaryText; font.pixelSize: rem(0.8125); font.bold: true }
                                     Text { text: "Desarrollador: Francisco Javier Gallego Orellana"; color: secondaryText; font.pixelSize: rem(0.75) }
-                                    Text { text: "Proyecto comunitario de herramientas y aplicaciones para Linux."; color: muted; font.pixelSize: rem(0.6875); wrapMode: Text.WordWrap }
-                                    Text { text: "Repositorio oficial: github.com/Montejaque/punto-vuela-linux-toolkit"; color: accent; font.pixelSize: rem(0.625); wrapMode: Text.WordWrap }
+                                    Text { text: "Proyecto comunitario de herramientas y aplicaciones para Linux."; color: muted; font.pixelSize: rem(0.75); wrapMode: Text.WordWrap }
+                                    Text { text: "Repositorio oficial: github.com/Montejaque/punto-vuela-linux-toolkit"; color: accent; font.pixelSize: rem(0.75); wrapMode: Text.WordWrap }
                                 }
                             }
                         }
