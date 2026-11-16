@@ -1,11 +1,6 @@
 name: Electron Linux AppImage
 
 on:
-  push:
-    branches: [rewrite/electron-desktop]
-    paths:
-      - "desktop-electron/**"
-      - ".github/workflows/electron-prototype.yml"
   pull_request:
     branches: [main]
     paths:
