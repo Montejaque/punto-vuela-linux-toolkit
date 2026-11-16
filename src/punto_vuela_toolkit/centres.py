@@ -148,7 +148,7 @@ def _parse_page(html: str) -> tuple[list[dict[str, str]], int]:
 def _read_cache() -> list[dict[str, str]]:
     try:
         data = json.loads(CACHE_FILE.read_text(encoding="utf-8"))
-        if isinstance(data, list) and len(data) >= 100 and all(isinstance(item, dict) and "slug" in item for item in data):
+        if isinstance(data, list) and len(data) >= 100:
             return data
     except (OSError, ValueError):
         pass
@@ -158,7 +158,8 @@ def _read_cache() -> list[dict[str, str]]:
 def load_centres(force: bool = False) -> list[dict[str, str]]:
     """Load all official centres, refreshing a local cache when possible."""
     cached = _read_cache()
-    if cached and not force:
+    cache_has_profile_links = bool(cached) and all(isinstance(item, dict) and "slug" in item for item in cached)
+    if cached and cache_has_profile_links and not force:
         try:
             if time.time() - CACHE_FILE.stat().st_mtime < 7 * 24 * 60 * 60:
                 return cached
