@@ -1025,6 +1025,8 @@ ApplicationWindow {
                                             id: dataProtectionAcknowledged
                                             Layout.fillWidth: true
                                             enabled: true
+                                            checked: dataProtectionRead
+                                            onClicked: { if (!dataProtectionRead) dataProtectionDialog.open() }
                                             contentItem: Label {
                                                 text: "He leído la información sobre protección de datos (consulta el botón correspondiente)."
                                                 textFormat: Text.PlainText; color: primaryText; opacity: 1; wrapMode: Text.WordWrap; font.pixelSize: 12
@@ -1034,6 +1036,8 @@ ApplicationWindow {
                                             id: privacyAcknowledged
                                             Layout.fillWidth: true
                                             enabled: true
+                                            checked: privacyPolicyRead
+                                            onClicked: { if (!privacyPolicyRead) privacyPolicyDialog.open() }
                                             contentItem: Label {
                                                 text: "He leído la política de privacidad (consulta el documento completo)."
                                                 textFormat: Text.PlainText; color: primaryText; opacity: 1; wrapMode: Text.WordWrap; font.pixelSize: 12
@@ -1043,6 +1047,8 @@ ApplicationWindow {
                                             id: termsAcknowledged
                                             Layout.fillWidth: true
                                             enabled: true
+                                            checked: termsAccepted
+                                            onClicked: { if (!termsAccepted) termsDialog.open() }
                                             contentItem: Label {
                                                 text: "He leído y acepto los términos y condiciones de uso (consulta el documento completo)."
                                                 textFormat: Text.PlainText; color: primaryText; opacity: 1; wrapMode: Text.WordWrap; font.pixelSize: 12
