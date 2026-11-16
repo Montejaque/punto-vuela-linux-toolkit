@@ -1212,7 +1212,7 @@ ApplicationWindow {
                                         }
                                     }
                                 }
-                                Text { id: emailStatus; Accessible.role: Accessible.Status; text: "Al pulsar «Enviar correo», la propuesta se envía al buzón corporativo y se remite una copia a tu dirección. La aplicación confirmará el resultado."; color: muted; font.pixelSize: rem(0.75); wrapMode: Text.WordWrap }
+                                Text { id: emailStatus; Accessible.role: Accessible.AlertMessage; text: "Al pulsar «Enviar correo», la propuesta se envía al buzón corporativo y se remite una copia a tu dirección. La aplicación confirmará el resultado."; color: muted; font.pixelSize: rem(0.75); wrapMode: Text.WordWrap }
                             }
                         }
                         Rectangle {
