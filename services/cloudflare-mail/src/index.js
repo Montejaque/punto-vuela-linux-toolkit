@@ -51,7 +51,7 @@ function buildMime(data) {
     ["Persona de contacto", data.contact], ["Teléfono", data.phone],
     ["Correo para la copia", data.reply_email], ["Aplicación", data.application],
     ["Enlace", data.url || "No indicado"], ["Distribución", data.distribution || "No indicada"],
-    ["Necesidad y utilidad", data.purpose], ["Observaciones", data.notes || "Ninguna"],
+    ["Necesidad y utilidad", data.purpose], ["Observaciones", data.notes || "Ninguna"], ["Vista previa revisada", data.preview_text || "Sin cambios en la vista previa."],
     ["Información de protección de datos leída", data.data_protection_read ? "Sí" : "No"],
     ["Política de privacidad leída", data.privacy_policy_read ? "Sí" : "No"],
     ["Términos y condiciones aceptados", data.terms_accepted ? "Sí" : "No"],
