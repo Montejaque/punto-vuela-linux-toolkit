@@ -52,3 +52,20 @@ MIT para el código de este proyecto. El logotipo y otros recursos de marca pert
 El formulario de contacto utiliza un servicio HTTPS desplegado en Cloudflare Workers. El Worker envía las solicitudes mediante Gmail API desde la cuenta corporativa y mantiene las credenciales OAuth exclusivamente en los secretos de Cloudflare. La AppImage no contiene contraseñas ni tokens.
 
 La configuración y el despliegue se documentan en [docs/CORREO-CLOUDFLARE-WORKERS.md](docs/CORREO-CLOUDFLARE-WORKERS.md). Antes de publicar una versión funcional, hay que desplegar el Worker, configurar los secretos de Google y sustituir la URL provisional en `src/punto_vuela_toolkit/email_sender.py`. Hasta entonces, el envío mostrará que el servicio está pendiente de activación.
+
+
+## Ejecutar la AppImage en Ubuntu
+
+La primera vez que se descarga una AppImage, algunos navegadores y gestores de archivos no conservan el permiso de ejecución. En ese caso, GNOME no la abrirá con doble clic hasta habilitarlo:
+
+1. Abre **Propiedades** del archivo descargado.
+2. En **Permisos**, activa **Permitir ejecutar el archivo como un programa**.
+3. Cierra Propiedades y vuelve a hacer doble clic.
+
+También se puede habilitar una sola vez desde la terminal:
+
+```bash
+chmod +x ~/Descargas/Puntos_Vuela_Toolkit-x86_64.AppImage
+```
+
+Después de conceder el permiso, la AppImage se puede iniciar con doble clic. No requiere instalar paquetes ni permisos de administrador.
