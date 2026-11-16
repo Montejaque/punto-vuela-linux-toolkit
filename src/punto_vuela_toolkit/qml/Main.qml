@@ -41,6 +41,7 @@ ApplicationWindow {
 
     property bool previewVisible: false
     property bool emailSending: false
+    property bool checkingMailService: false
     property var puntoVuelaCentres: []
     property var filteredPuntoVuelaCentres: []
     property bool puntoVuelaCentresLoading: false
@@ -93,6 +94,21 @@ ApplicationWindow {
             emailStatus.text = result.message || (result.ok ? "Correo enviado correctamente." : "No se pudo enviar el correo.")
             emailStatus.color = result.ok ? "#62B47A" : "#E06A6A"
             if (result.ok) previewVisible = false
+        }
+        function onMailServiceChecked(payload) {
+            const result = JSON.parse(payload)
+            checkingMailService = false
+            if (result.ok) {
+                emailStatus.text = result.message || "Servicio de correo operativo."
+                emailStatus.color = "#62B47A"
+            } else {
+                const checks = result.checks || {}
+                const missing = Object.keys(checks).filter(key => !checks[key])
+                emailStatus.text = (result.message || "El servicio de correo no está preparado.") +
+                    (missing.length ? " Configuración pendiente: " + missing.join(", ") + "." : "") +
+                    (result.http_status ? " (HTTP " + result.http_status + ")" : "")
+                emailStatus.color = "#E06A6A"
+            }
         }
         function onPuntoVuelaCentresLoaded(payload) {
             const result = JSON.parse(payload)
@@ -1035,7 +1051,7 @@ ApplicationWindow {
                                 Rectangle {
                                     Layout.fillWidth: true
                                     radius: rem(0.625); color: panel; border.color: panelBorder
-                                    implicitHeight: legalColumn.implicitHeight + 24
+                                    implicitHeight: legalColumn.implicitHeight + rem(1.5)
                                     ColumnLayout {
                                         id: legalColumn
                                         anchors.fill: parent; anchors.margins: rem(0.75); spacing: rem(0.5625)
@@ -1102,7 +1118,7 @@ ApplicationWindow {
                                                 opacity: 1
                                                 wrapMode: Text.WordWrap
                                                 verticalAlignment: Text.AlignVCenter
-                                                leftPadding: rem(1.625)
+                                                leftPadding: rem(0.25)
                                                 rightPadding: rem(0.5)
                                                 font.pixelSize: rem(0.8125)
                                             }
@@ -1172,7 +1188,7 @@ ApplicationWindow {
                         }
                         Rectangle {
                             Layout.fillWidth: true; visible: previewVisible; radius: rem(1); color: panel; border.color: panelBorder
-                            implicitHeight: previewColumn.implicitHeight + 36
+                            implicitHeight: previewColumn.implicitHeight + rem(2.25)
                             ColumnLayout {
                                 id: previewColumn
                                 anchors.fill: parent; anchors.margins: rem(1.125); spacing: rem(0.625)
@@ -1184,6 +1200,17 @@ ApplicationWindow {
                                 }
                                 RowLayout {
                                     Layout.fillWidth: true
+                                    Button {
+                                        text: checkingMailService ? "Comprobando…" : "Comprobar correo"
+                                        enabled: !checkingMailService && !emailSending
+                                        Accessible.name: "Comprobar la configuración del servicio de correo"
+                                        onClicked: {
+                                            checkingMailService = true
+                                            emailStatus.text = "Comprobando conexión, credenciales y protección antispam…"
+                                            emailStatus.color = secondaryText
+                                            appImageManager.checkMailService()
+                                        }
+                                    }
                                     Button {
                                         text: "Enviar por WhatsApp"
                                         onClicked: {
