@@ -1,113 +1,57 @@
-import { useMemo, useState } from "react";
-import {
-  AppWindow, BookOpen, Boxes, ChevronDown, CircleHelp, Download,
-  FileText, FolderCheck, Grid2X2, Home, Mail, Moon, Search, Settings2,
-  ShieldCheck, Sparkles, Sun, Wrench
-} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { AppWindow, BookOpen, Boxes, CheckCircle2, ChevronDown, CircleHelp, Download, ExternalLink, FileText, FolderCheck, Grid2X2, Home, Mail, Moon, RefreshCw, Search, ShieldCheck, Sun, Wrench, Trash2, Play, Settings2, MapPin, AlertCircle } from "lucide-react";
 
-type Section = "home" | "catalog" | "installed" | "tools" | "contact" | "help";
-type AppItem = { name: string; category: string; description: string; icon: string; compatibility: string };
+type Section = "home"|"catalog"|"installed"|"tools"|"centres"|"contact"|"help";
+type Item = {name:string;description:string;category:string;author?:string;license?:string;glibc?:string;compatibleUbuntu20?:boolean;compatibility?:string;downloadUrl?:string;repository?:string;catalogUrl?:string;iconUrl?:string;version?:string;releaseUrl?:string;assetName?:string;path?:string;size?:number;executable?:boolean;modified?:string;slug?:string;url?:string;details?:string};
+declare global { interface Window { puntoVuela: {platform:string;version:string;invoke:(method:string,args?:any)=>Promise<any>}; } }
 
-const sampleApps: AppItem[] = [
-  { name: "LibreOffice", category: "Oficina", description: "Suite ofimática completa para documentos, hojas de cálculo y presentaciones.", icon: "L", compatibility: "Ubuntu 20.04+" },
-  { name: "GIMP", category: "Diseño", description: "Edición y retoque de imágenes con herramientas profesionales.", icon: "G", compatibility: "Ubuntu 20.04+" },
-  { name: "Audacity", category: "Audio", description: "Grabación y edición multipista de audio.", icon: "A", compatibility: "Ubuntu 20.04+" },
-  { name: "VLC", category: "Multimedia", description: "Reproductor multimedia para prácticamente cualquier formato.", icon: "V", compatibility: "Ubuntu 20.04+" },
-  { name: "Inkscape", category: "Diseño", description: "Diseño e ilustración vectorial.", icon: "I", compatibility: "Ubuntu 20.04+" },
-  { name: "KeePassXC", category: "Seguridad", description: "Gestor local de contraseñas con base de datos cifrada.", icon: "K", compatibility: "Ubuntu 20.04+" }
+const nav:{id:Section;label:string;icon:any;group:string}[]=[
+{id:"home",label:"Inicio",icon:Home,group:"Espacio de trabajo"},{id:"catalog",label:"Catálogo AppImage",icon:Grid2X2,group:"Espacio de trabajo"},{id:"installed",label:"Mis aplicaciones",icon:FolderCheck,group:"Espacio de trabajo"},{id:"tools",label:"Herramientas Punto Vuela",icon:Wrench,group:"Espacio de trabajo"},{id:"centres",label:"Directorio de centros",icon:MapPin,group:"Recursos"},{id:"contact",label:"Contacto y propuestas",icon:Mail,group:"Sistema"},{id:"help",label:"Ayuda y documentación",icon:CircleHelp,group:"Sistema"}
 ];
+const legal={privacy:"https://github.com/Montejaque/punto-vuela-linux-toolkit/blob/main/privacy.md",terms:"https://github.com/Montejaque/punto-vuela-linux-toolkit/blob/main/terms.md"};
+const fmt=(n:number)=>n<1024*1024?(n/1024).toFixed(0)+" KB":(n/1024/1024).toFixed(1)+" MB";
 
-const nav: { id: Section; label: string; icon: typeof Home; group: string }[] = [
-  { id: "home", label: "Inicio", icon: Home, group: "Espacio de trabajo" },
-  { id: "catalog", label: "Catálogo AppImage", icon: Grid2X2, group: "Espacio de trabajo" },
-  { id: "installed", label: "Mis aplicaciones", icon: FolderCheck, group: "Espacio de trabajo" },
-  { id: "tools", label: "Herramientas Punto Vuela", icon: Wrench, group: "Espacio de trabajo" },
-  { id: "contact", label: "Contacto y propuestas", icon: Mail, group: "Sistema" },
-  { id: "help", label: "Ayuda y documentación", icon: CircleHelp, group: "Sistema" }
-];
-
-export default function App() {
-  const [section, setSection] = useState<Section>("home");
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("Todas");
-  const [dark, setDark] = useState(true);
-  const categories = ["Todas", ...Array.from(new Set(sampleApps.map((item) => item.category)))];
-  const filtered = useMemo(() => sampleApps.filter((item) =>
-    (category === "Todas" || item.category === category) &&
-    (item.name + " " + item.description + " " + item.category).toLocaleLowerCase("es").includes(query.toLocaleLowerCase("es"))
-  ), [category, query]);
-  const active = nav.find((item) => item.id === section)!;
-
-  return <div className={dark ? "app-shell dark" : "app-shell light"}>
-    <aside className="sidebar">
-      <div className="brand">
-        <div className="brand-mark" aria-hidden="true">V</div>
-        <div><strong>PUNTOS VUELA</strong><span>TOOLKIT</span></div>
-      </div>
-      {["Espacio de trabajo", "Sistema"].map((group) => <div className="nav-group" key={group}>
-        <p className="nav-heading">{group}</p>
-        {nav.filter((item) => item.group === group).map((item) => {
-          const Icon = item.icon;
-          return <button key={item.id} className={section === item.id ? "nav-item active" : "nav-item"}
-            onClick={() => setSection(item.id)} aria-current={section === item.id ? "page" : undefined}>
-            <Icon size="1.125rem" aria-hidden="true" /><span>{item.label}</span>
-          </button>;
-        })}
-      </div>)}
-      <div className="sidebar-footer"><ShieldCheck size="1rem" /> Aplicación de escritorio</div>
-    </aside>
-
-    <main className="main-content">
-      <header className="topbar">
-        <div className="breadcrumb"><span>Toolkit</span><ChevronDown size="0.9rem" /><strong>{active.label}</strong></div>
-        <div className="top-actions">
-          <label className="global-search"><Search size="1rem" /><span className="sr-only">Buscar en la aplicación</span>
-            <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar aplicaciones, herramientas..." />
-            <kbd>⌘ K</kbd>
-          </label>
-          <button className="icon-button" onClick={() => setDark(!dark)} aria-label={dark ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}>{dark ? <Sun /> : <Moon />}</button>
-        </div>
-      </header>
-
-      <section className="page">
-        {section === "home" && <>
-          <div className="hero">
-            <div><span className="eyebrow"><Sparkles size="0.9rem" /> TU ESPACIO DIGITAL</span>
-              <h1>Todo Linux.<br /><em>En un solo lugar.</em></h1>
-              <p>Descubre aplicaciones, gestiona tus herramientas y mantén tu entorno de trabajo al día.</p>
-              <button className="primary-button" onClick={() => setSection("catalog")}>Explorar catálogo <Grid2X2 size="1rem" /></button>
-            </div>
-            <div className="hero-art" aria-hidden="true"><div className="orbit orbit-one"></div><div className="orbit orbit-two"></div><div className="hero-logo">V</div><span className="floating-chip chip-a"><Boxes size="1rem" /> Aplicaciones</span><span className="floating-chip chip-b"><Wrench size="1rem" /> Herramientas</span></div>
-          </div>
-          <div className="section-heading"><div><span className="eyebrow">EMPIEZA POR AQUÍ</span><h2>Tu espacio de trabajo</h2></div><span className="muted">Edición preview · 0.2.0</span></div>
-          <div className="quick-grid">
-            <button className="quick-card" onClick={() => setSection("catalog")}><span className="quick-icon"><Grid2X2 /></span><strong>Catálogo AppImage</strong><span>Explora aplicaciones compatibles</span><Download size="1rem" /></button>
-            <button className="quick-card" onClick={() => setSection("installed")}><span className="quick-icon"><FolderCheck /></span><strong>Mis aplicaciones</strong><span>Administra tus descargas</span><AppWindow size="1rem" /></button>
-            <button className="quick-card" onClick={() => setSection("tools")}><span className="quick-icon"><Wrench /></span><strong>Herramientas Punto Vuela</strong><span>Utilidades y recursos digitales</span><Settings2 size="1rem" /></button>
-          </div>
-        </>}
-
-        {section === "catalog" && <><div className="page-title"><div><span className="eyebrow">DESCUBRE SOFTWARE</span><h1>Catálogo de aplicaciones</h1><p>Encuentra herramientas para tu día a día en Linux.</p></div><span className="result-pill">{filtered.length} resultados</span></div>
-          <div className="filter-panel"><div className="filter-label"><span>Filtrar por categoría</span><span className="muted">{filtered.length} aplicaciones</span></div>
-            <div className="category-list" aria-label="Categorías de aplicaciones">{categories.map((item) => <button key={item} className={category === item ? "category-chip selected" : "category-chip"} onClick={() => setCategory(item)} aria-pressed={category === item}>{item}</button>)}</div>
-          </div>
-          <div className="app-grid">{filtered.map((item) => <article className="app-card" key={item.name}>
-            <div className="app-card-top"><div className="app-icon">{item.icon}</div><span className="compatibility">{item.compatibility}</span></div>
-            <span className="category-tag">{item.category}</span><h3>{item.name}</h3><p>{item.description}</p>
-            <button className="secondary-button" onClick={() => window.alert("La instalación se habilitará al conectar el gestor local de AppImages.")}>Ver aplicación <Download size="0.95rem" /></button>
-          </article>)}</div>
-        </>}
-
-        {section === "installed" && <EmptyState icon={<FolderCheck />} title="Tus aplicaciones, bajo control" description="Aquí aparecerán las AppImages que descargues, con su estado, tamaño, actualizaciones e integración en el escritorio." />}
-        {section === "tools" && <EmptyState icon={<Wrench />} title="Herramientas Punto Vuela" description="Accede a las utilidades y recursos digitales del ecosistema Punto Vuela. El catálogo se conectará con los repositorios oficiales." />}
-        {section === "contact" && <EmptyState icon={<Mail />} title="Contacto y propuestas" description="Formulario accesible para proponer nuevas aplicaciones. La conexión con el servicio de correo se migrará y verificará antes de publicar." />}
-        {section === "help" && <EmptyState icon={<BookOpen />} title="Ayuda y documentación" description="Guías de instalación, gestión de aplicaciones y resolución de problemas." />}
-      </section>
-      <footer className="app-footer"><span>Puntos Vuela Toolkit <b>·</b> Nueva edición</span><span>Diseñada para Linux · Sin permisos de administrador</span></footer>
-    </main>
-  </div>;
+export default function App(){
+ const [section,setSection]=useState<Section>("home"),[query,setQuery]=useState(""),[category,setCategory]=useState("Todas"),[dark,setDark]=useState(true);
+ const [items,setItems]=useState<Item[]>([]),[installed,setInstalled]=useState<Item[]>([]),[tools,setTools]=useState<Item[]>([]),[centres,setCentres]=useState<Item[]>([]);
+ const [loading,setLoading]=useState(false),[message,setMessage]=useState(""),[error,setError]=useState(false),[busy,setBusy]=useState("");
+ const [form,setForm]=useState({center:"",municipality:"",province:"Málaga",contact:"",phone:"",reply_email:"",application:"",url:"",distribution:"",purpose:"",notes:"",data_protection_read:false,privacy_policy_read:false,terms_accepted:false,website:""});
+ const active=nav.find(x=>x.id===section)!;
+ const categories=useMemo(()=>["Todas",...Array.from(new Set(items.flatMap(x=>[x.category,...(x as any).categories||[]])).values()).filter(Boolean).sort((a,b)=>a.localeCompare(b,"es"))],[items]);
+ const filtered=useMemo(()=>items.filter(x=>(category==="Todas"||x.category===category||(x as any).categories?.includes(category))&&[x.name,x.description,x.author,x.category].join(" ").toLocaleLowerCase("es").includes(query.toLocaleLowerCase("es"))),[items,category,query]);
+ const notify=(text:string,isError=false)=>{setMessage(text);setError(isError);};
+ const invoke=async(method:string,args:any={})=>{setBusy(method);try{return await window.puntoVuela.invoke(method,args);}finally{setBusy("");}};
+ const loadCatalog=async(force=false)=>{setLoading(true);try{const data=await invoke("catalog.search",{query:"",force});setItems(data);notify(`Catálogo cargado: ${data.length} aplicaciones.`);}catch(e:any){notify(e.message||"No se pudo cargar el catálogo.",true);}finally{setLoading(false);}};
+ const loadInstalled=async()=>{try{setInstalled(await invoke("apps.list"));}catch(e:any){notify(e.message,true);}};
+ const loadTools=async(force=false)=>{setLoading(true);try{setTools(await invoke("tools.list",{force}));}catch(e:any){notify(e.message,true);}finally{setLoading(false);}};
+ const loadCentres=async()=>{setLoading(true);try{setCentres(await invoke("centres.list"));}catch(e:any){notify("No se pudo consultar el directorio oficial: "+e.message,true);}finally{setLoading(false);}};
+ useEffect(()=>{if(section==="catalog"&&!items.length)void loadCatalog();if(section==="installed")void loadInstalled();if(section==="tools"&&!tools.length)void loadTools();if(section==="centres"&&!centres.length)void loadCentres();},[section]);
+ const install=async(item:Item,method="apps.install")=>{try{const result=await invoke(method,method==="tools.install"?{repository:item.repository}:{name:item.name});notify(result.message||"Instalación completada.");await loadInstalled();}catch(e:any){notify(e.message,true);}};
+ const appAction=async(method:string,item:Item)=>{try{const result=await invoke(method,{path:item.path});notify(result.message||"Operación completada.");await loadInstalled();}catch(e:any){notify(e.message,true);}};
+ const send=async(e:React.FormEvent)=>{e.preventDefault();try{const result=await invoke("mail.send",{data:form});notify(result.message||"Solicitud enviada.");setForm({...form,application:"",url:"",purpose:"",notes:""});}catch(e:any){notify(e.message,true);}};
+ const change=(key:string,value:any)=>setForm(old=>({...old,[key]:value}));
+ const open=(url:string)=>void invoke("tools.openExternal",{url}).catch((e:any)=>notify(e.message,true));
+ const sizeLabel=(n:number)=>fmt(n||0);
+ return <div className={dark?"app-shell dark":"app-shell light"}>
+  <aside className="sidebar"><div className="brand"><div className="brand-mark" aria-hidden="true">V</div><div><strong>PUNTOS VUELA</strong><span>TOOLKIT</span></div></div>
+   {["Espacio de trabajo","Recursos","Sistema"].map(group=><div className="nav-group" key={group}><p className="nav-heading">{group}</p>{nav.filter(x=>x.group===group).map(x=>{const Icon=x.icon;return <button key={x.id} className={section===x.id?"nav-item active":"nav-item"} onClick={()=>{setSection(x.id);setQuery("");}} aria-current={section===x.id?"page":undefined}><Icon size="1.125rem" aria-hidden="true"/><span>{x.label}</span></button>;})}</div>)}
+   <div className="sidebar-footer"><ShieldCheck size="1rem"/> Aplicación local · sin root</div>
+  </aside>
+  <main className="main-content"><header className="topbar"><div className="breadcrumb"><span>Toolkit</span><ChevronDown size=".9rem"/><strong>{active.label}</strong></div><div className="top-actions"><label className="global-search"><Search size="1rem"/><span className="sr-only">Buscar</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Buscar..."/></label><button className="icon-button" onClick={()=>setDark(!dark)} aria-label={dark?"Cambiar a tema claro":"Cambiar a tema oscuro"}>{dark?<Sun/>:<Moon/>}</button></div></header>
+   <section className="page">
+    {message&&<div role="status" aria-live="polite" className={error?"notice error":"notice"}><span>{error?<AlertCircle size="1rem"/>:<CheckCircle2 size="1rem"/>}{message}</span><button onClick={()=>setMessage("")} aria-label="Cerrar aviso">×</button></div>}
+    {section==="home"&&<><div className="hero"><div><span className="eyebrow">TU ESPACIO DIGITAL</span><h1>Todo Linux.<br/><em>En un solo lugar.</em></h1><p>Descubre, instala y gestiona aplicaciones AppImage y herramientas del ecosistema Punto Vuela, sin permisos de administrador.</p><button className="primary-button" onClick={()=>setSection("catalog")}>Explorar catálogo <Grid2X2 size="1rem"/></button></div><div className="hero-art" aria-hidden="true"><div className="orbit orbit-one"/><div className="orbit orbit-two"/><div className="hero-logo">V</div><span className="floating-chip chip-a"><Boxes size="1rem"/> Aplicaciones</span><span className="floating-chip chip-b"><Wrench size="1rem"/> Herramientas</span></div></div><div className="section-heading"><div><span className="eyebrow">EMPIEZA POR AQUÍ</span><h2>Tu espacio de trabajo</h2></div><span className="muted">Electron · {window.puntoVuela.version}</span></div><div className="quick-grid">{[{id:"catalog",title:"Catálogo AppImage",desc:"Miles de aplicaciones comunitarias",icon:Grid2X2},{id:"installed",title:"Mis aplicaciones",desc:"Gestiona tus descargas y actualizaciones",icon:FolderCheck},{id:"tools",title:"Herramientas Punto Vuela",desc:"Aplicaciones de los repositorios propios",icon:Wrench}].map(x=><button className="quick-card" key={x.id} onClick={()=>setSection(x.id as Section)}><span className="quick-icon"><x.icon/></span><strong>{x.title}</strong><span>{x.desc}</span></button>)}</div></>}
+    {section==="catalog"&&<><div className="page-title"><div><span className="eyebrow">APPIMAGE COMMUNITY</span><h1>Catálogo de aplicaciones</h1><p>Feed oficial de AppImage Community, con compatibilidad declarada para Ubuntu 20.04.</p></div><button className="secondary-button" disabled={loading} onClick={()=>loadCatalog(true)}><RefreshCw size="1rem"/> Actualizar catálogo</button></div><div className="filter-panel"><div className="filter-label"><span>Filtrar por categoría</span><span className="muted">{filtered.length} resultados de {items.length}</span></div><div className="category-list">{categories.map(c=><button key={c} className={category===c?"category-chip selected":"category-chip"} onClick={()=>setCategory(c)} aria-pressed={category===c}>{c}</button>)}</div></div>{loading?<p role="status">Cargando catálogo…</p>:<div className="app-grid">{filtered.map(item=><article className="app-card" key={item.name}><div className="app-card-top">{item.iconUrl?<img className="remote-icon" src={item.iconUrl} alt="" loading="lazy"/>:<div className="app-icon">{item.name.slice(0,1)}</div>}<span className="compatibility">{item.glibc||"glibc no declarada"}</span></div><span className="category-tag">{item.category}</span><h3>{item.name}</h3><p>{item.description||"Aplicación AppImage de la comunidad."}</p><p className="muted">Autor: {item.author||"No indicado"} · Licencia: {item.license||"No indicada"}</p><span className={item.compatibleUbuntu20===false?"compatibility warning":"compatibility"}>{item.compatibility}</span><div className="card-actions"><button className="secondary-button" disabled={busy==="apps.install"||item.compatibleUbuntu20===false} onClick={()=>install(item)}> <Download size="1rem"/> Instalar</button><button className="text-button" onClick={()=>open(item.catalogUrl||"https://appimage.github.io/")}>Ficha <ExternalLink size=".9rem"/></button></div></article>)}</div>}</>}
+    {section==="installed"&&<><div className="page-title"><div><span className="eyebrow">BIBLIOTECA LOCAL</span><h1>Mis aplicaciones</h1><p>AppImages guardadas en tu carpeta personal. No se modifica el sistema.</p></div><div className="card-actions"><button className="secondary-button" onClick={()=>loadInstalled()}><RefreshCw size="1rem"/> Actualizar</button><button className="secondary-button" onClick={()=>invoke("apps.folder").then(()=>notify("Carpeta abierta."))}>Abrir carpeta</button></div></div>{installed.length===0?<Empty title="Todavía no tienes aplicaciones" text="Instala aplicaciones desde el catálogo para verlas aquí."/>:<div className="app-grid">{installed.map(item=><article className="app-card" key={item.path}><div className="app-card-top"><div className="app-icon">{item.name?.slice(0,1)}</div><span className="compatibility">{sizeLabel(item.size||0)}</span></div><h3>{item.name}</h3><p>{item.executable?"Permisos de ejecución activos":"Necesita permisos de ejecución"} · Modificada: {new Date(item.modified||"").toLocaleDateString("es-ES")}</p><div className="card-actions"><button className="secondary-button" onClick={()=>appAction("apps.launch",item)}><Play size="1rem"/> Abrir</button><button className="text-button" onClick={()=>appAction("apps.permissions",item)}>Permisos</button><button className="text-button" onClick={async()=>{try{const r=await invoke("apps.checkUpdate",{path:item.path});notify(r.message,r.available?false:!r.supported);}catch(e:any){notify(e.message,true);}}}>Comprobar actualización</button><button className="text-button" onClick={()=>{if(confirm("¿Eliminar esta AppImage y su acceso del menú?"))void appAction("apps.remove",item);}}><Trash2 size=".9rem"/> Eliminar</button></div></article>)}</div>}</>}
+    {section==="tools"&&<><div className="page-title"><div><span className="eyebrow">REPOSITORIOS MONTEJAQUE</span><h1>Herramientas Punto Vuela</h1><p>Aplicaciones públicas de Montejaque que ofrecen una AppImage x86_64 en su última Release.</p></div><button className="secondary-button" onClick={()=>loadTools(true)}><RefreshCw size="1rem"/> Actualizar</button></div>{loading?<p role="status">Consultando GitHub…</p>:tools.length?<div className="app-grid">{tools.map(item=><article className="app-card" key={item.repository}><span className="category-tag">PUNTO VUELA</span><h3>{item.name}</h3><p>{item.description}</p><p className="muted">Versión: {item.version}</p><div className="card-actions"><button className="secondary-button" onClick={()=>install(item,"tools.install")}><Download size="1rem"/> Instalar</button><button className="text-button" onClick={()=>open(item.releaseUrl||item.repositoryUrl||"https://github.com/Montejaque")}>Ver Release <ExternalLink size=".9rem"/></button></div></article>)}</div>:<Empty title="No se han encontrado herramientas instalables" text="Comprueba las Releases públicas de los repositorios o vuelve a actualizar."/ >}</>}
+    {section==="centres"&&<><div className="page-title"><div><span className="eyebrow">DIRECTORIO OFICIAL</span><h1>Centros Punto Vuela</h1><p>Listado público obtenido desde puntosvuela.es. Busca por centro o municipio.</p></div><button className="secondary-button" onClick={loadCentres}><RefreshCw size="1rem"/> Actualizar</button></div>{loading?<p role="status">Cargando centros…</p>:<div className="app-grid">{centres.filter(c=>[c.name,c.details].join(" ").toLocaleLowerCase("es").includes(query.toLocaleLowerCase("es"))).map(c=><article className="app-card" key={c.slug}><span className="category-tag">CENTRO PUNTO VUELA</span><h3>{c.name}</h3><p>{c.details?.slice(0,240)}</p><button className="text-button" onClick={()=>open(c.url||"https://puntosvuela.es/centros")}>Ver ficha oficial <ExternalLink size=".9rem"/></button></article>)}</div>}</>}
+    {section==="contact"&&<><div className="page-title"><div><span className="eyebrow">PROPÓN UNA APLICACIÓN</span><h1>Contacto y propuestas</h1><p>Completa los datos. El mensaje solo se marcará como enviado cuando Gmail confirme la operación.</p></div></div><form className="proposal-form" onSubmit={send}><div className="form-grid"><Field label="Centro Punto Vuela *"><input required value={form.center} onChange={e=>change("center",e.target.value)}/></Field><Field label="Municipio *"><input required value={form.municipality} onChange={e=>change("municipality",e.target.value)}/></Field><Field label="Provincia *"><select value={form.province} onChange={e=>change("province",e.target.value)}>{["Almería","Cádiz","Córdoba","Granada","Huelva","Jaén","Málaga","Sevilla"].map(x=><option key={x}>{x}</option>)}</select></Field><Field label="Persona de contacto *"><input required value={form.contact} onChange={e=>change("contact",e.target.value)}/></Field><Field label="Teléfono *"><input required value={form.phone} onChange={e=>change("phone",e.target.value)}/></Field><Field label="Correo electrónico *"><input type="email" required value={form.reply_email} onChange={e=>change("reply_email",e.target.value)}/></Field><Field label="Nombre de la aplicación *"><input required value={form.application} onChange={e=>change("application",e.target.value)}/></Field><Field label="Enlace oficial"><input type="url" value={form.url} onChange={e=>change("url",e.target.value)}/></Field><Field label="Distribución o sistema"><input value={form.distribution} onChange={e=>change("distribution",e.target.value)}/></Field><Field label="Motivo y utilidad *" wide><textarea required rows={4} value={form.purpose} onChange={e=>change("purpose",e.target.value)}/></Field><Field label="Observaciones" wide><textarea rows={3} value={form.notes} onChange={e=>change("notes",e.target.value)}/></Field></div><div className="legal-checks"><Check label={<>He leído la <a href={legal.privacy} onClick={e=>{e.preventDefault();open(legal.privacy);}}>política de privacidad</a>.</>} checked={form.privacy_policy_read} onChange={v=>change("privacy_policy_read",v)}/><Check label={<>He leído la <a href={legal.privacy} onClick={e=>{e.preventDefault();open(legal.privacy);}}>información de protección de datos</a>.</>} checked={form.data_protection_read} onChange={v=>change("data_protection_read",v)}/><Check label={<>Acepto los <a href={legal.terms} onClick={e=>{e.preventDefault();open(legal.terms);}}>términos y condiciones</a>.</>} checked={form.terms_accepted} onChange={v=>change("terms_accepted",v)}/></div><label className="honeypot" aria-hidden="true">No rellenar<input tabIndex={-1} autoComplete="off" value={form.website} onChange={e=>change("website",e.target.value)}/></label><button className="primary-button" type="submit" disabled={!!busy}>Enviar propuesta <Mail size="1rem"/></button><p className="muted">El servicio de correo puede no estar disponible si el Worker de Cloudflare no está configurado.</p></form></>}
+    {section==="help"&&<><div className="page-title"><div><span className="eyebrow">DOCUMENTACIÓN</span><h1>Ayuda y documentación</h1><p>Guía para instalar, ejecutar y mantener tus aplicaciones.</p></div></div><div className="help-list"><Help title="Instalar una aplicación" text="Abre Catálogo AppImage, busca la aplicación y pulsa Instalar. Se descargará en tu espacio personal y se añadirá un acceso al menú de aplicaciones."/><Help title="Gestionar tus aplicaciones" text="En Mis aplicaciones puedes abrir una AppImage, reparar sus permisos, consultar si tiene actualizaciones compatibles y eliminarla."/><Help title="Actualizaciones" text="La actualización automática solo es posible cuando la AppImage incorpora metadatos compatibles con AppImageUpdate. No todas las aplicaciones lo permiten."/><Help title="Ubuntu 20.04" text="El catálogo bloquea aplicaciones que declaran una glibc superior a 2.31. Si el autor no declara ese requisito, la compatibilidad no puede garantizarse."/><Help title="Sin permisos de administrador" text="Las AppImages se guardan en ~/.local/share/punto-vuela-linux-toolkit/AppImages y los lanzadores en ~/.local/share/applications. No se usa sudo."/><Help title="Correo" text="Las propuestas se envían al Worker de Cloudflare y Gmail API. Si el servicio no está configurado, la aplicación muestra el error y no indica que se haya enviado."/><div className="card-actions"><button className="secondary-button" onClick={()=>open("https://github.com/Montejaque/punto-vuela-linux-toolkit/blob/main/docs/GUIA-DE-AYUDA.md")}><BookOpen size="1rem"/> Guía completa</button><button className="text-button" onClick={()=>open("https://github.com/Montejaque/punto-vuela-linux-toolkit")}>Repositorio <ExternalLink size=".9rem"/></button></div></div></>}
+   </section><footer className="app-footer"><span>Puntos Vuela Toolkit <b>·</b> Electron</span><span>Linux x86_64 · Sin permisos de administrador</span></footer>
+  </main>
+ </div>;
 }
-
-function EmptyState({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
-  return <div className="empty-state"><div className="empty-icon">{icon}</div><span className="eyebrow">EN DESARROLLO</span><h1>{title}</h1><p>{description}</p></div>;
-}
+function Empty({title,text}:{title:string;text:string}){return <div className="empty-state"><div className="empty-icon"><FolderCheck/></div><h2>{title}</h2><p>{text}</p></div>;}
+function Field({label,children,wide=false}:{label:string;children:React.ReactNode;wide?:boolean}){return <label className={wide?"field wide":"field"}><span>{label}</span>{children}</label>;}
+function Check({label,checked,onChange}:{label:React.ReactNode;checked:boolean;onChange:(v:boolean)=>void}){return <label className="legal-check"><input type="checkbox" checked={checked} onChange={e=>onChange(e.target.checked)}/><span>{label}</span></label>;}
+function Help({title,text}:{title:string;text:string}){return <article className="help-item"><h3>{title}</h3><p>{text}</p></article>;}
