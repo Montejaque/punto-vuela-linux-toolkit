@@ -265,3 +265,27 @@ h1,h2,h3 { font-family: "Space Grotesk","DM Sans",sans-serif; }
 .brand-mark img,.hero-logo img{object-fit:contain!important;padding:.28rem;background:#F3D54E;border-radius:inherit}
 @media(max-width:900px){.help-layout{grid-template-columns:1fr}.help-contact{position:static;max-width:none}}
 @media(prefers-reduced-motion:reduce){.help-item,.help-chevron,.help-panel{transition:none!important}}
+
+
+/* Brand assets: keep the supplied SVG fully visible in every surface. */
+.brand-mark { overflow:hidden; padding:0; background:#171d25; }
+.brand-mark img { display:block; width:100%; height:100%; object-fit:contain; border-radius:.55rem; }
+.hero-logo { overflow:hidden; padding:1rem; }
+.hero-logo img { display:block; width:100%; height:100%; object-fit:contain; border-radius:1.25rem; }
+.help-brand img { display:block; width:3.5rem; height:3.5rem; object-fit:contain; border-radius:.7rem; background:#171d25; padding:.25rem; }
+.app-card-visual,.tool-monogram { width:3.5rem; height:3.5rem; flex:0 0 3.5rem; display:grid; place-items:center; overflow:hidden; border-radius:.85rem; background:#fff; color:#171d25; }
+.app-card-visual { position:relative; }
+.app-card-visual .app-fallback { position:absolute; inset:0; display:grid; place-items:center; font-weight:800; font-size:1.3rem; color:#171d25; background:#f3d54e; }
+.app-card-visual .remote-icon { position:relative; z-index:1; display:block!important; width:100%; height:100%; object-fit:contain; padding:.25rem; border-radius:0; }
+.tool-monogram { background:#fff; }
+.tool-monogram img { display:block; width:100%; height:100%; object-fit:contain; padding:.2rem; }
+.tool-monogram span { font-weight:800; font-size:1.2rem; color:#171d25; }
+.detail-cover { display:grid; place-items:center; min-height:13rem; overflow:hidden; background:linear-gradient(135deg,#202833,#354250); }
+.detail-cover img { position:relative; z-index:1; display:block; max-width:100%; width:auto; height:12rem; max-height:100%; object-fit:contain; padding:1rem; }
+.detail-cover-shade { display:none; }
+.preview-modal { max-height:90vh; overflow:auto; }
+.developer-contact { display:flex; flex-direction:column; gap:.35rem; text-align:right; color:var(--muted); font-size:.82rem; }
+.developer-contact strong { color:var(--text); }
+.field-hint { display:block; margin-top:.35rem; color:var(--muted); font-size:.7rem; line-height:1.4; }
+.field select,.field input,.field textarea { width:100%; min-width:0; }
+.field select { appearance:auto; }
