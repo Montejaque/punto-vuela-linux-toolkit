@@ -50,7 +50,7 @@ function buildMime(data) {
     ["Punto Vuela", data.center], ["Municipio", data.municipality], ["Provincia", data.province],
     ["Persona de contacto", data.contact], ["Teléfono", data.phone],
     ["Correo para la copia", data.reply_email], ["Aplicación", data.application],
-    ["Enlace", data.url || "No indicado"], ["Distribución", data.distribution || "No indicada"],
+    ["Enlace", data.url || "No indicado"],
     ["Necesidad y utilidad", data.purpose], ["Observaciones", data.notes || "Ninguna"], ["Vista previa revisada", data.preview_text || "Sin cambios en la vista previa."],
     ["Información de protección de datos leída", data.data_protection_read ? "Sí" : "No"],
     ["Política de privacidad leída", data.privacy_policy_read ? "Sí" : "No"],
@@ -67,7 +67,7 @@ function buildMime(data) {
     '<tr><td style="background:#303740;border-top:6px solid #F3D54E;padding:22px 30px"><table role="presentation" cellspacing="0" cellpadding="0"><tr>' +
     '<td style="vertical-align:middle;padding-right:16px"><img src="cid:pv-toolkit-logo" width="66" height="66" alt="Puntos Vuela Toolkit" style="display:block;width:66px;height:66px;border-radius:12px;background:#F3D54E"></td>' +
     '<td style="vertical-align:middle"><div style="font-size:11px;letter-spacing:2px;color:#d9dee5;font-weight:bold">PUNTOS VUELA</div>' +
-    '<div style="font-size:23px;line-height:1.3;color:#fff;font-weight:bold;margin-top:5px">Solicitud de incorporación de aplicación</div></td></tr></table></td></tr>' +
+    '<div style="font-size:23px;line-height:1.3;color:#ffffff!important;font-weight:bold;margin-top:5px">Solicitud de incorporación de aplicación</div></td></tr></table></td></tr>' +
     '<tr><td style="padding:25px 30px 12px;font-size:14px;line-height:1.6">Se ha recibido una propuesta desde Punto Vuela Linux Toolkit.</td></tr>' +
     '<tr><td style="padding:8px 22px 26px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0">' + table + "</table></td></tr>" +
     '<tr><td style="padding:18px 30px;background:#f7f8fa;color:#788392;font-size:11px;line-height:1.5">Mensaje generado automáticamente por Puntos Vuela Toolkit.</td></tr>' +
@@ -75,7 +75,7 @@ function buildMime(data) {
   const text = rows.map(([label, value]) => label + ": " + String(value ?? "")).join("\n");
   const alternative = "pv-alt-" + crypto.randomUUID().replace(/-/g, "");
   const related = "pv-related-" + crypto.randomUUID().replace(/-/g, "");
-  const logoBase64 = "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAwIDMwMDAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbGxlZGJ5PSJ0aXRsZSBkZXNjIj48dGl0bGUgaWQ9InRpdGxlIj5QdW50b3MgVnVlbGEgVG9vbGtpdDwvdGl0bGU+PGRlc2MgaWQ9ImRlc2MiPlPDrW1ib2xvIFYgbmVncm8gc29icmUgZm9uZG8gYW1hcmlsbG8gZGUgUHVudG9zIFZ1ZWxhLjwvZGVzYz48cmVjdCB3aWR0aD0iMzAwMCIgaGVpZ2h0PSIzMDAwIiBmaWxsPSIjRjNENTRFIi8+PHBhdGggZmlsbD0iIzAwMDAwMCIgZD0ibTQ4MyA1MTQuNzNjMCAxLjE1IDE1OC4yMSA0MzguMzggMzUxLjUxIDk3MS4xMSAxOTMuMyA1MzIuNzMgMzU0LjM5IDk3NS43MiAzNTcuMjcgOTg0LjkybDUuNzUgMTUuNTMgMjk5LjczLTEuMTUgMjk5Ljc0LTEuNzIgMzYwLjE0LTk4My43NyAzNjAuMTQtOTgzLjc3LTI5OC41OS0xLjczYy0xNjQuNTMtMC41Ny0zMDAuMzEtMC41Ny0zMDAuODggMC41OC0xLjE1IDEuMTUtNzMuMDYgMjU3LjczLTE1OS45NCA1NzEuMjdsLTE1Ny4wNSA1NjguOTgtMzguNTUgMzEzLjU0Yy0yMC43MSAxNzIuNTktMzcuOTcgMzE2Ljk5LTM3Ljk3IDMyMC40NSAwIDQuMDItNS4xOCA3LjQ3LTExLjUgNy40Ny02LjMzIDAtMTEuNTEtMi44Ny0xMS41MS02LjMyLTAuMC0zLjQ2LTE2LjY4LTE0Ni4xMy0zNy40LTMxNy41N2wtMzcuOTctMzExLjgyLTE3MC44Ni01NzMuNTgtMTcwLjg3LTU3NC4xNWgtMzAwLjMxYy0xNjUuNjggMC0zMDAuODggMS4xNS0zMDAuODggMS43M3oiLz48L3N2Zz4=";
+  const logoBase64 = "iVBORw0KGgoAAAANSUhEUgAAAIQAAACECAIAAADeJhTwAAAABmJLR0QA/wD/AP+gvaeTAAAJdUlEQVR4nO2d21cTSR7HqzsBkkAEuQVI8DKys3J0xxGdQR1dRMThFnBUbrrP+75ve/ZtHucfGvAooCMgrhecQZzDuOvIRW6BGAmGQEiyD9nNRkKa7qpvd9c51udND/4M+ST1q/rVr6ql4GQ7EfCBbPYLEPwfIYMjhAyOEDI4QsjgCCGDI4QMjhAyOELI4AghgyOEDI4QMjhCyOAIIYMjhAyOEDI4QsjgCCGDI4QMjhAyOELI4Agr479/9Nw/vxRO/vF9MBKP00dzFee01JcxviT1PP753dzihsIPbISjm1sxQojdZsnJ3uODe8jjOHmsgOX1sMp48kvg7z+8YAySJNdhnR5p2vPXRvHXf4z/6806Ktr3f6tmlMH6a3e1ua0WiTFIkg+h7ZEnq6hoykzPhYAmZFnqavOwBmH89yWFOfVnSxiDpHL7pyVgNAXuDC8Do9XVFnvK7IxBAANCTzvrJyKVH4cWgdEUuDuClNHjBbwJABltDeV5uay5J8mbudDU6yAqWiYi27Gf/rmCiuawW9ovl7PHAchw2DAvJUnfkO4j1di4P7i+jYrW0Yj5OGLmLZAvaZJ+/dPG3WEfMFqPtxISByOjrrbY7WJNX0nGxv3+wBYq2q7cxWXv8lJbXW0xJBRGhixLN1oqIKEIIdFoHJtdd7C0sjkx9R4VrdvrsYAm97Dl1a2rB1ChCCH993Qcqe6OLLOUCXbQw7y8SAKTUV3lPP75PlS0O8PL21HcG/YxA7gx6kR1/jHcb40sPADTeGAtMvbMj4qWSiwWHxqDZW/sGgspo6sNNnoS3eZU45OBFT9mdmC1SJ0tvMooL7X9+WvMvILoljaAVZCG86Wu4hxUNALfz+jGjVRTr4P/nv6AipYEuMLoha6uCFzGd1cqHHYLKlr/ffCX430w8nTiHSSUM8/ajN56Actw2C2tuJcIr+AOjvpQk7RrTW6HDfaxS4Dfxulpx9QGCCHDj1fXghFUNAKt1MLHKKKHjEvnSlBpLbIdG3yILCINjmCiHaiwn60phIRKBS/DapGuN7tR0YBzqpevgso73urpba+UZdgkPokuu83A1d/tB0tR0CgPnNR240ogqegi4+SxguoqJyTUin/r6UQAEmoAlDC+OrH/D4fzIKF2oFcfRlcr7LMDWYqHwtGHzzCtDr2g3Yt09JLR7fWgRtX+e4Bd8QePVsKbMfY42VnytSbYZsEO9JJRWW4/dwoz35iYWptdYE28A6OYedS3da6i/dmQUOno2C4GLPSzz6lQ2fsmbhWVjo4yrjW57aA1KuNSfGZ+A9Kvtj8/u/FCKXucTOgow5lnbapzQULdG/N9CNE3c6DmUZ0tbl1bT/XtakUtODa3Yvcf0bc5odoPeqFbSenoK6PxQikq3fXRpo1oNA7pVztyMPfUn/azx1FAXxlZVvl6E6Y00n9/ia6L4MnEu8AaoNp4s71SwldAPkL35nvUSLXoCz9/SbMUh+wmSZJeJZBUdJcBLB7QjVQDo4CE8c3pooMeB3scZYw4ltLZghmpbmvf+AusRZ69AJS29CuBpGKEjB6vBzLajr8MpB5ZU8PQQx970deWI3dcQXZ2Z8IIGYcrc78+ASiNxOPkzgNtXw5IFcTbUJ7vzGKPsycGnZ5DpfE+jSPVIGK5B9xIVsYgGdebKyBr16FR30Y4qvKHp14H2SuMJYU5l84hz8kpYJAMVFUnFI4+eKx2WwIyqe3xeoAnSJUx7lA+6kRJ/3212xuDiEkttptWGeNkNF90FRYASiN9Q6qW4ptbsWHmU8zVVc4vjuYzBlGPcTKys+SORsAEcW5xY/LV2p4/Nvp0NbShNrtk4laHQak7gaF3h/SCpiVq9prYJ7UWi9SJ28lXg6EyzpwsPIQoKvSpSBvsJ2Iu1hZXuGyMQTRhqAxJIux3OhBCnvwSWF7dVPiBpZVNNUOZMoYtL5IYfcURpBAdi8WV97QHmE/tOewWb4Nx9/skMFrGkYO5NccBWzTKaWOAuaf2u28rch2wax9UYsLlX5DSyMDo8lZk9z6oeJwMMbdLo+YamjBBxo1md5aV9f8Nrme8DOnnX9/7/EoZZU8qXLbzp4tYItBhgoziwuzL5wGlkUznmtgX3j3eSuBJUfWYc0chZKR69Hz3A2GTv7FeyqN3F0gmzJHRUl/GvkMwOx/a9e9nMvy9SmqOFRw9gmmh14o5MiB7Zz7/5q7ldEYZRlYGd2DaVarsu8rxOJlL267YisQWffTZG3vsSiumyfjmdNEBN2tpZCZNxtvFjViMfr3XeMFVWoQ8Z68J02RIEqBrJD1tTL9l2tozK3UnMPPGZ/bffGZ+51ufKaurYZ8zC9WpTYeZMv74mZPxVt70tz5dj3puNMPOMNBh8l3ojAuO9LeeZSpl7hhFTJfR2cpUGpl5m/7NoJRxwO2o/RJ/zl4TJstgbIRZ8IUj2x+VC6mHqVsdujeZ74n5j2xguRUpGo0vpDR8RqPxedo7ELpaTVteJDFfRtulsn0MpZHUr8LbpTDdpTlnThZWHdLlnL0mzJdhZ7swejolSVDPa01P3QnMl0HY5lSpFRG6hJGdJV+9otc5e01wIePCV0XUzztI7aadW6D5ZrTUl0G669jhQoYsS520+XMudZiianPmZIwinMgghNyk7d37+JuhWUZhAWbbEQIvMo4ecZ6opulqZcwZ3W2e7Cxe3gReXgehXXCEwtHVd/+9NJjiojUTt5LS4UlGG+VJiMRI5Q9sab3SoupQXg1bpRILRzJKi3IunqEpjSRGKors/ZerJjRHKcCRDEI7aMwuhAghsxoThixLwPupIfAlw3uZ5uFF//tmaFtksCxudIIvGXTP0koMUFrntaY0cCrDlwxCdUvprPac4bBZIMeosHAn4+IZzc/SokjgdOOh3nAnQ5alGxpLI0sr4eD69vSchpzB1fIiCXcyiPYibjxOKs/1qe88Lyux1VPNofWGRxnHP9+n9Vlamm5rAT7MDQuPMojO5+mwz9sEwqmMrla3Th/eL47mAx9hh4VTGcBndO6Az9SdgFMZRJ/HIlgsEvDGfDj8yrh6BX/etAH31Bs94FeGHiexjT9nrwkpONlu9mvIyKvf13e9GUeSiMpTaA67JXUj72xNkS2H388f1zI+Nfj9mHyCCBkcIWRwhJDBEUIGRwgZHCFkcISQwRFCBkcIGRwhZHCEkMERQgZHCBkcIWRwhJDBEUIGRwgZHCFkcISQwRFCBkf8B92D74JWerKJAAAAAElFTkSuQmCC
   return [
     "From: Punto Vuela Linux Toolkit <" + SENDER + ">",
     "To: " + RECIPIENT,
@@ -100,10 +100,10 @@ function buildMime(data) {
     btoa(unescape(encodeURIComponent(html))),
     "--" + alternative + "--",
     "--" + related,
-    'Content-Type: image/svg+xml; name="logo_toolkit.svg"',
+    'Content-Type: image/png; name="logo_toolkit.png"',
     "Content-Transfer-Encoding: base64",
     "Content-ID: <pv-toolkit-logo>",
-    'Content-Disposition: inline; filename="logo_toolkit.svg"',
+    'Content-Disposition: inline; filename="logo_toolkit.png"',
     "",
     logoBase64,
     "--" + related + "--",
