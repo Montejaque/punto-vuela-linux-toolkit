@@ -1,91 +1,134 @@
 # Puntos Vuela Toolkit
 
-Centro de software para Linux con identidad Punto Vuela. Reúne las herramientas propias de Punto Vuela y facilita descubrir, instalar y mantener aplicaciones AppImage.
+**Centro de aplicaciones Linux de Punto Vuela.** Una aplicación de escritorio para descubrir aplicaciones AppImage, administrar la biblioteca local y acceder a las herramientas de Punto Vuela desde una interfaz unificada.
 
-## Objetivos
+> Rama de desarrollo activa: `rewrite/electron-desktop` · Versión Electron: **0.4.0**.  
+> La interfaz Electron está implementada con React, TypeScript y Electron. La edición PySide6 anterior se conserva como referencia de migración y para las Releases históricas.
 
-- Nueva interfaz de escritorio Electron + React + TypeScript; la edición PySide6/QML anterior se conserva como referencia de migración y para mantener las Releases históricas.
-- Distribución x86_64 en AppImage, DEB y RPM.
-- Instalación y gestión en el espacio del usuario, sin requerir privilegios root para las funciones propias.
-- Catálogo Punto Vuela con enlaces a los proyectos oficiales.
-- Catálogo integrado AppImage Community mediante su feed JSON: búsqueda por nombre, descripción, categoría y autor; fichas con licencia y requisito glibc; instalación desde la última GitHub Release cuando existe un AppImage x86_64.
-- Acceso independiente a AppImageHub/Pling; no se confunde con el feed comunitario ni se presupone que ofrezca una API de versiones.
-- Diseño claro, oscuro o automático según el tema del sistema; selector visible en la barra superior y preferencia guardada entre sesiones.
-- Carpeta de AppImages por usuario en `~/.local/share/punto-vuela-linux-toolkit/AppImages` (o `$XDG_DATA_HOME`), descargas HTTPS, validación ELF, permisos automáticos, lanzamiento, reparación de permisos y eliminación con confirmación.
-- Comprobación y actualización mediante AppImageUpdate cuando la AppImage incluye información de actualización compatible. La actualización se confirma expresamente y se conserva el respaldo del actualizador. El actualizador oficial x86_64 puede descargarse al perfil de usuario y se verifica con el SHA-256 publicado por GitHub.
-- Guía de ayuda en la aplicación y en `docs/GUIA-DE-AYUDA.md`.
-- Acento amarillo `#F3D54E`, tipografía Inter y símbolo V oficial de Puntos Vuela integrado en el icono de Toolkit.
+## Capturas de pantalla
 
-## Estado
+Las capturas de la interfaz Electron se incorporarán aquí cuando se genere y ejecute una compilación del commit actual en un escritorio Linux. No se incluyen mockups como si fueran capturas reales.
 
-Versión de desarrollo: catálogo comunitario consultable, instalación desde GitHub Releases cuando hay un archivo AppImage, biblioteca local, lanzamiento, permisos, eliminación, comprobación y actualización condicionada a metadatos del editor. No instala paquetes DEB/RPM/APT ni puede garantizar actualizaciones de AppImages que no publiquen metadatos compatibles. AppImageHub/Pling se ofrece como fuente web independiente.
+Capturas previstas:
+- **Inicio:** resumen de la aplicación y accesos principales.
+- **Catálogo AppImage:** búsqueda, categorías y tarjetas de aplicaciones.
+- **Ficha de aplicación:** detalles, compatibilidad y opciones disponibles.
+- **Mis aplicaciones:** biblioteca local y acciones de administración.
+- **Herramientas Punto Vuela:** catálogo de herramientas propias.
+- **Contacto y propuestas:** formulario, revisión de la propuesta y protección antispam.
+- **Ayuda y documentación:** guía integrada.
 
-## Desarrollo
+## Funciones principales
 
-Requiere Python 3.10+ y PySide6 6.4.3:
+- Catálogo AppImage Community a través de su feed JSON público.
+- Búsqueda por nombre, descripción, categoría y autor.
+- Fichas con información publicada por el proyecto, como licencia, autor y requisito glibc, cuando está disponible.
+- Instalación desde GitHub Releases cuando el catálogo identifica un repositorio y una Release con un AppImage x86_64 compatible.
+- Biblioteca local para consultar, abrir y eliminar aplicaciones gestionadas.
+- Descarga HTTPS, validación del tipo de archivo ELF y permisos de ejecución.
+- Comprobación y actualización mediante AppImageUpdate solo cuando la AppImage contiene metadatos compatibles.
+- Acceso independiente a AppImageHub/Pling; no se presenta como parte del feed comunitario ni se presupone que proporcione una API de versiones.
+- Secciones de proyectos y herramientas propias de Punto Vuela.
+- Apariencia clara, oscura o adaptada al sistema.
+- Formulario de propuestas con selección de centro, revisión previa y envío por correo o WhatsApp.
+- Verificación antispam Turnstile en el flujo de envío por correo.
+
+## Tecnología
+
+- Electron 43
+- React 18
+- TypeScript
+- Vite
+- Lucide React
+- Cloudflare Workers para el servicio de correo
+- Gmail API para la entrega de mensajes
+
+## Estado de la versión Electron
+
+La interfaz Electron y el flujo de propuestas están en desarrollo en `rewrite/electron-desktop`. El servicio Cloudflare Worker `punto-vuela-mail` ha superado el despliegue automatizado de GitHub Actions en la ejecución [44058080605](https://github.com/Montejaque/punto-vuela-linux-toolkit/actions/runs/44058080605).
+
+Este resultado confirma el despliegue del Worker, pero no equivale por sí solo a una prueba funcional completa del envío de correo desde la aplicación. Antes de publicar una versión estable deben completarse las pruebas de extremo a extremo, incluida la verificación Turnstile y el envío real de un mensaje de prueba autorizado.
+
+Los avisos de GitHub Actions sobre Node.js 20 y la futura migración de `ubuntu-latest` son advertencias informativas de mantenimiento; no fueron la causa del fallo anterior ni impidieron el despliegue que terminó correctamente.
+
+## Compatibilidad y distribución
+
+El objetivo de la distribución es Linux x86_64, con especial atención a Ubuntu 20.04 (glibc 2.31) y posteriores.
+
+La estrategia histórica del proyecto contempla AppImage, DEB y RPM. La edición Electron actual debe considerarse distribuible únicamente en los formatos que hayan sido compilados y probados en la ejecución correspondiente. No se debe dar por publicada una AppImage porque exista un workflow o porque se haya compilado una versión anterior.
+
+La compilación no requiere que el usuario final tenga privilegios de administrador para las funciones propias de gestión de AppImages. La aplicación no debe ejecutar instalaciones privilegiadas del sistema de forma silenciosa.
+
+## Capturas reproducibles
+
+Para obtener capturas verificables de la versión actual:
+
+1. Compilar la rama `rewrite/electron-desktop` con las dependencias definidas en `desktop-electron/package.json`.
+2. Ejecutar la aplicación en un escritorio Linux real.
+3. Capturar las pantallas principales a resolución de escritorio y guardar los PNG en `docs/screenshots/`.
+4. Sustituir la lista de pantallas previstas de este README por imágenes de esa ejecución, indicando el commit o versión capturada.
+
+No utilizar imágenes conceptuales, pantallas reconstruidas ni capturas de una versión antigua etiquetándolas como la versión actual.
+
+## Desarrollo de Electron
+
+Requisitos: Node.js compatible con Electron 43 y npm.
 
 ```bash
-python -m venv .venv
-. .venv/bin/activate
-pip install -r requirements.txt
-bash packaging/fetch-brand-assets.sh
-python -m punto_vuela_toolkit
+cd desktop-electron
+npm ci
+npm run dev
 ```
 
-## Paquetes
+Compilación de la interfaz y del proceso principal:
 
-La estrategia prevista es generar AppImage, DEB y RPM x86_64 desde GitHub Actions. La compilación de paquetes se realiza dentro de un contenedor Ubuntu 20.04 y usa PySide6 6.6.3 como base conservadora. El objetivo es Ubuntu 20.04 x86_64 y posteriores; la compatibilidad debe confirmarse con los artefactos y pruebas reales de cada ejecución de GitHub Actions antes de publicar una versión estable. Los paquetes DEB/RPM serán instalables mediante el gestor de paquetes de cada distribución; las operaciones de administración del sistema pueden solicitar autorización al sistema operativo. La aplicación no ejecutará instalaciones privilegiadas silenciosamente.
+```bash
+npm run build
+```
 
-## Logotipo
+Comprobaciones de tipos:
 
-El recurso oficial se obtiene desde:
-https://puntosvuela.es/storage/images/logotipovuela.svg
+```bash
+npm run typecheck
+```
 
-El icono de la aplicación utiliza `src/punto_vuela_toolkit/assets/logo_toolkit.svg`, basado en el SVG facilitado: fondo amarillo corporativo y símbolo V negro. Se utiliza en la interfaz, el icono de ventana y los paquetes de escritorio. Su uso debe respetar las condiciones de identidad corporativa de Punto Vuela.
+Generación local de AppImage x86_64:
 
-## Licencia
+```bash
+npm run dist:appimage
+```
 
-MIT para el código de este proyecto. El logotipo y otros recursos de marca pertenecen a sus respectivos titulares y no quedan relicenciados por esta licencia.
+El artefacto generado se guarda en `desktop-electron/release/`. Debe comprobarse el resultado real y probarse en Ubuntu 20.04 antes de publicarlo.
 
 ## Envío de solicitudes por correo
 
-El formulario de contacto utiliza un servicio HTTPS desplegado en Cloudflare Workers. El Worker envía las solicitudes mediante Gmail API desde la cuenta corporativa y mantiene las credenciales OAuth exclusivamente en los secretos de Cloudflare. La AppImage no contiene contraseñas ni tokens.
+El formulario utiliza un Cloudflare Worker desplegado en:
 
-La configuración y el despliegue se documentan en [docs/CORREO-CLOUDFLARE-WORKERS.md](docs/CORREO-CLOUDFLARE-WORKERS.md). Antes de publicar una versión funcional, hay que desplegar el Worker, configurar los secretos de Google y sustituir la URL provisional en `src/punto_vuela_toolkit/email_sender.py`. Hasta entonces, el envío mostrará que el servicio está pendiente de activación.
+`https://punto-vuela-mail.montejaque.workers.dev`
 
+El Worker:
+- entrega la página de verificación Turnstile en `/turnstile`;
+- valida el token con Cloudflare Turnstile antes de aceptar el envío;
+- aplica limitación de frecuencia mediante el binding KV `RATE_LIMIT`;
+- envía el mensaje mediante Gmail API;
+- mantiene las credenciales OAuth en secretos de Cloudflare, fuera del código de la aplicación.
 
-## Ejecutar la AppImage en Ubuntu
+Los secretos de GitHub Actions utilizados para el despliegue son `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID`. No introducir sus valores en el repositorio, README, código de cliente o capturas.
 
-La primera vez que se descarga una AppImage, algunos navegadores y gestores de archivos no conservan el permiso de ejecución. En ese caso, GNOME no la abrirá con doble clic hasta habilitarlo:
+La configuración del servicio y de sus secretos debe mantenerse documentada en [docs/CORREO-CLOUDFLARE-WORKERS.md](docs/CORREO-CLOUDFLARE-WORKERS.md).
 
-1. Abre **Propiedades** del archivo descargado.
-2. En **Permisos**, activa **Permitir ejecutar el archivo como un programa**.
-3. Cierra Propiedades y vuelve a hacer doble clic.
+## Identidad visual
 
-También se puede habilitar una sola vez desde la terminal:
+- Amarillo corporativo de Toolkit: `#F3D54E`.
+- Antracita, blanco y grises neutros.
+- Logotipo oficial local: `desktop-electron/public/assets/logo_toolkit.svg`.
 
-```bash
-chmod +x ~/Descargas/Puntos_Vuela_Toolkit-x86_64.AppImage
-```
+El logotipo y los recursos de marca pertenecen a sus titulares. La licencia MIT del código no relicencia la identidad corporativa.
 
-Después de conceder el permiso, la AppImage se puede iniciar con doble clic. No requiere instalar paquetes ni permisos de administrador.
+## Ayuda
 
+La guía de uso está en [docs/GUIA-DE-AYUDA.md](docs/GUIA-DE-AYUDA.md). Debe mantenerse alineada con la versión Electron activa y evitar instrucciones exclusivas de la edición PySide6 cuando no correspondan.
 
-## Revisión visual y funcional Electron 0.4.0
+## Licencia
 
-La rama de migración incorpora una revisión de la interfaz y del flujo de propuestas:
-
-- Logotipo oficial de Puntos Vuela Toolkit integrado como recurso local de la aplicación.
-- Portada y cabeceras de sección con composición visual, fondos decorativos y animaciones CSS respetando la preferencia de movimiento reducido del sistema.
-- Filtro de categorías con selector principal y accesos rápidos.
-- Tarjetas de aplicaciones con iconografía, fallback visual y ficha modal con información ampliada.
-- Vista previa editable de propuestas antes del envío, con selección entre correo electrónico y WhatsApp.
-- WhatsApp abre una conversación preparada; el usuario confirma el envío desde WhatsApp.
-- El correo incluye el contenido revisado y el Worker incorpora el logotipo oficial como imagen MIME en línea.
-
-La actualización del Worker debe desplegarse en Cloudflare para que el nuevo diseño del correo llegue a producción. La AppImage de esta revisión debe superar CI y las pruebas manuales en Ubuntu 20.04 antes de publicarse.
-
-
-### Modos de apariencia
-
-La interfaz permite elegir entre **Claro**, **Oscuro** y **Sistema** desde el selector de apariencia de la barra superior. La selección queda guardada para los siguientes inicios; el modo Sistema sigue los cambios de apariencia del escritorio mientras la aplicación está abierta. El selector incluye estados activos, etiquetas accesibles y adaptación a pantallas pequeñas.
+MIT para el código del proyecto. El logotipo y los demás recursos de marca permanecen sujetos a los derechos de sus respectivos titulares.
