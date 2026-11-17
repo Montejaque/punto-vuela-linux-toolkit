@@ -336,3 +336,24 @@ h1,h2,h3 { font-family: "Space Grotesk","DM Sans",sans-serif; }
 .light .legal-source{background:#f8fafc}
 @media(max-width:48rem){.legal-modal-header{padding:1.4rem 1.25rem 1.2rem}.legal-modal-body{padding:1.2rem 1.25rem}.legal-modal-footer{padding:1rem 1.25rem 1.25rem}.legal-source{align-items:flex-start;flex-wrap:wrap}.legal-source .secondary-button{width:100%;justify-content:center}.legal-modal-footer button{flex:1}}
 @media(prefers-reduced-motion:reduce){.legal-modal{animation:none!important}}
+
+/* Visor documental integrado para Ayuda y documentación */
+.help-viewer-modal{position:relative;display:flex;flex-direction:column;width:min(100%,58rem);height:min(90vh,54rem);overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:1.35rem;background:var(--panel);color:var(--text);box-shadow:0 2rem 6rem rgba(0,0,0,.45);animation:modal-enter .24s cubic-bezier(.2,.75,.25,1) both}
+.help-viewer-header{position:relative;flex:0 0 auto;padding:1.65rem 2rem 1.25rem;background:radial-gradient(circle at 92% 4%,rgba(243,213,78,.18),transparent 13rem),linear-gradient(130deg,rgba(39,56,75,.95),rgba(23,29,37,.92));border-bottom:1px solid var(--line)}
+.help-viewer-header h2{margin:.75rem 2rem .35rem 0;font-size:clamp(1.4rem,3vw,1.9rem);letter-spacing:-.04em}
+.help-viewer-header>p{margin:0;color:rgba(255,255,255,.72);font-size:.82rem}
+.help-viewer-content{flex:1;min-height:0;overflow:auto;padding:1.5rem 2rem;background:var(--panel)}
+.help-viewer-content pre{margin:0;color:var(--text);font-family:Inter,system-ui,sans-serif;font-size:.86rem;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere;tab-size:2}
+.help-viewer-state{min-height:10rem;display:flex;align-items:center;justify-content:center;gap:.7rem;color:var(--muted);font-size:.9rem;flex-wrap:wrap}
+.help-viewer-state.error{color:#c65b55}
+.help-viewer-state .secondary-button{flex-basis:100%;max-width:12rem}
+.spin-icon{animation:spin 1.2s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.help-viewer-modal .legal-modal-footer{flex:0 0 auto;padding:1rem 2rem;border-top:1px solid var(--line)}
+.light .help-viewer-modal{background:#fff;color:#17202b}
+.light .help-viewer-header{background:radial-gradient(circle at 92% 4%,rgba(243,213,78,.22),transparent 13rem),linear-gradient(130deg,#f4f6f8,#fff)}
+.light .help-viewer-header>p{color:#566273}
+.light .help-viewer-content{background:#fff}
+.light .help-viewer-content pre{color:#27313d}
+@media(max-width:48rem){.help-viewer-modal{height:94vh;width:100%;border-radius:1rem}.help-viewer-header{padding:1.35rem 1.25rem 1rem}.help-viewer-content{padding:1.1rem 1.25rem}.help-viewer-content pre{font-size:.8rem}.help-viewer-modal .legal-modal-footer{padding:1rem 1.25rem}}
+@media(prefers-reduced-motion:reduce){.help-viewer-modal,.spin-icon{animation:none!important}}
