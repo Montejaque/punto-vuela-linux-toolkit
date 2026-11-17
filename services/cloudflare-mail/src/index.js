@@ -75,7 +75,7 @@ function buildMime(data) {
   const text = rows.map(([label, value]) => label + ": " + String(value ?? "")).join("\n");
   const alternative = "pv-alt-" + crypto.randomUUID().replace(/-/g, "");
   const related = "pv-related-" + crypto.randomUUID().replace(/-/g, "");
-  const logoBase64 = "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAwIDMwMDAiPjxyZWN0IHdpZHRoPSIzMDAwIiBoZWlnaHQ9IjMwMDAiIGZpbGw9IiNGM0Q1NEUiLz48cGF0aCBmaWxsPSIjMDAwMDAwIiBkPSJtNDgzIDUxNC43M2MwIDEuMTUgMTU4LjIxIDQzOC4zOCAzNTEuNTEgOTcxLjExIDE5My4zIDUzMi43MyAzNTQuMzkgOTc1LjcyIDM1Ny4yNyA5ODQuOTJsNS43NSAxNS41MyAyOTkuNzMtMS4xNSAyOTkuNzQtMS43MiAzNjAuMTQtOTgzLjc3IDM2MC4xNC05ODMuNzctMjk4LjU5LTEuNzNjLTE2NC41My0wLjU3LTMwMC4zMS0wLjU3LTMwMC44OCAwLjU4LTEuMTUgMS4xNS03My4wNiAyNTcuNzMtMTU5Ljk0IDU3MS4yN2wtMTU3LjA1IDU2OC45OC0zOC41NSAzMTMuNTRjLTIwLjcxIDE3Mi41OS0zNy45NyAzMTYuOTktMzcuOTcgMzIwLjQ1IDAgNC4wMi01LjE4IDcuNDctMTEuNSA3LjQ3LTYuMzMgMC0xMS41MS0yLjg3LTExLjUxLTYuMzIgMC0zLjQ2LTE2LjY4LTE0Ni4xMy0zNy40LTMxNy41N2wtMzcuOTctMzExLjgyLTE3MC44Ni01NzMuNTgtMTcwLjg3LTU3NC4xNWgtMzAwLjMxYy0xNjUuNjggMC0zMDAuODggMS4xNS0zMDAuODggMS43M3oiLz48L3N2Zz4=";
+  const logoBase64 = "LOGO_PLACEHOLDER";
   return [
     "From: Punto Vuela Linux Toolkit <" + SENDER + ">",
     "To: " + RECIPIENT,
@@ -100,10 +100,10 @@ function buildMime(data) {
     btoa(unescape(encodeURIComponent(html))),
     "--" + alternative + "--",
     "--" + related,
-    'Content-Type: image/svg+xml; name="logo_toolkit.svg"',
+    'Content-Type: image/png; name="logo_toolkit.png"',
     "Content-Transfer-Encoding: base64",
     "Content-ID: <pv-toolkit-logo>",
-    'Content-Disposition: inline; filename="logo_toolkit.svg"',
+    'Content-Disposition: inline; filename="logo_toolkit.png"',
     "",
     logoBase64,
     "--" + related + "--",
