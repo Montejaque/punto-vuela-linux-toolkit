@@ -13,16 +13,30 @@ const MAIL = "https://punto-vuela-mail.montejaque.workers.dev";
 const UA = "PuntoVuelaLinuxToolkit-Electron/0.3";
 const GLIBC_MAX = [2,31,0];
 
+async function remoteFetch(input: string | URL, init: RequestInit = {}): Promise<Response> {
+  try { return await remoteFetch(input, init); }
+  catch (error: any) {
+    const host = new URL(String(input)).hostname;
+    const detail = error?.cause?.code || error?.cause?.message || error?.message || "error de red";
+    throw new Error(`No se pudo conectar con ${host}. Comprueba tu conexión a Internet o inténtalo más tarde. (${detail})`);
+  }
+}
 async function getJson(url: string): Promise<any> {
-  const response = await fetch(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(60000) });
+  const response = await remoteFetch(url, { headers: { "user-agent": UA, accept: "application/json" }, signal: AbortSignal.timeout(60000) });
   if (!response.ok) throw new Error(`Error HTTP ${response.status} al consultar ${new URL(url).hostname}`);
   if (!new URL(response.url).protocol.startsWith("https")) throw new Error("La conexión ha dejado de ser HTTPS.");
   return response.json();
 }
 async function cachedJson(file: string, ttl: number, loader: () => Promise<any>, force = false): Promise<any> {
-  if (!force) try { const stat = await fs.stat(file); if (Date.now()-stat.mtimeMs < ttl) return JSON.parse(await fs.readFile(file,"utf8")); } catch {}
-  const value = await loader(); await fs.mkdir(path.dirname(file),{recursive:true});
-  const tmp=file+".part"; await fs.writeFile(tmp,JSON.stringify(value)); await fs.rename(tmp,file); return value;
+  let stale: any = null;
+  try { const stat = await fs.stat(file); stale = JSON.parse(await fs.readFile(file,"utf8")); if (!force && Date.now()-stat.mtimeMs < ttl) return stale; } catch {}
+  try {
+    const value = await loader(); await fs.mkdir(path.dirname(file),{recursive:true});
+    const tmp=file+".part"; await fs.writeFile(tmp,JSON.stringify(value)); await fs.rename(tmp,file); return value;
+  } catch (error: any) {
+    if (stale !== null) return stale;
+    throw error;
+  }
 }
 function ver(value: string): number[] | null { const m=value.match(/(\d+(?:\.\d+)*)/); return m?m[1].split(".").map(Number):null; }
 function glibcCompatible(value: string): boolean { const v=ver(value); if(!v)return true; for(let i=0;i<3;i++){if((v[i]||0)!==(GLIBC_MAX[i]||0))return (v[i]||0)<(GLIBC_MAX[i]||0);} return true; }
@@ -33,7 +47,7 @@ async function download(url:string, filename?:string):Promise<string> {
   const u=new URL(url); if(u.protocol!=="https:")throw new Error("Solo se permiten descargas HTTPS.");
   await fs.mkdir(APP_DIR,{recursive:true}); const name=safeName(filename||path.basename(u.pathname)); const dest=managedPath(path.join(APP_DIR,name));
   try { await fs.access(dest); throw new Error("Ya existe una AppImage con ese nombre."); } catch(e:any) { if(e.message==="Ya existe una AppImage con ese nombre.")throw e; }
-  const response=await fetch(url,{headers:{"user-agent":UA},redirect:"follow",signal:AbortSignal.timeout(15*60*1000)});
+  const response=await remoteFetch(url,{headers:{"user-agent":UA},redirect:"follow",signal:AbortSignal.timeout(15*60*1000)});
   if(!response.ok||!response.url.startsWith("https://")||!response.body)throw new Error("No se pudo descargar el archivo desde un origen HTTPS.");
   const tmp=dest+".part"; const file=await fs.open(tmp,"wx"); let first=Buffer.alloc(0); let size=0;
   try { const reader=response.body.getReader(); while(true){const {done,value}=await reader.read();if(done)break;const chunk=Buffer.from(value);if(first.length<4)first=Buffer.concat([first,chunk]).subarray(0,4);size+=chunk.length;await file.write(chunk);} if(first.length!==4||first[0]!==0x7f||first.toString("ascii",1,4)!=="ELF"||size<1024*1024)throw new Error("El archivo descargado no es una AppImage ELF válida."); await file.close(); await fs.chmod(tmp,0o755); await fs.rename(tmp,dest); return dest; }
@@ -77,7 +91,7 @@ async function updaterInstall():Promise<string>{
   const dir=path.join(DATA,"tools"),file=path.join(dir,"appimageupdatetool-x86_64.AppImage");await fs.mkdir(dir,{recursive:true});
   try{await fs.access(file);return file;}catch{}
   const rel=await getJson("https://api.github.com/repos/AppImageCommunity/AppImageUpdate/releases/tags/continuous");const asset=rel.assets?.find((a:any)=>a.name==="appimageupdatetool-x86_64.AppImage");if(!asset?.digest?.startsWith("sha256:"))throw new Error("GitHub no proporciona SHA-256 verificable para AppImageUpdate.");
-  const response=await fetch(asset.browser_download_url,{headers:{"user-agent":UA}});if(!response.ok||!response.url.startsWith("https://"))throw new Error("No se pudo descargar AppImageUpdate de forma segura.");
+  const response=await remoteFetch(asset.browser_download_url,{headers:{"user-agent":UA}});if(!response.ok||!response.url.startsWith("https://"))throw new Error("No se pudo descargar AppImageUpdate de forma segura.");
   const bytes=Buffer.from(await response.arrayBuffer());const digest=createHash("sha256").update(bytes).digest("hex");if(digest!==asset.digest.slice(7))throw new Error("La verificación SHA-256 de AppImageUpdate ha fallado.");if(bytes.subarray(0,4).toString("hex")!=="7f454c46")throw new Error("El actualizador no es un ejecutable ELF.");
   await fs.writeFile(file,bytes,{mode:0o755});return file;
 }
@@ -95,11 +109,11 @@ export async function api(method:string,args:any={}):Promise<any>{
     case "apps.checkUpdate": await updaterInstall(); return updateCheck(args.path);
     case "apps.update": {const p=managedPath(args.path);await updaterInstall();const check=await updateCheck(p);if(!check.supported)throw new Error(check.message);if(!check.available)return {updated:false,message:check.message};const result=await new Promise<any>((resolve,reject)=>{const child=spawn(path.join(DATA,"tools","appimageupdatetool-x86_64.AppImage"),["--appimage-extract-and-run","--overwrite",p]);let out="";child.stdout.on("data",d=>out+=d);child.stderr.on("data",d=>out+=d);child.on("error",reject);child.on("close",code=>code===0?resolve({updated:true,message:out||"AppImage actualizada."}):reject(new Error(out||"Error al actualizar.")));});await fs.access(p);return result;}
     case "tools.openExternal": {const u=new URL(args.url);if(u.protocol!=="https:")throw new Error("Solo se pueden abrir enlaces HTTPS.");await shell.openExternal(u.href);return {ok:true};}
-    case "mail.send": {const response=await fetch(MAIL,{method:"POST",headers:{"content-type":"application/json","accept":"application/json"},body:JSON.stringify(args.data),signal:AbortSignal.timeout(30000)});const result=await response.json().catch(()=>({ok:false,message:"Respuesta no válida del servicio de correo."}));if(!response.ok||!result.ok)throw new Error(result.message||"No se pudo enviar la solicitud.");return result;}
+    case "mail.send": {const response=await remoteFetch(MAIL,{method:"POST",headers:{"content-type":"application/json","accept":"application/json"},body:JSON.stringify(args.data),signal:AbortSignal.timeout(30000)});const result=await response.json().catch(()=>({ok:false,message:"Respuesta no válida del servicio de correo."}));if(!response.ok||!result.ok)throw new Error(result.message||"No se pudo enviar la solicitud.");return result;}
     case "centres.list": {
       const cacheFile=path.join(CACHE,"centres.json");
       const rows=await cachedJson(cacheFile,7*24*3600*1000,async()=>{
-        const load=async(page:number)=>{const url=page===1?"https://puntosvuela.es/centros":`https://puntosvuela.es/centros?page=${page}`;const response=await fetch(url,{headers:{"user-agent":UA},signal:AbortSignal.timeout(30000)});if(!response.ok)throw new Error("Error consultando el directorio de centros.");return response.text();};
+        const load=async(page:number)=>{const url=page===1?"https://puntosvuela.es/centros":`https://puntosvuela.es/centros?page=${page}`;const response=await remoteFetch(url,{headers:{"user-agent":UA},signal:AbortSignal.timeout(30000)});if(!response.ok)throw new Error("Error consultando el directorio de centros.");return response.text();};
         const first=await load(1);const last=Math.max(1,...[...first.matchAll(/[?&]page=(\d+)/g)].map(m=>Number(m[1])));
         const pages=[first,...await Promise.all(Array.from({length:Math.max(0,last-1)},(_,i)=>load(i+2)))];
         const result=new Map<string,any>();
@@ -110,7 +124,7 @@ export async function api(method:string,args:any={}):Promise<any>{
     }
     case "centres.details": {
       const slug=String(args.slug||"").replace(/^\/+|\/+$/g,"");if(!/^[\w-]+$/u.test(slug))throw new Error("Ficha de centro no válida.");
-      const response=await fetch("https://puntosvuela.es/centros/"+encodeURIComponent(slug),{headers:{"user-agent":UA},signal:AbortSignal.timeout(30000)});if(!response.ok)throw new Error("No se pudo abrir la ficha del centro.");const html=await response.text();
+      const response=await remoteFetch("https://puntosvuela.es/centros/"+encodeURIComponent(slug),{headers:{"user-agent":UA},signal:AbortSignal.timeout(30000)});if(!response.ok)throw new Error("No se pudo abrir la ficha del centro.");const html=await response.text();
       const text=html.replace(/<(script|style|noscript)[\s\S]*?<\/\1>/gi," ").replace(/<[^>]*>/g," ").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").replace(/\s+/g," ");
       const contact=text.match(/Información de contacto\s+(.*?)\s+Agentes de innovación local/i);const ail=text.match(/Agentes de innovación local\s+(.+?)(?:\s+Horario de apertura|\s+Verificar disponibilidad|\s+Te estamos esperando)/i);
       if(!contact||!ail)throw new Error("La ficha no contiene datos de contacto reconocibles.");
