@@ -14,7 +14,7 @@ const UA = "PuntoVuelaLinuxToolkit-Electron/0.3";
 const GLIBC_MAX = [2,31,0];
 
 async function remoteFetch(input: string | URL, init: RequestInit = {}): Promise<Response> {
-  try { return await remoteFetch(input, init); }
+  try { return await fetch(input, init); }
   catch (error: any) {
     const host = new URL(String(input)).hostname;
     const detail = error?.cause?.code || error?.cause?.message || error?.message || "error de red";
