@@ -75,7 +75,7 @@ function buildMime(data) {
   const text = rows.map(([label, value]) => label + ": " + String(value ?? "")).join("\n");
   const alternative = "pv-alt-" + crypto.randomUUID().replace(/-/g, "");
   const related = "pv-related-" + crypto.randomUUID().replace(/-/g, "");
-  const logoBase64 = "LOGO_PLACEHOLDER";
+  const logoBase64 = "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAwIDMwMDAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbGxlZGJ5PSJ0aXRsZSBkZXNjIj48dGl0bGUgaWQ9InRpdGxlIj5QdW50b3MgVnVlbGEgVG9vbGtpdDwvdGl0bGU+PGRlc2MgaWQ9ImRlc2MiPlPDrW1ib2xvIFYgbmVncm8gc29icmUgZm9uZG8gYW1hcmlsbG8gZGUgUHVudG9zIFZ1ZWxhLjwvZGVzYz48cmVjdCB3aWR0aD0iMzAwMCIgaGVpZ2h0PSIzMDAwIiBmaWxsPSIjRjNENTRFIi8+PHBhdGggZmlsbD0iIzAwMDAwMCIgZD0ibTQ4MyA1MTQuNzNjMCAxLjE1IDE1OC4yMSA0MzguMzggMzUxLjUxIDk3MS4xMSAxOTMuMyA1MzIuNzMgMzU0LjM5IDk3NS43MiAzNTcuMjcgOTg0LjkybDUuNzUgMTUuNTMgMjk5LjczLTEuMTUgMjk5Ljc0LTEuNzIgMzYwLjE0LTk4My43NyAzNjAuMTQtOTgzLjc3LTI5OC41OS0xLjczYy0xNjQuNTMtMC41Ny0zMDAuMzEtMC41Ny0zMDAuODggMC41OC0xLjE1IDEuMTUtNzMuMDYgMjU3LjczLTE1OS45NCA1NzEuMjdsLTE1Ny4wNSA1NjguOTgtMzguNTUgMzEzLjU0Yy0yMC43MSAxNzIuNTktMzcuOTcgMzE2Ljk5LTM3Ljk3IDMyMC40NSAwIDQuMDItNS4xOCA3LjQ3LTExLjUgNy40Ny02LjMzIDAtMTEuNTEtMi44Ny0xMS41MS02LjMyLTAuMC0zLjQ2LTE2LjY4LTE0Ni4xMy0zNy40LTMxNy41N2wtMzcuOTctMzExLjgyLTE3MC44Ni01NzMuNTgtMTcwLjg3LTU3NC4xNWgtMzAwLjMxYy0xNjUuNjggMC0zMDAuODggMS4xNS0zMDAuODggMS43M3oiLz48L3N2Zz4=";
   return [
     "From: Punto Vuela Linux Toolkit <" + SENDER + ">",
     "To: " + RECIPIENT,
@@ -100,10 +100,10 @@ function buildMime(data) {
     btoa(unescape(encodeURIComponent(html))),
     "--" + alternative + "--",
     "--" + related,
-    'Content-Type: image/png; name="logo_toolkit.png"',
+    'Content-Type: image/svg+xml; name="logo_toolkit.svg"',
     "Content-Transfer-Encoding: base64",
     "Content-ID: <pv-toolkit-logo>",
-    'Content-Disposition: inline; filename="logo_toolkit.png"',
+    'Content-Disposition: inline; filename="logo_toolkit.svg"',
     "",
     logoBase64,
     "--" + related + "--",
