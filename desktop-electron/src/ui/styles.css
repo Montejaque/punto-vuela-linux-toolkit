@@ -297,3 +297,13 @@ h1,h2,h3 { font-family: "Space Grotesk","DM Sans",sans-serif; }
 .preview-heading{padding-right:2rem}
 .preview-heading h2{margin:.35rem 0}
 @media(max-width:48rem){.developer-panel{align-items:flex-start}.app-card{min-height:0}.detail-cover{height:9rem}}
+
+
+/* Fix logo visibility in collapsed navigation and contact panel */
+.collapsed .brand{position:relative;min-height:3.25rem;justify-content:center;padding-left:0;padding-right:0}
+.collapsed .brand-mark{flex:0 0 2.8rem;width:2.8rem;height:2.8rem}
+.collapsed .collapse-button{position:absolute;right:-.35rem;top:-.25rem;width:1.45rem;height:1.45rem;padding:.15rem;z-index:3;background:#e5bd00;border:2px solid #ffd500;border-radius:.45rem}
+.collapsed .collapse-button svg{width:.9rem;height:.9rem}
+.developer-mark{width:5.25rem;height:5.25rem;flex:0 0 5.25rem;overflow:hidden;padding:.35rem;background:#ffd500;border:1px solid rgba(23,29,37,.12);border-radius:1rem}
+.developer-mark img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}
+@media(max-width:48rem){.developer-mark{width:3.75rem;height:3.75rem;flex-basis:3.75rem}}
