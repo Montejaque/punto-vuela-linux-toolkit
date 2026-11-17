@@ -18,6 +18,21 @@ function json(data, status = 200) {
     },
   });
 }
+function turnstilePage() {
+  const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Verificación de seguridad</title><style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,sans-serif;color:#202833}.wrap{min-height:78px;display:flex;align-items:center;justify-content:flex-start}.cf-turnstile{min-height:65px}</style></head><body><div class="wrap"><div class="cf-turnstile" data-sitekey="0x4AAAAAAGE00xD9YbrCMdVS" data-callback="onTurnstileSuccess" data-expired-callback="onTurnstileExpired" data-error-callback="onTurnstileError" data-theme="auto"></div></div><script>function onTurnstileSuccess(token){parent.postMessage({type:"turnstile-token",token:token},"*")}function onTurnstileExpired(){parent.postMessage({type:"turnstile-expired"},"*")}function onTurnstileError(){parent.postMessage({type:"turnstile-error"},"*")}</script><script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script></body></html>`;
+  return new Response(html, {status:200,headers:{"content-type":"text/html; charset=utf-8","cache-control":"no-store","content-security-policy":"frame-ancestors *; default-src 'self' https://challenges.cloudflare.com; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; connect-src https://challenges.cloudflare.com"}});
+}
+async function verifyTurnstile(token, request, env) {
+  if (!env.TURNSTILE_SECRET_KEY) return {ok:false, reason:"missing-secret"};
+  if (typeof token !== "string" || !token.trim()) return {ok:false, reason:"missing-token"};
+  const body = new URLSearchParams({secret:env.TURNSTILE_SECRET_KEY,response:token});
+  const ip = request.headers.get("CF-Connecting-IP");
+  if (ip) body.set("remoteip", ip);
+  const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body});
+  if (!response.ok) return {ok:false, reason:"verification-unavailable"};
+  const result = await response.json();
+  return {ok:result.success === true, reason:result.success ? "" : "invalid-token"};
+}
 function esc(value) {
   return String(value ?? "").trim().replace(/[&<>"']/g, c =>
     ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])
@@ -112,8 +127,10 @@ function buildMime(data) {
 }
 export default {
   async fetch(request, env) {
+    const url = new URL(request.url);
+    if (request.method === "GET" && url.pathname === "/turnstile") return turnstilePage();
     if (request.method === "OPTIONS") return json({ok: true});
-    if (request.method !== "POST") return json({ok: false, message: "Método no permitido."}, 405);
+    if (request.method !== "POST" || url.pathname !== "/") return json({ok: false, message: "Método no permitido."}, 405);
     if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_REFRESH_TOKEN) {
       return json({ok: false, message: "El servicio de correo aún no está configurado."}, 503);
     }
@@ -127,6 +144,8 @@ export default {
         await env.RATE_LIMIT.put(key, String(current + 1), {expirationTtl: 3600});
       }
       const data = await request.json();
+      const verification = await verifyTurnstile(data.turnstileToken, request, env);
+      if (!verification.ok) return json({ok:false,message:verification.reason==="missing-secret"?"La protección Turnstile no está configurada en el servidor.":"Completa de nuevo la verificación antispam."}, verification.reason==="missing-secret"?503:403);
       // Honeypot: silently accept bot submissions without forwarding email.
       if (String(data.website || "").trim()) return json({ok: true, message: "Solicitud recibida."});
       const required = ["center", "municipality", "province", "contact", "phone", "reply_email", "application", "purpose"];
