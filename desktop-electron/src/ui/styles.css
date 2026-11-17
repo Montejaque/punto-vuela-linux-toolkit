@@ -357,3 +357,9 @@ h1,h2,h3 { font-family: "Space Grotesk","DM Sans",sans-serif; }
 .light .help-viewer-content pre{color:#27313d}
 @media(max-width:48rem){.help-viewer-modal{height:94vh;width:100%;border-radius:1rem}.help-viewer-header{padding:1.35rem 1.25rem 1rem}.help-viewer-content{padding:1.1rem 1.25rem}.help-viewer-content pre{font-size:.8rem}.help-viewer-modal .legal-modal-footer{padding:1rem 1.25rem}}
 @media(prefers-reduced-motion:reduce){.help-viewer-modal,.spin-icon{animation:none!important}}
+
+
+/* Documentos legales completos empaquetados localmente */
+.legal-document-body{max-height:min(56vh,34rem);overflow:auto}
+.legal-document-body pre{margin:0;color:var(--text);font:400 .84rem/1.75 Inter,system-ui,sans-serif;white-space:pre-wrap;overflow-wrap:anywhere;tab-size:2}
+.light .legal-document-body pre{color:#27313d}
