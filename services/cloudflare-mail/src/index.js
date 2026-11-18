@@ -76,7 +76,7 @@ export default {
       const htmlContent = '<!doctype html><html lang="es"><meta charset="utf-8"><body style="font-family:Arial,sans-serif;color:#202833"><h2 style="border-bottom:5px solid #F3D54E;padding-bottom:12px">Nueva propuesta · Puntos Vuela Toolkit</h2><table cellpadding="9" cellspacing="0" style="border-collapse:collapse;width:100%">' +
         rows.map(([label,value]) => '<tr><th align="left" style="border-bottom:1px solid #e9edf2;color:#657080">' + esc(label) + '</th><td style="border-bottom:1px solid #e9edf2">' + esc(value) + '</td></tr>').join("") +
         '</table><p style="color:#788392;font-size:12px">Mensaje generado automáticamente por Puntos Vuela Toolkit.</p></body></html>';
-      const textContent = rows.map(([label,value]) => label + ": " + String(value ?? "")).join("\\n");
+      const textContent = rows.map(([label,value]) => label + ": " + String(value ?? "")).join("\n");
       const sent = await fetch("https://api.brevo.com/v3/smtp/email", {
         method: "POST",
         headers: {"api-key": env.BREVO_API_KEY, "content-type": "application/json", accept: "application/json"},
