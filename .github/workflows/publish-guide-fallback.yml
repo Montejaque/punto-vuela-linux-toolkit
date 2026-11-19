@@ -1,0 +1,83 @@
+name: Publish interactive guide to GitHub Pages (fallback)
+
+on:
+  push:
+    branches: ["rewrite/electron-desktop"]
+    paths:
+      - "docs-site/**"
+      - "desktop-electron/src/**"
+      - "desktop-electron/public/**"
+      - "desktop-electron/package.json"
+      - "docs/GUIA-DE-AYUDA.md"
+      - ".github/workflows/publish-guide-fallback.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Screenshot generation is best-effort. Do not let apt mirror failures
+      # prevent publication of the documentation site.
+      - name: Generate screenshots (best effort)
+        continue-on-error: true
+        run: |
+          cd desktop-electron
+          npm install
+          npm install --no-save playwright
+          npx playwright install chromium
+          npx vite --host 127.0.0.1 > /tmp/toolkit-vite.log 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:5173/ >/dev/null; then break; fi
+            sleep 2
+          done
+          node ../docs-site/capture-screenshots.mjs
+      - name: Prepare static Pages site
+        run: |
+          mkdir -p _site/screenshots
+          cp docs-site/index.html _site/index.html
+          cp desktop-electron/public/assets/logo_toolkit.svg _site/logo_toolkit.svg
+          cp docs/GUIA-DE-AYUDA.md _site/GUIA-DE-AYUDA.md
+          cp -f docs-site/screenshots/*.png _site/screenshots/ 2>/dev/null || true
+          # Preserve the custom domain in the deployed artifact.
+          printf '%s\n' 'toolkit.javigallego.es' > _site/CNAME
+          sed -i 's#../desktop-electron/public/assets/logo_toolkit.svg#logo_toolkit.svg#' _site/index.html
+          # If capture failed, create readable placeholder screenshots so the guide
+          # remains complete and has no broken image links.
+          for spec in '01-inicio:Inicio' '02-catalogo:Catalogo' '03-ficha-app:Ficha de aplicacion' '04-mis-aplicaciones:Mis aplicaciones' '05-herramientas:Herramientas' '06-recursos:Banco de recursos' '07-faqs:FAQs' '08-contacto:Contacto' '09-ayuda:Ayuda'; do
+            file="${spec%%:*}"
+            label="${spec#*:}"
+            if [ ! -s "_site/screenshots/${file}.png" ]; then
+              cat > "_site/screenshots/${file}.svg" <<EOF
+          <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720"><rect width="1280" height="720" fill="#f2f4f6"/><rect x="0" y="0" width="1280" height="92" fill="#18212b"/><text x="56" y="58" font-family="Arial,sans-serif" font-size="30" fill="#f3d54e">Puntos Vuela Toolkit</text><rect x="70" y="150" width="1140" height="500" rx="24" fill="#fff" stroke="#dce2e8"/><text x="640" y="340" text-anchor="middle" font-family="Arial,sans-serif" font-size="44" fill="#27384b">${label}</text><text x="640" y="400" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" fill="#667282">Captura no disponible en esta publicación</text></svg>
+          EOF
+              # Redirect this guide section's image to the generated SVG fallback.
+              sed -i "s#screenshots/${file}.png#screenshots/${file}.svg#g" _site/index.html
+            fi
+          done
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-22.04
+    needs: build
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
