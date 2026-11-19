@@ -22,7 +22,7 @@ Consulta la [guía interactiva de Puntos Vuela Toolkit](https://montejaque.githu
 
 ## Capturas
 
-Las imágenes actuales de la interfaz se publican en `docs/screenshots/` y se reutilizan en la guía web. El proceso de capturas automatizado documenta la versión y commit de la interfaz capturada.
+Las capturas se generan automáticamente en CI al preparar la guía visual y se publican como parte del sitio de GitHub Pages. Se usan datos de demostración, no se realizan instalaciones ni envíos reales durante la captura.
 
 ## Tecnología
 
