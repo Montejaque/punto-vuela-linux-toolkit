@@ -14,8 +14,9 @@
 
 ## Tecnologías utilizadas
 
-- **Electron**: plataforma utilizada para la interfaz de escritorio multiplataforma.
-- **HTML, CSS y JavaScript**: tecnologías para la interfaz y la experiencia de usuario.
+- **Electron**: plataforma de escritorio.
+- **React**: biblioteca utilizada para la interfaz de usuario.
+- **TypeScript**: lenguaje utilizado para el desarrollo de la interfaz.
 
 ## Capturas de la aplicación
 
