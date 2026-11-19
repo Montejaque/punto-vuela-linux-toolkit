@@ -19,7 +19,7 @@ function json(data, status = 200) {
 }
 function turnstilePage() {
   const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Verificación de seguridad</title><style>html,body{margin:0;padding:0;background:transparent;font-family:Arial,sans-serif;color:#202833}.wrap{min-height:78px;display:flex;align-items:center;justify-content:flex-start;flex-direction:column}.status{width:100%;font-size:12px;color:#64748b;padding:4px 0}.widget{min-height:65px;width:100%}</style></head><body><div class="wrap"><div id="turnstile-status" class="status" role="status">Conectando con Cloudflare…</div><div id="turnstile-widget" class="widget"></div></div><script>
-function report(type,extra){parent.postMessage(Object.assign({type:type},extra||{}),"*");}
+function report(type,extra){var payload=Object.assign({type:type},extra||{});if(window.parent!==window){window.parent.postMessage(payload,"*");}else if(window.opener&&!window.opener.closed){window.opener.postMessage(payload,"*");if(type==="turnstile-token"){setTimeout(function(){window.close();},500);}}}
 function onTurnstileSuccess(token){document.getElementById("turnstile-status").textContent="Verificación completada.";report("turnstile-token",{token:token});}
 function onTurnstileExpired(){document.getElementById("turnstile-status").textContent="La verificación ha caducado.";report("turnstile-expired");}
 function onTurnstileError(code){var detail=String(code||"sin código");document.getElementById("turnstile-status").textContent="Cloudflare ha devuelto el error "+detail+".";report("turnstile-error",{code:detail});}
@@ -50,7 +50,7 @@ function esc(value) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (request.method === "GET" && url.pathname === "/turnstile") return turnstilePage();
+    if (request.method === "GET" && url.pathname === "/health") return json({ok:true,service:"punto-vuela-mail",brevoConfigured:!!env.BREVO_API_KEY,senderConfigured:!!env.MAIL_FROM_EMAIL,turnstileConfigured:!!env.TURNSTILE_SECRET_KEY,rateLimitConfigured:!!env.RATE_LIMIT,recipient:env.MAIL_TO_EMAIL||RECIPIENT});\n    if (request.method === "GET" && url.pathname === "/turnstile") return turnstilePage();
     if (request.method === "OPTIONS") return json({ok: true});
     if (request.method !== "POST" || url.pathname !== "/") return json({ok: false, message: "Método no permitido."}, 405);
     if (!env.BREVO_API_KEY || !env.MAIL_FROM_EMAIL) {
@@ -102,7 +102,7 @@ export default {
       if (!sent.ok) {
         const detail = await sent.text();
         console.error("Brevo API error", sent.status, detail.slice(0, 500));
-        return json({ok: false, message: "Brevo no ha podido enviar la solicitud. Comprueba la configuración del remitente y la API Key."}, 502);
+        const safeDetail=detail.replace(/[\\r\\n]+/g," ").slice(0,220);\n        return json({ok:false,message:"Brevo ha rechazado el envío (HTTP "+sent.status+"). "+safeDetail},502);
       }
       return json({ok: true, message: "Solicitud enviada correctamente a " + recipient + "."});
     } catch (error) {
