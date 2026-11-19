@@ -10,6 +10,35 @@
 - **Términos y condiciones:** https://toolkit.javigallego.es/terms.html
 - **Descargas:** https://github.com/Montejaque/punto-vuela-linux-toolkit/releases
 
+## Capturas de la aplicación
+
+### Pantalla de inicio
+![Pantalla de inicio de Puntos Vuela Toolkit](https://toolkit.javigallego.es/screenshots/01-inicio.png)
+
+### Catálogo de aplicaciones
+![Catálogo de aplicaciones AppImage](https://toolkit.javigallego.es/screenshots/02-catalogo.png)
+
+### Ficha de aplicación
+![Ficha de detalle de una aplicación](https://toolkit.javigallego.es/screenshots/03-ficha-app.png)
+
+### Mis aplicaciones
+![Biblioteca de aplicaciones](https://toolkit.javigallego.es/screenshots/04-mis-aplicaciones.png)
+
+### Herramientas Punto Vuela
+![Herramientas Punto Vuela](https://toolkit.javigallego.es/screenshots/05-herramientas.png)
+
+### Recursos
+![Banco de recursos](https://toolkit.javigallego.es/screenshots/06-recursos.png)
+
+### Preguntas frecuentes
+![Preguntas frecuentes](https://toolkit.javigallego.es/screenshots/07-faqs.png)
+
+### Contacto y propuestas
+![Contacto y propuestas](https://toolkit.javigallego.es/screenshots/08-contacto.png)
+
+### Ayuda
+![Ayuda y documentación](https://toolkit.javigallego.es/screenshots/09-ayuda.png)
+
 ## Funcionalidades
 
 ### Catálogo de aplicaciones
@@ -49,7 +78,7 @@ Envía propuestas de aplicaciones, selecciona el centro y revisa la información
 - La compatibilidad de cada AppImage depende de los requisitos de la propia aplicación y del sistema.
 - Algunas aplicaciones pueden no disponer de opciones compatibles de instalación, actualización o gestión.
 
-## Instalación
+## Descargas\n\nDescarga la versión más reciente desde [GitHub Releases](https://github.com/Montejaque/punto-vuela-linux-toolkit/releases).\n\n## Instalación
 
 1. Descarga la AppImage desde la sección [Releases](https://github.com/Montejaque/punto-vuela-linux-toolkit/releases).
 2. Guarda el archivo en tu equipo y habilita el permiso de ejecución.
