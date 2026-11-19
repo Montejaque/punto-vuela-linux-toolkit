@@ -41,7 +41,7 @@ jobs:
         working-directory: desktop-electron
       - name: Start Vite development server
         run: |
-          npm run dev -- --host 127.0.0.1 > /tmp/toolkit-vite.log 2>&1 &
+          npx vite --host 127.0.0.1 > /tmp/toolkit-vite.log 2>&1 &
           for i in $(seq 1 60); do
             if curl -fsS http://127.0.0.1:5173/ >/dev/null; then exit 0; fi
             sleep 2
@@ -52,7 +52,7 @@ jobs:
       - name: Capture full interface with demo API
         run: node ../docs-site/capture-screenshots.mjs
         working-directory: desktop-electron
-      - name: Prepare GitHub Pages bundle
+      - name: Configure Pages\n        uses: actions/configure-pages@v5\n      - name: Prepare GitHub Pages bundle
         run: |
           mkdir -p _site/screenshots
           cp docs-site/index.html _site/index.html
