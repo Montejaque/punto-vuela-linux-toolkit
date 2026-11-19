@@ -1,7 +1,7 @@
 import { chromium } from "../desktop-electron/node_modules/playwright/index.mjs";
 import { mkdir } from "node:fs/promises";
 const base="http://127.0.0.1:5173";
-await mkdir("docs-site/screenshots",{recursive:true});
+await mkdir("../docs-site/screenshots",{recursive:true});
 const browser=await chromium.launch({headless:true});
 const page=await browser.newPage({viewport:{width:1440,height:950},deviceScaleFactor:1});
 await page.addInitScript(()=>{
@@ -27,7 +27,7 @@ await page.addInitScript(()=>{
 });
 await page.goto(base,{waitUntil:"domcontentloaded"});
 await page.waitForTimeout(1500);
-async function shot(file){await page.waitForTimeout(500);await page.screenshot({path:"docs-site/screenshots/"+file,fullPage:true});}
+async function shot(file){await page.waitForTimeout(500);await page.screenshot({path:"../docs-site/screenshots/"+file,fullPage:true});}
 async function go(label){const btn=page.getByRole("button",{name:label,exact:true}).first();await btn.waitFor({state:"visible",timeout:15000});await btn.evaluate(el=>el.click());await page.waitForTimeout(800);}
 async function closeModal(){const close=page.getByRole("button",{name:"Cerrar",exact:true});if(await close.count()) await close.first().evaluate(el=>el.click());await page.waitForTimeout(250);}
 await shot("01-inicio.png");
