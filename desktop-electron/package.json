@@ -1,0 +1,56 @@
+{
+  "name": "puntos-vuela-toolkit",
+  "version": "0.4.1",
+  "private": true,
+  "description": "Centro de aplicaciones AppImage y herramientas Punto Vuela para Linux",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "concurrently -k \"vite --host 127.0.0.1\" \"wait-on tcp:127.0.0.1:5173 && electron .\"",
+    "build": "tsc --noEmit && vite build && tsc -p electron/tsconfig.json",
+    "start": "electron .",
+    "dist:appimage": "npm run build && electron-builder --linux AppImage --x64 --publish never",
+    "typecheck": "tsc --noEmit --pretty false && tsc -p electron/tsconfig.json --noEmit",
+    "test": "npm run typecheck"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "electron": "43.7.0",
+    "electron-builder": "^26.18.0",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "es.puntosvuela.toolkit",
+    "productName": "Puntos Vuela Toolkit",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "dist-electron/**",
+      "package.json"
+    ],
+    "linux": {
+      "target": ["AppImage"],
+      "category": "Utility",
+      "artifactName": "Puntos_Vuela_Toolkit-Electron-${arch}.${ext}",
+      "icon": "build/icon.png"
+    },
+    "publish": []
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Montejaque/punto-vuela-linux-toolkit.git"
+  },
+  "author": "Punto Vuela Montejaque"
+}
