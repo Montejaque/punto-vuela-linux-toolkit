@@ -50,7 +50,8 @@ function esc(value) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (request.method === "GET" && url.pathname === "/health") return json({ok:true,service:"punto-vuela-mail",brevoConfigured:!!env.BREVO_API_KEY,senderConfigured:!!env.MAIL_FROM_EMAIL,turnstileConfigured:!!env.TURNSTILE_SECRET_KEY,rateLimitConfigured:!!env.RATE_LIMIT,recipient:env.MAIL_TO_EMAIL||RECIPIENT});\n    if (request.method === "GET" && url.pathname === "/turnstile") return turnstilePage();
+    if (request.method === "GET" && url.pathname === "/health") return json({ok:true,service:"punto-vuela-mail",brevoConfigured:!!env.BREVO_API_KEY,senderConfigured:!!env.MAIL_FROM_EMAIL,turnstileConfigured:!!env.TURNSTILE_SECRET_KEY,rateLimitConfigured:!!env.RATE_LIMIT,recipient:env.MAIL_TO_EMAIL||RECIPIENT});
+    if (request.method === "GET" && url.pathname === "/turnstile") return turnstilePage();
     if (request.method === "OPTIONS") return json({ok: true});
     if (request.method !== "POST" || url.pathname !== "/") return json({ok: false, message: "Método no permitido."}, 405);
     if (!env.BREVO_API_KEY || !env.MAIL_FROM_EMAIL) {
@@ -102,7 +103,8 @@ export default {
       if (!sent.ok) {
         const detail = await sent.text();
         console.error("Brevo API error", sent.status, detail.slice(0, 500));
-        const safeDetail=detail.replace(/[\\r\\n]+/g," ").slice(0,220);\n        return json({ok:false,message:"Brevo ha rechazado el envío (HTTP "+sent.status+"). "+safeDetail},502);
+        const safeDetail=detail.replace(/[\\r\\n]+/g," ").slice(0,220);
+        return json({ok:false,message:"Brevo ha rechazado el envío (HTTP "+sent.status+"). "+safeDetail},502);
       }
       return json({ok: true, message: "Solicitud enviada correctamente a " + recipient + "."});
     } catch (error) {
