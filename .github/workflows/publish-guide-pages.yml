@@ -1,0 +1,74 @@
+name: Publish interactive user guide
+
+on:
+  push:
+    branches: ["rewrite/electron-desktop"]
+    paths:
+      - "desktop-electron/src/**"
+      - "desktop-electron/public/**"
+      - "desktop-electron/package.json"
+      - "docs-site/**"
+      - "docs/GUIA-DE-AYUDA.md"
+      - ".github/workflows/publish-guide-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-guide:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop-electron/package-lock.json
+      - name: Install app dependencies
+        run: npm ci
+        working-directory: desktop-electron
+      - name: Install Chromium for screenshots
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+        working-directory: desktop-electron
+      - name: Start Vite development server
+        run: |
+          npm run dev -- --host 127.0.0.1 > /tmp/toolkit-vite.log 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:5173/ >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/toolkit-vite.log
+          exit 1
+        working-directory: desktop-electron
+      - name: Capture full interface with demo API
+        run: node ../docs-site/capture-screenshots.mjs
+        working-directory: desktop-electron
+      - name: Prepare GitHub Pages bundle
+        run: |
+          mkdir -p _site/screenshots
+          cp docs-site/index.html _site/index.html
+          cp -a docs-site/screenshots/. _site/screenshots/
+          cp desktop-electron/public/assets/logo_toolkit.svg _site/logo_toolkit.svg
+          sed -i 's#../desktop-electron/public/assets/logo_toolkit.svg#logo_toolkit.svg#' _site/index.html
+          cp docs/GUIA-DE-AYUDA.md _site/GUIA-DE-AYUDA.md
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-22.04
+    needs: build-guide
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
