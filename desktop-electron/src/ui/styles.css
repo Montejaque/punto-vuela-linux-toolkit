@@ -357,3 +357,4 @@ h1,h2,h3 { font-family: "Space Grotesk","DM Sans",sans-serif; }
 .light .help-viewer-content pre{color:#27313d}
 @media(max-width:48rem){.help-viewer-modal{height:94vh;width:100%;border-radius:1rem}.help-viewer-header{padding:1.35rem 1.25rem 1rem}.help-viewer-content{padding:1.1rem 1.25rem}.help-viewer-content pre{font-size:.8rem}.help-viewer-modal .legal-modal-footer{padding:1rem 1.25rem}}
 @media(prefers-reduced-motion:reduce){.help-viewer-modal,.spin-icon{animation:none!important}}
+\n.turnstile-open-button{display:inline-flex;align-items:center;gap:.6rem;border:1px solid var(--line);border-radius:.7rem;background:var(--panel-raised,#27323e);color:var(--text);padding:.72rem 1rem;font-size:.82rem;font-weight:700;cursor:pointer}\n.turnstile-open-button:hover{border-color:var(--yellow);background:var(--panel)}\n.turnstile-open-button:disabled{opacity:.75;cursor:default}\n
