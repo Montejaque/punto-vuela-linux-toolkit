@@ -9,6 +9,9 @@ on:
       - "desktop-electron/package.json"
       - "docs-site/**"
       - "docs/GUIA-DE-AYUDA.md"
+      - "guia.html"
+      - "privacy.html"
+      - "terms.html"
       - ".github/workflows/publish-guide-pages.yml"
   workflow_dispatch:
 
