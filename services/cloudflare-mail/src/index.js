@@ -111,7 +111,7 @@ export default {
           htmlContent,
           textContent,
           attachment: [{name:"puntos-vuela-toolkit-icon.png",content:logoBase64,contentId:"puntos-vuela-toolkit-icon"}],
-        }),,
+        }),
       });
       if (!sent.ok) {
         const detail = await sent.text();
