@@ -56,8 +56,7 @@ async function download(url:string, filename?:string):Promise<string> {
 async function desktopIntegrate(file:string,name?:string):Promise<string> {
   const full=managedPath(file); const safe=full.replace(/\\/g,"\\\\").replace(/"/g,'\\"'); const base=path.basename(full,".AppImage").replace(/[^A-Za-z0-9._-]/g,"-").toLowerCase();
   const dir=path.join(process.env.XDG_DATA_HOME||path.join(os.homedir(),".local","share"),"applications"); await fs.mkdir(dir,{recursive:true});
-  const target=path.join(dir,`punto-vuela-${base}.desktop`); const label=(name||path.basename(full,".AppImage")).replace(/[\r
-]/g," ").trim();
+  const target=path.join(dir,`punto-vuela-${base}.desktop`); const label=(name||path.basename(full,".AppImage")).replace(/[\r\n]/g," ").trim();
   await fs.writeFile(target,`[Desktop Entry]\nType=Application\nName=${label}\nComment=Aplicación gestionada por Punto Vuela Toolkit\nExec="${safe}" %U\nIcon=application-x-executable\nTerminal=false\nCategories=Utility;\nStartupNotify=true\n`,{mode:0o644});
   return target;
 }
