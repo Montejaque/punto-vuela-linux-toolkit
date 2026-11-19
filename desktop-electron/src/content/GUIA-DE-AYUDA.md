@@ -1,35 +1,49 @@
 # Guía de ayuda — Puntos Vuela Toolkit
 
-**Desarrollo y mantenimiento:** Francisco Javier Gallego Orellana · Puntos Vuela Montejaque
-
-Puntos Vuela Toolkit permite descubrir aplicaciones AppImage, gestionar tu biblioteca personal y consultar recursos y herramientas de Punto Vuela.
+Puntos Vuela Toolkit permite descubrir aplicaciones AppImage, administrar aplicaciones locales, consultar herramientas Punto Vuela y acceder a recursos formativos y de software.
 
 ## Navegación
-- **Inicio:** accesos directos a las áreas principales.
-- **Catálogo AppImage:** búsqueda por nombre, descripción, categoría o autor. Consulta la ficha antes de descargar.
-- **Mis aplicaciones:** abre, corrige permisos, comprueba actualizaciones compatibles y elimina AppImages de tu perfil.
-- **Herramientas Punto Vuela:** catálogo de herramientas propias publicadas en GitHub.
-- **Banco de recursos y FAQs:** abre recursos y documentación de referencia.
-- **Contacto y propuestas:** selecciona tu centro, revisa los datos y el mensaje, y comparte por correo o WhatsApp.
+- **Inicio:** resumen y accesos directos.
+- **Catálogo AppImage:** búsqueda, categorías y fichas de aplicaciones.
+- **Mis aplicaciones:** abrir, reparar permisos, revisar actualizaciones compatibles, actualizar y eliminar AppImages de tu perfil.
+- **Herramientas Punto Vuela:** explorar aplicaciones publicadas en repositorios públicos.
+- **Banco de recursos:** abrir recursos temáticos en sus portales de origen.
+- **FAQs de software:** consultar preguntas frecuentes, guías y vídeos.
+- **Contacto y propuestas:** seleccionar centro, completar propuesta y revisar el mensaje antes de compartirlo.
+- **Ayuda y documentación:** documentación, compatibilidad, seguridad, privacidad y condiciones.
 
-## Instalar
-Desde el catálogo, pulsa Instalar cuando la ficha tenga una descarga compatible. Los archivos se guardan en tu perfil de usuario. No se requieren permisos de administrador para la gestión local de AppImages.
+## Catálogo e instalación
+Busca y filtra el catálogo. Revisa la ficha y utiliza Instalar cuando exista un recurso compatible. El Toolkit descarga desde el origen de la aplicación; no aloja las AppImages de terceros.
 
-## Compatibilidad
-Ubuntu 20.04 utiliza glibc 2.31. Si la AppImage requiere una versión superior, puede no ejecutarse en ese sistema. Revisa FUSE, controladores y dependencias adicionales. El Toolkit no garantiza que toda AppImage sea compatible.
+## Mis aplicaciones
+La biblioteca muestra las AppImages que gestiona el usuario. Desde sus acciones puedes abrirlas, corregir permisos, comprobar actualizaciones compatibles, actualizar cuando exista soporte y eliminar archivos. El almacenamiento se encuentra en tu perfil de usuario.
 
 ## Actualizaciones
-AppImageUpdate solo funciona con metadatos compatibles incorporados por el editor. Si no hay soporte, consulta el sitio oficial de la aplicación.
+AppImageUpdate solo puede actualizar archivos con metadatos compatibles. Si no hay soporte, revisa la web o Releases oficiales del proyecto.
+
+## Contacto y propuestas
+Selecciona un centro Punto Vuela, revisa los datos cargados si están disponibles y completa los campos de propuesta. Consulta y acepta privacidad, protección de datos y condiciones. La comprobación antispam Cloudflare Turnstile es necesaria antes de abrir la vista previa.
+
+En la vista previa:
+- **Correo:** la propuesta se envía a través del servicio remoto. El Toolkit muestra el resultado devuelto.
+- **WhatsApp:** se abre WhatsApp con el mensaje preparado; el envío final lo confirmas desde WhatsApp.
+
+## Tema
+Puedes elegir tema claro, oscuro o automático. La barra de navegación lateral puede contraerse o expandirse.
+
+## Compatibilidad
+Objetivo Linux x86_64, con especial atención a Ubuntu 20.04 y posteriores. Ubuntu 20.04 usa glibc 2.31; aplicaciones que exijan una versión superior pueden no funcionar. Revisa también FUSE, controladores y bibliotecas requeridas.
 
 ## Seguridad
-Descarga software desde fuentes fiables. La validación de archivos no es un análisis antivirus. El Toolkit no instala paquetes del sistema ni realiza operaciones privilegiadas silenciosas.
+Descarga desde fuentes fiables. Las comprobaciones de tipo de archivo y ejecutable no sustituyen a un antivirus. El Toolkit no instala paquetes del sistema ni ejecuta operaciones privilegiadas silenciosas.
 
-## Guía visual interactiva
-La guía web con capturas de las pantallas de la aplicación se publicará en GitHub Pages:
-https://montejaque.github.io/punto-vuela-linux-toolkit/
+## Documentación web
+- Web: https://toolkit.javigallego.es/
+- Guía ilustrada: https://toolkit.javigallego.es/guia.html
+- Releases: https://github.com/Montejaque/punto-vuela-linux-toolkit/releases
+- Privacidad: https://toolkit.javigallego.es/privacy.html
+- Condiciones: https://toolkit.javigallego.es/terms.html
 
 ## Contacto
-**Francisco Javier Gallego Orellana** · Puntos Vuela Montejaque
-
-- Correo: montejaque@puntosvuela.es
-- WhatsApp: +34 633 402 959
+Correo: montejaque@puntosvuela.es  
+WhatsApp: https://wa.me/34633402959
