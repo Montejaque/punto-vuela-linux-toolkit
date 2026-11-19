@@ -5,6 +5,7 @@ on:
     branches: ["rewrite/electron-desktop"]
     paths:
       - "index.html"
+      - "guia.html"
       - "privacy.html"
       - "terms.html"
       - "docs-site/**"
