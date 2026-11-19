@@ -1,4 +1,4 @@
-import { chromium } from "playwright";
+import { chromium } from "../desktop-electron/node_modules/playwright/index.mjs";
 import { mkdir } from "node:fs/promises";
 const base="http://127.0.0.1:5173";
 await mkdir("docs-site/screenshots",{recursive:true});
