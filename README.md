@@ -14,9 +14,8 @@
 
 ## Tecnologías utilizadas
 
-- **Python**: lenguaje principal de la aplicación.
-- **QML**: lenguaje declarativo utilizado para la interfaz gráfica.
-- **PySide6 6.4.3**: biblioteca Qt for Python que integra Python con la interfaz QML.
+- **Electron**: plataforma utilizada para la interfaz de escritorio multiplataforma.
+- **HTML, CSS y JavaScript**: tecnologías para la interfaz y la experiencia de usuario.
 
 ## Capturas de la aplicación
 
