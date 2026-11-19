@@ -19,7 +19,13 @@ function createWindow(): void {
   window.webContents.once("did-finish-load", () => {
     if (process.argv.includes("--smoke-test")) setTimeout(() => app.exit(0), 750);
   });
-  window.webContents.setWindowOpenHandler(({ url }) => {\n    if (url.startsWith("https://punto-vuela-mail.montejaque.workers.dev/turnstile")) {\n      return { action: "allow", overrideBrowserWindowOptions: { width: 430, height: 270, resizable: false, minimizable: false, maximizable: false, autoHideMenuBar: true, backgroundColor: "#ffffff" } };\n    }\n    if (url.startsWith("https://")) void shell.openExternal(url);\n    return { action: "deny" };\n  });
+  window.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith("https://punto-vuela-mail.montejaque.workers.dev/turnstile")) {
+      return { action: "allow", overrideBrowserWindowOptions: { width: 430, height: 270, resizable: false, minimizable: false, maximizable: false, autoHideMenuBar: true, backgroundColor: "#ffffff" } };
+    }
+    if (url.startsWith("https://")) void shell.openExternal(url);
+    return { action: "deny" };
+  });
   window.webContents.on("will-navigate", (event, url) => {
     const allowedUrl = isDevelopment ? url.startsWith("http://127.0.0.1:5173") : url.startsWith("file://");
     if (!allowedUrl) event.preventDefault();
