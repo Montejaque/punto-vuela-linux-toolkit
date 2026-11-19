@@ -1,80 +1,121 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Guía visual · Puntos Vuela Toolkit</title>
-<meta name="description" content="Guía visual e interactiva de Puntos Vuela Toolkit: catálogo AppImage, biblioteca, herramientas y soporte.">
+<title>Puntos Vuela Toolkit · Aplicaciones Linux en un solo lugar</title>
+<meta name="description" content="Puntos Vuela Toolkit: descubre, descarga y gestiona aplicaciones AppImage para Linux. Catálogo, herramientas, recursos y guía de uso.">
 <style>
-:root{--navy:#182635;--navy2:#263b50;--yellow:#f3d54e;--text:#202a35;--muted:#647283;--bg:#f3f5f7;--white:#fff;--line:#dce3e9;--shadow:0 16px 40px #15243514}
-*{box-sizing:border-box;scroll-margin-top:112px}
+:root{--navy:#172433;--navy2:#273b50;--yellow:#f3d54e;--ink:#1f2935;--muted:#667586;--bg:#f4f6f8;--white:#fff;--line:#dce3ea;--shadow:0 18px 45px #16263812}
+*{box-sizing:border-box;scroll-margin-top:88px}
 html{scroll-behavior:smooth}
-body{margin:0;color:var(--text);background:var(--bg);font:16px/1.6 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
 a{color:inherit;text-decoration:none}
-.site-nav{position:sticky;top:0;z-index:100;background:#182635f5;color:#fff;backdrop-filter:blur(14px);box-shadow:0 6px 24px #0002;border-bottom:1px solid #ffffff20}
-.nav-inner{max-width:1280px;margin:auto;padding:.7rem 1rem;display:flex;align-items:center;gap:1.1rem}
-.brand{display:flex;align-items:center;gap:.65rem;flex-shrink:0;font-weight:800;letter-spacing:-.02em}
-.brand img{width:38px;height:38px;object-fit:contain;background:var(--yellow);padding:4px;border-radius:11px}
-.navlinks{display:flex;align-items:center;gap:.35rem;overflow:auto;scrollbar-width:thin;flex:1}
-.navlinks a{white-space:nowrap;color:#dfe7ef;padding:.55rem .75rem;border-radius:9px;font-size:.88rem;font-weight:650;transition:.18s}
-.navlinks a:hover,.navlinks a.active{color:var(--navy);background:var(--yellow)}
-.navlinks a:focus-visible,.brand:focus-visible{outline:3px solid #fff;outline-offset:2px}
-.hero{background:linear-gradient(125deg,var(--navy),var(--navy2));color:white;padding:3.3rem 1.25rem 3.6rem}
-.hero-inner{max-width:1200px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:2rem}
-.eyebrow{color:var(--yellow);font-size:.78rem;font-weight:850;letter-spacing:.15em;text-transform:uppercase}
-.hero h1{font-size:clamp(2rem,5vw,3.7rem);letter-spacing:-.05em;line-height:1.05;margin:.6rem 0}
-.hero p{color:#d5dfeb;max-width:760px;margin:.8rem 0 0;font-size:1.1rem}
-.hero-badge{border:1px solid #ffffff30;background:#ffffff10;border-radius:20px;padding:1rem 1.25rem;max-width:260px;color:#e8eef5;font-size:.9rem}
-.wrap{max-width:1200px;margin:auto;padding:2rem 1rem 4rem}
-.intro-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:1rem;margin-bottom:2.2rem}
-.panel{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:1.3rem;box-shadow:var(--shadow)}
-.panel h2,.panel h3{margin:.1rem 0 .6rem}
-.panel p{color:var(--muted);margin:.35rem 0}
-.support{border-top:4px solid var(--yellow)}
-.section{padding:1.2rem 0 2.2rem}
-.section-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1rem}
-.section-heading h2{margin:0;font-size:1.6rem;letter-spacing:-.035em}
-.section-heading p{margin:.3rem 0 0;color:var(--muted)}
-.step-card{background:#fff;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}
-.step-copy{padding:1.2rem 1.35rem}
-.step-copy .number{color:#7a6500;font-weight:900;letter-spacing:.12em;font-size:.76rem}
-.step-copy h3{margin:.25rem 0 .5rem;font-size:1.3rem}
-.step-copy p{color:var(--muted);margin:.3rem 0}
-.screenshot{display:block;width:100%;height:auto;background:#eef1f4;border-top:1px solid var(--line)}
-.caption{padding:.75rem 1.2rem;color:var(--muted);font-size:.85rem;background:#fafbfc}
-.footer{margin-top:2rem;border-top:1px solid var(--line);padding:1.5rem 0;color:var(--muted);font-size:.9rem}
-@media(max-width:850px){.nav-inner{flex-wrap:wrap;gap:.5rem}.brand{width:100%}.navlinks{width:100%;flex-basis:100%}.intro-grid{grid-template-columns:1fr}.hero-inner{display:block}.hero-badge{margin-top:1.4rem}.hero{padding:2.4rem 1rem}}
+button{font:inherit}
+.topnav{position:sticky;top:0;z-index:99;background:#172433f5;color:white;border-bottom:1px solid #ffffff22;backdrop-filter:blur(14px);box-shadow:0 8px 24px #0002}
+.navwrap{max-width:1220px;margin:auto;padding:.75rem 1rem;display:flex;align-items:center;gap:1.25rem}
+.brand{display:flex;align-items:center;gap:.7rem;font-weight:850;white-space:nowrap;letter-spacing:-.03em}
+.brand img{width:40px;height:40px;padding:4px;background:var(--yellow);border-radius:11px}
+.navlinks{margin-left:auto;display:flex;gap:.25rem;align-items:center;overflow-x:auto}
+.navlinks a{white-space:nowrap;color:#dce6f0;padding:.55rem .75rem;border-radius:9px;font-size:.88rem;font-weight:700}
+.navlinks a:hover,.navlinks a:focus-visible{background:var(--yellow);color:var(--navy)}
+.navlinks .nav-cta{background:var(--yellow);color:var(--navy)}
+.hero{background:radial-gradient(circle at 80% 25%,#52677c55,transparent 32%),linear-gradient(120deg,#172433,#2c4258);color:white;padding:4.5rem 1.25rem 4.7rem}
+.hero-inner{max-width:1200px;margin:auto;display:grid;grid-template-columns:1.35fr .85fr;gap:3rem;align-items:center}
+.eyebrow{color:var(--yellow);font-size:.76rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase}
+.hero h1{font-size:clamp(2.5rem,6vw,4.5rem);line-height:1.02;letter-spacing:-.06em;margin:.7rem 0 1rem}
+.hero h1 em{color:var(--yellow);font-style:normal}
+.hero p{color:#d4dfeb;max-width:720px;font-size:1.12rem}
+.hero-actions{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.5rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;padding:.8rem 1.1rem;border-radius:.85rem;font-weight:800;border:1px solid transparent;transition:.18s}
+.btn.yellow{background:var(--yellow);color:var(--navy)}
+.btn.ghost{border-color:#ffffff45;color:white;background:#ffffff0b}
+.btn:hover{transform:translateY(-2px)}
+.hero-visual{min-height:300px;border:1px solid #ffffff22;border-radius:28px;background:linear-gradient(145deg,#ffffff13,#ffffff04);padding:1.5rem;position:relative;display:grid;place-items:center;overflow:hidden}
+.hero-visual img{width:min(65%,240px);aspect-ratio:1;object-fit:contain;background:var(--yellow);border-radius:2.2rem;padding:1.1rem;box-shadow:0 20px 70px #0004}
+.float-label{position:absolute;padding:.75rem 1rem;border-radius:14px;background:#fff;color:var(--navy);font-size:.85rem;font-weight:800;box-shadow:0 10px 28px #0003}
+.float-label.one{left:1rem;top:2rem}.float-label.two{right:1rem;bottom:2rem}
+.container{max-width:1200px;margin:auto;padding:0 1.15rem}
+.section{padding:4.2rem 0}
+.section-head{max-width:760px;margin-bottom:2rem}
+.section-head h2{font-size:clamp(1.8rem,4vw,2.7rem);letter-spacing:-.045em;line-height:1.15;margin:.45rem 0}
+.section-head p{color:var(--muted);margin:.4rem 0}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.feature{background:#fff;border:1px solid var(--line);border-radius:20px;padding:1.35rem;box-shadow:var(--shadow)}
+.feature .icon{width:3rem;height:3rem;border-radius:.9rem;display:grid;place-items:center;background:#f9e68c;color:#29384a;font-size:1.3rem}
+.feature h3{margin:.9rem 0 .4rem}
+.feature p{color:var(--muted);margin:.25rem 0}
+.download-band{background:var(--navy);color:#fff;border-radius:26px;padding:2.1rem;display:flex;align-items:center;justify-content:space-between;gap:2rem}
+.download-band h2{font-size:1.8rem;margin:0 0 .45rem;letter-spacing:-.04em}
+.download-band p{color:#d4deea;margin:0;max-width:700px}
+.guide{background:#e9edf1}
+.guide-head{display:flex;justify-content:space-between;align-items:end;gap:1rem;flex-wrap:wrap}
+.guide-head .section-head{margin-bottom:0}
+.guide-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.guide-card{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.guide-card img{width:100%;height:auto;display:block;background:#e5e9ee;border-bottom:1px solid var(--line)}
+.guide-copy{padding:1rem 1.2rem}
+.guide-copy h3{margin:0 0 .35rem}
+.guide-copy p{color:var(--muted);margin:.2rem 0}
+.guide-number{color:#887000;font-weight:900;font-size:.72rem;letter-spacing:.1em}
+.guide-disclaimer{margin:1rem 0 0;color:var(--muted);font-size:.85rem}
+.faqgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.faq{border:1px solid var(--line);background:#fff;border-radius:16px;padding:1.2rem}
+.faq h3{margin:.1rem 0 .45rem;font-size:1rem}
+.faq p{margin:.2rem 0;color:var(--muted)}
+.contactbox{background:#fff;border:1px solid var(--line);border-radius:22px;padding:1.7rem;display:flex;justify-content:space-between;gap:2rem;align-items:center}
+.contactbox p{margin:.3rem 0;color:var(--muted)}
+footer{background:var(--navy);color:#cbd6e2;padding:2rem 1rem}
+.footerinner{max-width:1200px;margin:auto;display:flex;justify-content:space-between;gap:1.2rem;flex-wrap:wrap;font-size:.85rem}
+@media(max-width:900px){.navwrap{flex-wrap:wrap}.brand{width:100%}.navlinks{margin:0;width:100%}.hero-inner{grid-template-columns:1fr}.hero-visual{min-height:240px}.feature-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:620px){.hero{padding:3rem 1rem}.feature-grid,.guide-grid,.faqgrid{grid-template-columns:1fr}.download-band,.contactbox{align-items:flex-start;flex-direction:column}.section{padding:3rem 0}.navlinks a{font-size:.8rem;padding:.5rem .6rem}}
 </style>
 </head>
 <body>
-<nav class="site-nav" aria-label="Navegación principal">
-<div class="nav-inner">
-<a class="brand" href="#inicio"><img src="logo_toolkit.svg" alt="Logo Puntos Vuela Toolkit"><span>Puntos Vuela Toolkit</span></a>
+<nav class="topnav" aria-label="Navegación del portal">
+<div class="navwrap">
+<a class="brand" href="#inicio"><img src="logo_toolkit.svg" alt=""><span>Puntos Vuela Toolkit</span></a>
 <div class="navlinks">
-<a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="#ficha">Ficha</a><a href="#apps">Mis aplicaciones</a><a href="#herramientas">Herramientas</a><a href="#recursos">Recursos</a><a href="#faqs">FAQs</a><a href="#contacto">Contacto</a><a href="#ayuda">Ayuda</a>
+<a href="#inicio">Inicio</a><a href="#funciones">Funciones</a><a href="#descarga">Descarga</a><a href="#guia">Guía de uso</a><a href="#faq">FAQ</a><a href="#contacto">Contacto</a><a class="nav-cta" href="https://github.com/Montejaque/punto-vuela-linux-toolkit/releases/latest">Obtener Toolkit ↗</a>
 </div>
 </div>
 </nav>
-<header class="hero" id="inicio"><div class="hero-inner"><div><span class="eyebrow">Documentación visual · Guía rápida</span><h1>Tu software Linux,<br>más sencillo.</h1><p>Guía visual de Puntos Vuela Toolkit. Explora el catálogo, instala y organiza tus aplicaciones AppImage y accede a recursos útiles desde un único lugar.</p></div><div class="hero-badge">Una guía paso a paso<br><strong>9 secciones · Capturas de interfaz</strong></div></div></header>
-<main class="wrap">
-<div class="intro-grid"><article class="panel"><h2>Cómo usar esta guía</h2><p>Usa el menú fijo superior para saltar directamente a cada apartado. Cada sección muestra una captura de la interfaz y una explicación de sus funciones.</p><p>Las imágenes se generan automáticamente en cada publicación con datos de demostración; no contienen información personal ni realizan envíos reales.</p></article><aside class="panel support" id="contacto"><h3>Desarrollo y soporte</h3><strong>Francisco Javier Gallego Orellana</strong><p>Puntos Vuela Montejaque</p><p><a href="mailto:montejaque@puntosvuela.es">monteja@puntosvuela.es</a><br><a href="https://wa.me/34633402959">WhatsApp · +34 633 402 959</a></p></aside></div>
-<div id="sections"></div>
-<div class="footer">Las capturas son demostrativas. No representan comprobaciones reales de instalación, envío de correo ni disponibilidad de catálogo.<br>© Puntos Vuela Toolkit · Puntos Vuela Montejaque</div>
+<header class="hero" id="inicio"><div class="hero-inner">
+<div><span class="eyebrow">Tu espacio digital · Linux</span><h1>Todo Linux.<br><em>En un solo lugar.</em></h1><p>Descubre, instala y organiza aplicaciones AppImage, herramientas de Punto Vuela y recursos digitales desde una aplicación sencilla, pensada para el día a día.</p><div class="hero-actions"><a class="btn yellow" href="https://github.com/Montejaque/punto-vuela-linux-toolkit/releases/latest">Descargar Toolkit ↗</a><a class="btn ghost" href="#guia">Ver guía de uso ↓</a></div></div>
+<div class="hero-visual"><span class="float-label one">Catálogo AppImage</span><img src="logo_toolkit.svg" alt="Identidad de Puntos Vuela Toolkit"><span class="float-label two">Linux · Aplicaciones</span></div>
+</div></header>
+<main>
+<section class="section" id="funciones"><div class="container">
+<div class="section-head"><span class="eyebrow">Qué puedes hacer</span><h2>Un centro de aplicaciones y recursos para Linux</h2><p>Todo organizado para que encontrar, instalar y gestionar herramientas digitales sea más fácil.</p></div>
+<div class="feature-grid">
+<article class="feature"><div class="icon">▦</div><h3>Catálogo AppImage</h3><p>Busca por nombre, categoría y descripción; consulta fichas y enlaces a fuentes de software.</p></article>
+<article class="feature"><div class="icon">⇩</div><h3>Mis aplicaciones</h3><p>Organiza tus AppImages descargadas, ejecútalas, corrige permisos y elimina las que ya no utilizas.</p></article>
+<article class="feature"><div class="icon">⚙</div><h3>Herramientas Punto Vuela</h3><p>Accede a herramientas y utilidades publicadas desde repositorios del proyecto.</p></article>
+<article class="feature"><div class="icon">◇</div><h3>Banco de recursos</h3><p>Recursos digitales para dinamización, formación, creatividad, empleo y ciudadanía.</p></article>
+<article class="feature"><div class="icon">?</div><h3>FAQs de software</h3><p>Preguntas frecuentes, materiales de consulta y ayuda para resolver dudas habituales.</p></article>
+<article class="feature"><div class="icon">✉</div><h3>Propuestas y contacto</h3><p>Envía propuestas para añadir aplicaciones, con revisión previa y protección antispam.</p></article>
+</div></div></section>
+<section class="section" id="descarga"><div class="container"><div class="download-band"><div><span class="eyebrow">Empieza ahora</span><h2>Descarga Puntos Vuela Toolkit</h2><p>Consulta la versión más reciente y sus archivos de lanzamiento en GitHub Releases. La compatibilidad depende de los requisitos de cada AppImage y de tu distribución Linux.</p></div><a class="btn yellow" href="https://github.com/Montejaque/punto-vuela-linux-toolkit/releases/latest">Ver versiones y descargas ↗</a></div></div></section>
+<section class="section guide" id="guia"><div class="container">
+<div class="guide-head"><div class="section-head"><span class="eyebrow">Dentro del portal</span><h2>Guía de uso</h2><p>La guía es una sección de este sitio. Recorre las pantallas principales del Toolkit con capturas y explicaciones rápidas.</p></div><a class="btn yellow" href="https://github.com/Montejaque/punto-vuela-linux-toolkit">Repositorio ↗</a></div>
+<div class="guide-grid">
+<article class="guide-card"><img loading="lazy" src="screenshots/01-inicio.png" alt="Pantalla de inicio del Toolkit"><div class="guide-copy"><span class="guide-number">01 · INICIO</span><h3>Tu espacio de trabajo</h3><p>Accesos directos al catálogo, tu biblioteca y las herramientas.</p></div></article>
+<article class="guide-card"><img loading="lazy" src="screenshots/02-catalogo.png" alt="Catálogo AppImage"><div class="guide-copy"><span class="guide-number">02 · CATÁLOGO</span><h3>Encuentra aplicaciones</h3><p>Busca, filtra y explora el catálogo comunitario.</p></div></article>
+<article class="guide-card"><img loading="lazy" src="screenshots/03-ficha-app.png" alt="Ficha de aplicación"><div class="guide-copy"><span class="guide-number">03 · FICHA</span><h3>Consulta detalles</h3><p>Revisa metadatos disponibles antes de instalar.</p></div></article>
+<article class="guide-card"><img loading="lazy" src="screenshots/04-mis-aplicaciones.png" alt="Biblioteca de aplicaciones"><div class="guide-copy"><span class="guide-number">04 · BIBLIOTECA</span><h3>Gestiona tus AppImages</h3><p>Abre, revisa, organiza y elimina aplicaciones locales.</p></div></article>
+<article class="guide-card"><img loading="lazy" src="screenshots/05-herramientas.png" alt="Herramientas Punto Vuela"><div class="guide-copy"><span class="guide-number">05 · HERRAMIENTAS</span><h3>Utilidades del proyecto</h3><p>Descubre herramientas publicadas en repositorios propios.</p></div></article>
+<article class="guide-card"><img loading="lazy" src="screenshots/06-recursos.png" alt="Banco de recursos"><div class="guide-copy"><span class="guide-number">06 · RECURSOS</span><h3>Recursos digitales</h3><p>Accede a enlaces agrupados por temas y necesidades.</p></div></article>
+<article class="guide-card"><img loading="lazy" src="screenshots/07-faqs.png" alt="Preguntas frecuentes"><div class="guide-copy"><span class="guide-number">07 · FAQS</span><h3>Resuelve tus dudas</h3><p>Guías, referencias y videotutoriales de apoyo.</p></div></article>
+<article class="guide-card"><img loading="lazy" src="screenshots/08-contacto.png" alt="Contacto y propuestas"><div class="guide-copy"><span class="guide-number">08 · CONTACTO</span><h3>Envía una propuesta</h3><p>Propón aplicaciones y revisa los datos antes del envío.</p></div></article>
+<article class="guide-card"><img loading="lazy" src="screenshots/09-ayuda.png" alt="Ayuda y documentación"><div class="guide-copy"><span class="guide-number">09 · AYUDA</span><h3>Documentación integrada</h3><p>Consulta información de uso, compatibilidad y seguridad.</p></div></article>
+</div><p class="guide-disclaimer">Las imágenes son capturas del entorno de demostración de la aplicación. No realizan instalaciones, envíos de correo ni operaciones sobre el sistema real.</p>
+</div></section>
+<section class="section" id="faq"><div class="container"><div class="section-head"><span class="eyebrow">Dudas frecuentes</span><h2>Antes de instalar</h2></div><div class="faqgrid">
+<article class="faq"><h3>¿Necesito permisos de administrador?</h3><p>La gestión de AppImages del Toolkit está diseñada para el espacio de usuario y no requiere root para esas operaciones.</p></article>
+<article class="faq"><h3>¿Todas las AppImages son compatibles?</h3><p>No. Cada aplicación puede requerir librerías, drivers o versiones de glibc diferentes. Consulta los requisitos del desarrollador.</p></article>
+<article class="faq"><h3>¿Dónde se descargan las aplicaciones?</h3><p>Desde las fuentes de sus proyectos, cuando el catálogo identifica una descarga compatible. Toolkit no aloja las aplicaciones de terceros.</p></article>
+<article class="faq"><h3>¿Cómo reporto una aplicación o problema?</h3><p>Utiliza la sección de Contacto y propuestas en la aplicación o abre una incidencia en el repositorio de GitHub.</p></article>
+</div></div></section>
+<section class="section" id="contacto"><div class="container"><div class="contactbox"><div><span class="eyebrow">Proyecto y soporte</span><h2>¿Necesitas ayuda o tienes una idea?</h2><p>Puntos Vuela Toolkit · Francisco Javier Gallego Orellana · Puntos Vuela Montejaque</p><p><a href="mailto:montejaque@puntosvuela.es">montejae@puntosvuela.es</a> · <a href="https://wa.me/34633402959">WhatsApp</a></p></div><a class="btn yellow" href="https://github.com/Montejaque/punto-vuela-linux-toolkit/issues">Contactar / reportar ↗</a></div></div></section>
 </main>
-<script>
-const items=[
-["catalogo","Catálogo AppImage","Explora, filtra y busca aplicaciones.","02-catalogo.png","Busca por nombre, categoría, descripción o autor. Revisa los datos publicados y los requisitos de compatibilidad antes de instalar."],
-["ficha","Ficha de aplicación","Consulta los detalles de una aplicación antes de instalar.","03-ficha-app.png","La ficha reúne icono, descripción y metadatos disponibles en el catálogo. No se inventan datos que el proyecto no publique."],
-["apps","Mis aplicaciones","Administra tus AppImages locales.","04-mis-aplicaciones.png","Abre aplicaciones, corrige permisos, consulta actualizaciones disponibles y elimina las que ya no necesitas. Los archivos permanecen en tu perfil."],
-["herramientas","Herramientas Punto Vuela","Accede a proyectos y utilidades propios.","05-herramientas.png","Consulta proyectos publicados, sus versiones y detalles. Descarga desde los repositorios o releases originales."],
-["recursos","Banco de recursos","Accesos agrupados a recursos útiles.","06-recursos.png","Explora categorías y abre las páginas externas de referencia. Los recursos pueden actualizarse independientemente del Toolkit."],
-["faqs","FAQs de software","Preguntas frecuentes y recursos de apoyo.","07-faqs.png","Accede a documentación oficial y videotutoriales para los procesos habituales."],
-["contacto-propuestas","Contacto y propuestas","Envía propuestas de aplicaciones y sugerencias.","08-contacto.png","Revisa los datos, completa la propuesta y confirma el mensaje antes de enviarlo. El correo requiere verificación antispam y WhatsApp confirmación manual."],
-["ayuda","Ayuda y documentación","Guía y soporte dentro de la aplicación.","09-ayuda.png","Consulta ayuda sobre instalación, compatibilidad, actualizaciones, seguridad y contacto."]
-];
-const container=document.getElementById("sections");
-items.forEach((s,i)=>{const section=document.createElement("section");section.className="section";section.id=s[0];section.innerHTML='<div class="section-heading"><div><h2>'+s[1]+'</h2><p>'+s[2]+'</p></div></div><article class="step-card"><div class="step-copy"><span class="number">PASO '+String(i+2).padStart(2,"0")+'</span><h3>'+s[1]+'</h3><p>'+s[4]+'</p></div><img class="screenshot" loading="lazy" src="screenshots/'+s[3]+'" alt="Captura de pantalla de '+s[1]+'"><div class="caption">Captura de interfaz · entorno de demostración</div></article>';container.appendChild(section)});
-const navLinks=[...document.querySelectorAll(".navlinks a")],ids=navLinks.map(a=>a.getAttribute("href").slice(1));
-const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){navLinks.forEach(a=>a.classList.toggle("active",a.hash==="#"+e.target.id))}})},{rootMargin:"-25% 0px -65% 0px"});
-ids.forEach(id=>{const el=document.getElementById(id);if(el)observer.observe(el)});
-</script>
+<footer><div class="footerinner"><span>© Puntos Vuela Toolkit · Puntos Vuela Montejaque</span><span><a href="https://github.com/Montejaque/punto-vuela-linux-toolkit">Código en GitHub ↗</a> · Linux x86_64 · MIT</span></div></footer>
 </body></html>
