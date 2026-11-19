@@ -12,6 +12,12 @@
 - **Contacto y propuestas:** envía sugerencias de aplicaciones y contacta con el equipo.
 - **Personalización:** modo claro, oscuro o automático.
 
+## Tecnologías utilizadas
+
+- **Python**: lenguaje principal de la aplicación.
+- **QML**: lenguaje declarativo utilizado para la interfaz gráfica.
+- **PySide6 6.4.3**: biblioteca Qt for Python que integra Python con la interfaz QML.
+
 ## Capturas de la aplicación
 
 Consulta la [guía ilustrada de uso](https://toolkit.javigallego.es/guia.html) para ver las pantallas y funciones de la aplicación.
