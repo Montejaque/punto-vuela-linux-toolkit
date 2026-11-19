@@ -2,85 +2,65 @@
 
 **Desarrollo y mantenimiento:** Francisco Javier Gallego Orellana · Puntos Vuela Montejaque
 
-Esta guía describe la edición Electron de Puntos Vuela Toolkit. Las pantallas y botones pueden variar ligeramente entre versiones.
+Esta guía describe la aplicación de escritorio Electron. Las pantallas pueden variar ligeramente según la versión publicada.
 
 ## 1. Inicio
-
-Desde Inicio encontrarás una introducción y accesos directos al Catálogo AppImage, Mis aplicaciones y Herramientas Punto Vuela.
-
-![Inicio](https://montejaque.github.io/punto-vuela-linux-toolkit/screenshots/01-inicio.png)
+La pantalla Inicio ofrece accesos a las principales secciones: Catálogo AppImage, Mis aplicaciones, Herramientas Punto Vuela y recursos de consulta.
 
 ## 2. Catálogo AppImage
+Busca aplicaciones por nombre, descripción o autor y utiliza las categorías para filtrar el catálogo. Abre la ficha para revisar los metadatos disponibles.
 
-Explora el feed de AppImage Community. Puedes buscar por nombre, descripción, categoría o autor y revisar la información que la fuente publica.
+La información de la ficha depende de los datos que publique la fuente; puede incluir descripción, autor, licencia, versión, icono y requisitos.
 
-![Catálogo](https://montejaque.github.io/punto-vuela-linux-toolkit/screenshots/02-catalogo.png)
-
-**Instalar:** utiliza el botón de instalación cuando la ficha tenga una descarga compatible. El Toolkit descarga desde la fuente del proyecto, no aloja el software.
-
-## 3. Ficha de aplicación
-
-Abre los detalles para consultar descripción, icono, autor, licencia, compatibilidad y versión cuando esos metadatos estén disponibles.
-
-![Ficha de aplicación](https://monteja.github.io/punto-vuela-linux-toolkit/screenshots/03-ficha-app.png)
-
-La información ausente en la fuente no se debe interpretar como garantía. Consulta el sitio del desarrollador si falta algún dato.
+## 3. Instalar desde el catálogo
+Utiliza el botón de instalación cuando la ficha disponga de un recurso descargable compatible. El Toolkit descarga desde la fuente del proyecto y no aloja ni mantiene el software de terceros.
 
 ## 4. Mis aplicaciones
+Esta sección reúne los AppImages gestionados en tu perfil de usuario. Permite:
+- Abrir una aplicación.
+- Corregir o habilitar permisos de ejecución.
+- Consultar si hay una actualización compatible.
+- Actualizar mediante AppImageUpdate cuando el archivo disponga de metadatos apropiados.
+- Eliminar el AppImage y gestionar lanzadores locales.
 
-La biblioteca muestra las AppImages gestionadas por el usuario. Desde aquí puedes abrir una aplicación, reparar permisos, comprobar si dispone de actualización compatible, actualizar o eliminar el archivo.
-
-![Mis aplicaciones](https://monteja.github.io/punto-vuela-linux-toolkit/screenshots/04-mis-aplicaciones.png)
-
-Las aplicaciones se guardan dentro del perfil personal, habitualmente en `~/.local/share/punto-vuela-linux-toolkit/AppImages` (o bajo `$XDG_DATA_HOME` si se configura).
+Los archivos se guardan en el directorio de datos de usuario de la aplicación, normalmente bajo `~/.local/share/punto-vuela-linux-toolkit/AppImages` (o la ruta de `$XDG_DATA_HOME` si está definida).
 
 ## 5. Herramientas Punto Vuela
-
-Sección para descubrir aplicaciones publicadas en los repositorios propios. Revisa la versión y ficha antes de instalar.
-
-![Herramientas Punto Vuela](https://monteja.github.io/punto-vuela-linux-toolkit/screenshots/05-herramientas.png)
+Explora herramientas publicadas en repositorios públicos del proyecto. Comprueba los detalles y el recurso descargable antes de instalar.
 
 ## 6. Banco de recursos
-
-Acceso agrupado a recursos de creatividad, formación, oficina, tecnología, ciudadanía y emprendimiento. Los enlaces llevan a los portales originales.
-
-![Banco de recursos](https://monteja.github.io/punto-vuela-linux-toolkit/screenshots/06-recursos.png)
+Accede a recursos agrupados por áreas. Los enlaces abren los portales de origen, donde se mantiene el contenido.
 
 ## 7. FAQs de software
-
-Accede a preguntas frecuentes, guías y videotutoriales de referencia para tareas habituales de la red.
-
-![FAQs](https://monteja.github.io/punto-vuela-linux-toolkit/screenshots/07-faqs.png)
+Consulta preguntas frecuentes, guías y videotutoriales enlazados desde el portal de recursos.
 
 ## 8. Contacto y propuestas
+Selecciona el centro Punto Vuela y revisa los datos de contacto que se cargan cuando están disponibles. Completa la aplicación propuesta, enlace, motivo y observaciones.
 
-Puedes seleccionar tu centro Punto Vuela, revisar y completar los datos de contacto y enviar una propuesta de aplicación. El formulario requiere la lectura y aceptación de los apartados legales y la comprobación antispam.
+Antes de continuar, el formulario requiere consultar y aceptar los apartados legales y completar la comprobación antispam de Cloudflare Turnstile. El texto de la propuesta se muestra en una vista previa.
 
-![Contacto](https://monteja.github.io/punto-vuela-linux-toolkit/screenshots/08-contacto.png)
-
-Antes del envío, el mensaje se muestra en una vista previa editable. Puedes elegir correo electrónico o WhatsApp. El correo se envía si el servicio remoto está disponible; WhatsApp abre una conversación para que confirmes el envío.
+- **Correo:** el envío se realiza mediante el servicio remoto; la aplicación muestra el resultado recibido del servicio.
+- **WhatsApp:** se abre una conversación con el texto preparado para que confirmes el envío en WhatsApp.
 
 ## 9. Ayuda y documentación
+La sección Ayuda incluye guía, información de compatibilidad, gestión de AppImages, actualizaciones, privacidad y condiciones. También puedes consultar la [guía web ilustrada](https://toolkit.javigallego.es/guia.html).
 
-Incluye explicaciones de uso, compatibilidad, gestión de aplicaciones, actualizaciones y privacidad.
+## 10. Tema y navegación
+Puedes seleccionar tema claro, oscuro o automático. La navegación lateral se puede expandir o contraer.
 
-![Ayuda](https://monteja.github.io/punto-vuela-linux-toolkit/screenshots/09-ayuda.png)
+## 11. Compatibilidad y seguridad
+- El objetivo es Linux x86_64, con especial atención a Ubuntu 20.04 y posteriores.
+- Ubuntu 20.04 utiliza glibc 2.31; una AppImage que requiera una glibc más reciente puede no ejecutarse.
+- También pueden existir requisitos de FUSE, controladores, bibliotecas y otros componentes.
+- La comprobación del tipo de archivo o del ejecutable no es un antivirus.
+- AppImageUpdate solo funciona con metadatos compatibles incorporados por el editor.
+- El Toolkit gestiona aplicaciones en el espacio de usuario y no necesita root para estas operaciones.
 
-## 10. Compatibilidad y seguridad
+## 12. Descarga, soporte y documentación
+- Web: https://toolkit.javigallego.es/
+- Releases: https://github.com/Montejaque/punto-vuela-linux-toolkit/releases
+- Guía interactiva: https://toolkit.javigallego.es/guia.html
+- Privacidad: https://toolkit.javigallego.es/privacy.html
+- Condiciones: https://toolkit.javigallego.es/terms.html
 
-- Ubuntu 20.04 utiliza glibc 2.31. Una AppImage que requiere una glibc posterior puede no ejecutarse.
-- Los requisitos glibc no garantizan compatibilidad completa: pueden existir dependencias de FUSE, drivers, bibliotecas y otros componentes.
-- Descarga software desde fuentes fiables. La validación ELF no es un antivirus.
-- AppImageUpdate solo puede comprobar/actualizar aplicaciones que incorporen metadatos compatibles.
-- La aplicación no ejecuta instalaciones privilegiadas del sistema. No necesita root para las funciones de gestión de AppImages en el espacio del usuario.
-
-## 11. Contacto
-
-**Francisco Javier Gallego Orellana** · Puntos Vuela Montejaque
-
-- [montejaque@puntosvuela.es](mailto:montejaque@puntosvuela.es)
-- [WhatsApp +34 633 402 959](https://wa.me/34633402959)
-
----
-
-*Puntos Vuela Toolkit · Guía de uso*
+**Contacto:** montejaque@puntosvuela.es · [WhatsApp 633 402 959](https://wa.me/34633402959)
