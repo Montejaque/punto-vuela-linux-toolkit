@@ -40,10 +40,18 @@ jobs:
           npm install --no-save playwright
           npx playwright install chromium
           npx vite --host 127.0.0.1 > /tmp/toolkit-vite.log 2>&1 &
-          for i in $(seq 1 60); do
-            if curl -fsS http://127.0.0.1:5173/ >/dev/null; then break; fi
-            sleep 2
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5173/ >/dev/null; then
+              echo "Vite is ready at http://127.0.0.1:5173"
+              break
+            fi
+            sleep 1
           done
+          if ! curl -fsS http://127.0.0.1:5173/ >/dev/null; then
+            echo "::warning::Vite did not become ready. Dumping startup log:"
+            cat /tmp/toolkit-vite.log || true
+            exit 1
+          fi
           node ../docs-site/capture-screenshots.mjs
       - name: Prepare static Pages site
         run: |
