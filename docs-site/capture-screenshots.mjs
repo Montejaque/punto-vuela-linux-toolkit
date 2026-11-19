@@ -3,14 +3,14 @@ import { mkdir } from "node:fs/promises";
 const base="http://127.0.0.1:5173";
 await mkdir("docs-site/screenshots",{recursive:true});
 const browser=await chromium.launch({headless:true});
-const page=await browser.newPage({viewport:{width:1440,height:1024},deviceScaleFactor:1});
+const page=await browser.newPage({viewport:{width:1440,height:950},deviceScaleFactor:1});
 await page.addInitScript(()=>{
  const catalog=[
-  {name:"LibreOffice",description:"Suite of office tools for documents, spreadsheets and presentations.",category:"Oficina",categories:["Oficina"],author:"The Document Foundation",license:"MPL-2.0",glibc:"2.31",compatibleUbuntu20:true,compatibility:"Ubuntu 20.04 o posterior (referencia declarada)",iconUrl:"",version:"24.2",repository:"https://github.com/LibreOffice"},
+  {name:"LibreOffice",description:"Suite de oficina para documentos, hojas de cálculo y presentaciones.",category:"Oficina",categories:["Oficina"],author:"The Document Foundation",license:"MPL-2.0",glibc:"2.31",compatibleUbuntu20:true,compatibility:"Ubuntu 20.04 o posterior (referencia declarada)",iconUrl:"",version:"24.2",repository:"https://github.com/LibreOffice"},
   {name:"GIMP",description:"Editor de imágenes libre para retoque, composición y creación.",category:"Diseño",categories:["Diseño"],author:"GIMP Team",license:"GPL-3.0",glibc:"2.31",compatibleUbuntu20:true,compatibility:"Compatibilidad declarada por el catálogo",iconUrl:"",version:"3.0",repository:"https://www.gimp.org"},
   {name:"Inkscape",description:"Editor vectorial de código abierto.",category:"Diseño",categories:["Diseño"],author:"Inkscape Project",license:"GPL-3.0",glibc:"2.31",compatibleUbuntu20:true,compatibility:"Compatibilidad declarada por el catálogo",iconUrl:"",version:"1.4",repository:"https://inkscape.org"}
  ];
- const tool=[{name:"Punto Vuela Toolkit",description:"Centro de aplicaciones y recursos Linux de Punto Vuela.",category:"Punto Vuela",author:"Francisco Javier Gallego Orellana",license:"MIT",compatibility:"Linux x86_64",version:"0.4.1",iconUrl:"",repository:"https://github.com/Montejaque/punto-vuela-linux-toolkit",repositoryUrl:"https://github.com/Montejaque/punto-vuela-linux-toolkit"}];
+ const tool=[{name:"Puntos Vuela Toolkit",description:"Centro de aplicaciones y recursos Linux de Punto Vuela.",category:"Punto Vuela",author:"Francisco Javier Gallego Orellana",license:"MIT",compatibility:"Linux x86_64",version:"0.4.1",iconUrl:"",repository:"https://github.com/Montejaque/punto-vuela-linux-toolkit",repositoryUrl:"https://github.com/Montejaque/punto-vuela-linux-toolkit"}];
  const centres=[{name:"Centro Punto Vuela de Montejaque",slug:"montejaque",municipality:"Montejaque",province:"Málaga",details:"Centro demo para capturas",url:"https://puntosvuela.es"}];
  window.puntoVuela={version:"0.4.1",invoke:async(method,args={})=>{
   if(method==="catalog.search") return catalog;
@@ -25,28 +25,19 @@ await page.addInitScript(()=>{
   return {message:"Operación de demostración"};
  }};
 });
-await page.goto(base,{waitUntil:"networkidle"});
-await page.screenshot({path:"docs-site/screenshots/01-inicio.png",fullPage:true});
-async function clickNav(label){await page.getByRole("button",{name:label,exact:true}).first().click();await page.waitForTimeout(400);}
-await clickNav("Catálogo AppImage");
-await page.screenshot({path:"docs-site/screenshots/02-catalogo.png",fullPage:true});
-await page.getByRole("button",{name:/Ver detalles/}).first().click();
-await page.waitForTimeout(200);
-await page.screenshot({path:"docs-site/screenshots/03-ficha-app.png",fullPage:true});
-await page.keyboard.press("Escape"); await page.waitForTimeout(200);
-await clickNav("Mis aplicaciones");
-await page.screenshot({path:"docs-site/screenshots/04-mis-aplicaciones.png",fullPage:true});
-await clickNav("Herramientas Punto Vuela");
-await page.screenshot({path:"docs-site/screenshots/05-herramientas.png",fullPage:true});
-await clickNav("Banco de recursos");
-await page.screenshot({path:"docs-site/screenshots/06-recursos.png",fullPage:true});
-await clickNav("FAQs de software");
-await page.screenshot({path:"docs-site/screenshots/07-faqs.png",fullPage:true});
-await clickNav("Contacto y propuestas");
-await page.getByLabel("Centro Punto Vuela *").selectOption("montejaque").catch(()=>{});
-await page.waitForTimeout(500);
-await page.screenshot({path:"docs-site/screenshots/08-contacto.png",fullPage:true});
-await clickNav("Ayuda y documentación");
-await page.screenshot({path:"docs-site/screenshots/09-ayuda.png",fullPage:true});
+await page.goto(base,{waitUntil:"domcontentloaded"});
+await page.waitForTimeout(1500);
+async function shot(file){await page.waitForTimeout(500);await page.screenshot({path:"docs-site/screenshots/"+file,fullPage:true});}
+async function go(label){const btn=page.getByRole("button",{name:label,exact:true}).first();await btn.waitFor({state:"visible",timeout:15000});await btn.evaluate(el=>el.click());await page.waitForTimeout(800);}
+async function closeModal(){const close=page.getByRole("button",{name:"Cerrar",exact:true});if(await close.count()) await close.first().evaluate(el=>el.click());await page.waitForTimeout(250);}
+await shot("01-inicio.png");
+await go("Catálogo AppImage");await shot("02-catalogo.png");
+const details=page.getByRole("button",{name:/Ver detalles/});if(await details.count()){await details.first().evaluate(el=>el.click());await page.waitForTimeout(350);await shot("03-ficha-app.png");await closeModal();}else await shot("03-ficha-app.png");
+await go("Mis aplicaciones");await shot("04-mis-aplicaciones.png");
+await go("Herramientas Punto Vuela");await shot("05-herramientas.png");
+await go("Banco de recursos");await shot("06-recursos.png");
+await go("FAQs de software");await shot("07-faqs.png");
+await go("Contacto y propuestas");await shot("08-contacto.png");
+await go("Ayuda y documentación");await shot("09-ayuda.png");
 await browser.close();
-console.log("Captured 9 UI screenshots with demo data.");
+console.log("Capturas de UI generadas: 9");
