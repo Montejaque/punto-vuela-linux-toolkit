@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { api } from "./services";
 
 const isDevelopment = !app.isPackaged;
-const allowed = new Set(["catalog.search","tools.list","apps.list","apps.folder","apps.install","tools.install","apps.launch","apps.permissions","apps.remove","apps.checkUpdate","apps.update","tools.openExternal","mail.send","centres.list","centres.details","app.info"]);
+const allowed = new Set(["catalog.search","tools.list","apps.list","apps.folder","apps.install","tools.install","apps.launch","apps.permissions","apps.remove","apps.checkUpdate","apps.update","tools.openExternal","mail.send","mail.health","centres.list,"centres.details","app.info"]);
 
 function createWindow(): void {
   const window = new BrowserWindow({
