@@ -14,16 +14,18 @@ main section{padding:50px 0;border-bottom:1px solid var(--line);scroll-margin-to
 @media(max-width:650px){.hero{padding:36px 0 30px}main section{padding:36px 0}.nav a{font-size:.84rem;padding:8px 10px}.shot{border-radius:9px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
-<style id="shared-site-menu">
-header nav.site-menu{display:flex!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:50!important;flex-direction:row!important;flex-wrap:wrap!important;align-items:center!important;gap:8px!important;width:100%!important;margin:14px 0 0!important;padding:0!important;overflow:visible!important;background:transparent!important}
-header nav.site-menu a{display:inline-flex!important;align-items:center!important;visibility:visible!important;opacity:1!important;white-space:nowrap!important;text-decoration:none!important;border:1px solid #dedbd2!important;border-radius:9px!important;padding:9px 13px!important;font-size:.9rem!important;font-weight:650!important;background:#fff!important;color:#202124!important}
-header nav.site-menu a:hover,header nav.site-menu a:focus-visible{background:#fff5c4!important;border-color:#e0c849!important}
-header nav.site-menu a.menu-home{background:#f3d54e!important;border-color:#f3d54e!important;color:#17191c!important}
-@media(max-width:600px){header nav.site-menu{gap:6px!important;margin-top:12px!important}header nav.site-menu a{padding:8px 10px!important;font-size:.84rem!important}}
-</style></head>
+<style id="home-menu-identical">
+.header-row{display:flex;align-items:center;justify-content:space-between;gap:20px}.main-nav{display:flex;align-items:center;gap:20px}.main-nav a{text-decoration:none;font-weight:650;font-size:.93rem;white-space:nowrap}.main-nav a:hover,.main-nav a:focus-visible{color:#806800;text-decoration:underline;text-underline-offset:4px}.nav-toggle{display:none;border:1px solid #d4d1c8;background:#fff;border-radius:10px;width:44px;height:44px;padding:9px;cursor:pointer;color:#202124}.nav-toggle span{display:block;width:22px;height:2px;background:currentColor;margin:5px auto;border-radius:2px;transition:transform .2s,opacity .2s}.nav-toggle[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}.nav-toggle[aria-expanded="true"] span:nth-child(2){opacity:0}.nav-toggle[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}@media(max-width:760px){header{padding:12px 0}.header-row{flex-wrap:wrap}.nav-toggle{display:block}.main-nav{display:none;width:100%;flex-direction:column;align-items:stretch;gap:0;padding:8px 0 4px}.main-nav.is-open{display:flex}.main-nav a{padding:12px 10px;border-top:1px solid var(--line)}}
+
+</style>
+</head>
 <body>
 <div class="topline"></div>
-<header><div class="wrap"><a class="brand" href="/"><span class="mark">V</span><span>Puntos Vuela Toolkit</span></a><nav class="site-menu" aria-label="Menú principal"><a class="menu-home" href="/">Inicio</a><a href="/guia.html">Guía de uso</a><a href="/privacy.html">Privacidad</a><a href="/terms.html">Condiciones</a><a href="https://github.com/Montejaque/punto-vuela-linux-toolkit">GitHub</a></nav></div></header>
+<header><div class="wrap header-row" id="top">
+<a class="brand" href="/" aria-label="Puntos Vuela Toolkit, inicio"><span class="mark" aria-hidden="true">V</span><span>Puntos Vuela Toolkit</span></a>
+<button class="nav-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="mainNav"><span></span><span></span><span></span></button>
+<nav class="main-nav" id="mainNav" aria-label="Navegación principal">
+<a href="/">Inicio</a><a href="/#features">Qué ofrece</a><a href="/#audience">Destinatarios</a><a href="/guia.html">Guía de uso</a><a href="/privacy.html">Privacidad</a><a href="/terms.html">Condiciones</a><a href="https://github.com/Montejaque/punto-vuela-linux-toolkit" target="_blank" rel="noopener">GitHub</a></nav></div></header>
 <div class="hero"><div class="wrap">
 <nav class="nav hero-nav" aria-label="Menú de la guía"><a class="home" href="/">← Web principal</a><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="#ficha">Ficha</a><a href="#mis-apps">Mis aplicaciones</a><a href="#herramientas">Herramientas</a><a href="#recursos">Recursos</a><a href="#faqs">FAQs</a><a href="#contacto">Contacto</a><a href="#ayuda">Ayuda</a><a href="#seguridad">Seguridad</a></nav>
 <span class="eyebrow">Guía de uso · Edición Electron</span><h1>Guía práctica de Puntos Vuela Toolkit</h1><p>Recorre las secciones de la aplicación y consulta cómo explorar, instalar y administrar AppImages, acceder a recursos y enviar propuestas.</p></div></div>
@@ -41,4 +43,5 @@ header nav.site-menu a.menu-home{background:#f3d54e!important;border-color:#f3d5
 <section id="contacto-final"><div class="wrap"><h2>Contacto</h2><div class="contactbox"><strong>Francisco Javier Gallego Orellana · Puntos Vuela Montejaque</strong><p><a href="mailto:montejaque@puntosvuela.es">montejaque@puntosvuela.es</a></p><p><a href="https://wa.me/34633402959">WhatsApp +34 633 402 959</a></p></div><a class="back" href="/">Volver a la web principal</a></div></section>
 </main>
 <footer><div class="wrap foot"><a href="/privacy.html">Privacidad</a><a href="/terms.html">Condiciones de uso</a><a href="https://github.com/Montejaque/punto-vuela-linux-toolkit">Repositorio GitHub</a><span>Puntos Vuela Toolkit · Guía de uso</span></div></footer>
+<script>(()=>{const b=document.querySelector('.nav-toggle'),n=document.getElementById('mainNav');if(!b||!n)return;const close=()=>{b.setAttribute('aria-expanded','false');b.setAttribute('aria-label','Abrir menú');n.classList.remove('is-open')};b.addEventListener('click',()=>{const open=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',String(!open));b.setAttribute('aria-label',open?'Abrir menú':'Cerrar menú');n.classList.toggle('is-open',!open)});n.querySelectorAll('a').forEach(a=>a.addEventListener('click',close));document.addEventListener('keydown',e=>{if(e.key==='Escape')close()})})();</script>
 </body></html>
