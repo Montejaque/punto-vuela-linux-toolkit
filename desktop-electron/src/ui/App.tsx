@@ -31,7 +31,8 @@ export default function App(){
  const [centres,setCentres]=useState<Centre[]>([]),[centreQuery,setCentreQuery]=useState(""),[centreLoading,setCentreLoading]=useState(false);
  const [loading,setLoading]=useState(false),[message,setMessage]=useState(""),[error,setError]=useState(false),[busy,setBusy]=useState(""),[updates,setUpdates]=useState<Record<string,boolean>>({});
  const [selectedItem,setSelectedItem]=useState<Item|null>(null),[previewOpen,setPreviewOpen]=useState(false),[previewChannel,setPreviewChannel]=useState<"email"|"whatsapp">("email"),[previewText,setPreviewText]=useState("");const [previewFeedback,setPreviewFeedback]=useState("");
- const [turnstileToken,setTurnstileToken]=useState(""),[turnstileStatus,setTurnstileStatus]=useState("Pulsa el botón para abrir la verificación de seguridad.");\n const [mailHealthText,setMailHealthText]=useState("Comprobando configuración del correo…");
+ const [turnstileToken,setTurnstileToken]=useState(""),[turnstileStatus,setTurnstileStatus]=useState("Pulsa el botón para abrir la verificación de seguridad.");
+ const [mailHealthText,setMailHealthText]=useState("Comprobando configuración del correo…");
  const [legalModal,setLegalModal]=useState<keyof typeof legalContent|null>(null);
  const [helpViewer,setHelpViewer]=useState<{title:string;url:string;content:string;loading:boolean;error:string}|null>(null);
  const showHelpViewer=(title:string,url:string)=>{const content=url.includes("GUIA-DE-AYUDA")?helpGuide:url.includes("README")?projectReadme:url.includes("privacy")?privacyDocument:termsDocument;setHelpViewer({title,url,content,loading:false,error:""});};
