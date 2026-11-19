@@ -361,3 +361,21 @@ h1,h2,h3 { font-family: "Space Grotesk","DM Sans",sans-serif; }
 .turnstile-open-button{display:inline-flex;align-items:center;gap:.6rem;border:1px solid var(--line);border-radius:.7rem;background:var(--panel-raised,#27323e);color:var(--text);padding:.72rem 1rem;font-size:.82rem;font-weight:700;cursor:pointer}
 .turnstile-open-button:hover{border-color:var(--yellow);background:var(--panel)}
 .turnstile-open-button:disabled{opacity:.75;cursor:default}
+
+/* Envío de correo: confirmación centrada y explícita */
+.mail-result-backdrop{z-index:1200}
+.mail-result-modal{width:min(100%,30rem);padding:2rem;border:1px solid var(--line);border-radius:1.4rem;background:var(--panel);color:var(--text);box-shadow:0 2rem 6rem rgba(0,0,0,.45);text-align:center;animation:modal-enter .24s cubic-bezier(.2,.75,.25,1) both}
+.mail-result-icon{width:5rem;height:5rem;margin:0 auto 1rem;border-radius:50%;display:grid;place-items:center;color:#fff}
+.mail-result-modal.success .mail-result-icon{background:#16a34a}
+.mail-result-modal.failure .mail-result-icon{background:#dc2626}
+.mail-result-modal.success{border-color:rgba(22,163,74,.45)}
+.mail-result-modal.failure{border-color:rgba(220,38,38,.45)}
+.mail-result-modal h2{margin:.3rem 0 .75rem;font-size:1.35rem;line-height:1.25}
+.mail-result-modal.success h2{color:#22c55e}.mail-result-modal.failure h2{color:#ef4444}
+.mail-result-modal p{margin:0;color:var(--muted);line-height:1.6;overflow-wrap:anywhere}
+.mail-result-actions{display:flex;justify-content:center;gap:.7rem;margin-top:1.5rem;flex-wrap:wrap}
+.mail-result-modal.success .primary-button{background:#16a34a;color:#fff}
+.mail-result-modal.failure .primary-button{background:#dc2626;color:#fff}
+.mail-result-modal.failure .secondary-button{background:#374151;color:#fff}
+.light .mail-result-modal{background:#fff;color:#17202b}
+@media(max-width:36rem){.mail-result-modal{padding:1.4rem}.mail-result-actions button{flex:1}}
