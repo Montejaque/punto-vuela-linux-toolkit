@@ -33,7 +33,7 @@ await page.screenshot({path:"docs-site/screenshots/02-catalogo.png",fullPage:tru
 await page.getByRole("button",{name:/Ver detalles/}).first().click();
 await page.waitForTimeout(200);
 await page.screenshot({path:"docs-site/screenshots/03-ficha-app.png",fullPage:true});
-await page.getByRole("button",{name:"Cerrar"}).first().click();
+await page.keyboard.press("Escape"); await page.waitForTimeout(200);
 await clickNav("Mis aplicaciones");
 await page.screenshot({path:"docs-site/screenshots/04-mis-aplicaciones.png",fullPage:true});
 await clickNav("Herramientas Punto Vuela");
