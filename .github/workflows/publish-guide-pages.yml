@@ -60,6 +60,7 @@ jobs:
           cp desktop-electron/public/assets/logo_toolkit.svg _site/logo_toolkit.svg
           sed -i 's#../desktop-electron/public/assets/logo_toolkit.svg#logo_toolkit.svg#' _site/index.html
           cp docs/GUIA-DE-AYUDA.md _site/GUIA-DE-AYUDA.md
+          cp guia.html _site/guia.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
