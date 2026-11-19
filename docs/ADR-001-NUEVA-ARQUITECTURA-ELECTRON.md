@@ -1,7 +1,8 @@
 # ADR-001: Nueva interfaz de escritorio con Electron
 
-- Estado: migración funcional en curso; pendiente validación final y publicación
-- Fecha: 2026-11-16
+- Estado: implementación Electron activa; validación de publicación y pruebas manuales pendientes
+- Fecha de actualización: 2026-11-19
+- Fecha de decisión original: 2026-11-16
 - Rama: `rewrite/electron-desktop`
 - Versiones anteriores: se conservan sin modificar (`pruebas-80` y anteriores)
 
@@ -57,7 +58,7 @@ Evaluar **Electron + React + TypeScript + Vite** como nueva interfaz, con estas 
 - **Compatibilidad glibc**: compilar en entorno con glibc 2.31 o más antiguo y ejecutar prueba real en Ubuntu 20.04.
 - **Correo**: no simular éxito; requiere despliegue del Worker y prueba real con cuenta autorizada.
 
-## Estado de implementación (16-11-2026)
+## Estado de implementación (19-11-2026)
 
 La rama Electron ya incorpora:
 - Proceso principal con IPC de lista permitida; el renderer no tiene acceso Node directo.
@@ -68,12 +69,11 @@ La rama Electron ya incorpora:
 - Formulario de propuestas con campos obligatorios, motivo, observaciones y aceptaciones legales; envío a Cloudflare Worker y confirmación basada en respuesta HTTP/Gmail del servicio.
 - Pantallas de biblioteca, herramientas, directorio, contacto y ayuda.
 
-Pendiente antes de publicar:
-- Confirmar el resultado del workflow de AppImage sobre glibc 2.31, incluido el smoke test del binario empaquetado; completar prueba manual en Ubuntu 20.04 GNOME.
-- Ejecutar pruebas manuales en un equipo Ubuntu 20.04 con GNOME, especialmente doble clic, integración del menú y actualizaciones AppImageUpdate.
-- Desplegar/verificar Cloudflare Worker, secretos OAuth de Google y binding KV RATE_LIMIT; enviar una propuesta real de prueba y confirmar recepción.
-- Auditar contraste, navegación por teclado y lector de pantalla sobre el paquete final.
-- Revisar y fijar dependencias npm mediante lockfile y resolver avisos relevantes de auditoría.
-- Actualizar documentación y publicar una nueva Release sin reemplazar las anteriores.
+Pendiente de validación:
+- Prueba manual de la AppImage en Ubuntu 20.04 GNOME: arranque, integración de escritorio, navegación y cierre.
+- Comprobar compatibilidad de glibc 2.31 y dependencias del artefacto final.
+- Prueba real del formulario y del servicio remoto de correo, incluyendo Turnstile y confirmación de entrega.
+- Revisión de accesibilidad: teclado, foco, contraste y lector de pantalla.
+- Revisión de dependencias y avisos de seguridad relevantes.
 
-La implementación no debe considerarse Release hasta completar las validaciones anteriores.
+La guía, README y documentación integrada se han actualizado para describir la edición Electron. El estado de los workflows y de la publicación debe verificarse en Actions antes de dar por cerrada la validación. La implementación no debe considerarse Release estable hasta completar las pruebas anteriores.
