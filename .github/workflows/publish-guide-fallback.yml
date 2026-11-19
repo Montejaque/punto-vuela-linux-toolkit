@@ -4,6 +4,9 @@ on:
   push:
     branches: ["rewrite/electron-desktop"]
     paths:
+      - "index.html"
+      - "privacy.html"
+      - "terms.html"
       - "docs-site/**"
       - "desktop-electron/src/**"
       - "desktop-electron/public/**"
@@ -57,6 +60,9 @@ jobs:
         run: |
           mkdir -p _site/screenshots
           cp docs-site/index.html _site/index.html
+          cp index.html _site/original-index.html
+          cp privacy.html _site/privacy.html
+          cp terms.html _site/terms.html
           cp desktop-electron/public/assets/logo_toolkit.svg _site/logo_toolkit.svg
           cp docs/GUIA-DE-AYUDA.md _site/GUIA-DE-AYUDA.md
           cp -f docs-site/screenshots/*.png _site/screenshots/ 2>/dev/null || true
