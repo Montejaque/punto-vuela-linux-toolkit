@@ -103,7 +103,7 @@ export default {
       if (!sent.ok) {
         const detail = await sent.text();
         console.error("Brevo API error", sent.status, detail.slice(0, 500));
-        const safeDetail=detail.replace(/[\\r\\n]+/g," ").slice(0,220);
+        const safeDetail=detail.replace(/[\r\n]+/g," ").slice(0,220);
         return json({ok:false,message:"Brevo ha rechazado el envío (HTTP "+sent.status+"). "+safeDetail},502);
       }
       return json({ok: true, message: "Solicitud enviada correctamente a " + recipient + "."});
