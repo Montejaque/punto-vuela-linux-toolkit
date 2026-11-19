@@ -60,6 +60,7 @@ jobs:
         run: |
           mkdir -p _site/screenshots
           cp docs-site/index.html _site/index.html
+          cp guia.html _site/guia.html
           cp index.html _site/original-index.html
           cp privacy.html _site/privacy.html
           cp terms.html _site/terms.html
@@ -79,7 +80,7 @@ jobs:
           <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720"><rect width="1280" height="720" fill="#f2f4f6"/><rect x="0" y="0" width="1280" height="92" fill="#18212b"/><text x="56" y="58" font-family="Arial,sans-serif" font-size="30" fill="#f3d54e">Puntos Vuela Toolkit</text><rect x="70" y="150" width="1140" height="500" rx="24" fill="#fff" stroke="#dce2e8"/><text x="640" y="340" text-anchor="middle" font-family="Arial,sans-serif" font-size="44" fill="#27384b">${label}</text><text x="640" y="400" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" fill="#667282">Captura no disponible en esta publicación</text></svg>
           EOF
               # Redirect this guide section's image to the generated SVG fallback.
-              sed -i "s#screenshots/${file}.png#screenshots/${file}.svg#g" _site/index.html
+              sed -i "s#screenshots/${file}.png#screenshots/${file}.svg#g" _site/index.html _site/guia.html
             fi
           done
       - uses: actions/configure-pages@v5
