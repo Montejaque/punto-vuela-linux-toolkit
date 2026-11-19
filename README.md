@@ -1,99 +1,69 @@
 # Puntos Vuela Toolkit
 
-**Puntos Vuela Toolkit** es una aplicación de escritorio para Linux que reúne un catálogo comunitario de AppImages, una biblioteca local para gestionar aplicaciones, herramientas del ecosistema Punto Vuela y recursos de consulta.
+**Puntos Vuela Toolkit** es una aplicación de escritorio para Linux que reúne herramientas y recursos para descubrir, descargar, organizar, actualizar y utilizar aplicaciones AppImage desde un único lugar.
 
-**Responsable del proyecto:** Francisco Javier Gallego Orellana · Puntos Vuela Montejaque.
+## Información de la aplicación
 
-## Descarga y documentación
-
-- 🌐 **Web del proyecto:** https://toolkit.javigallego.es/
-- 📘 **Guía interactiva con capturas:** https://toolkit.javigallego.es/guia.html
-- 🔐 **Privacidad:** https://toolkit.javigallego.es/privacy.html
-- 📄 **Términos y condiciones:** https://toolkit.javigallego.es/terms.html
-- 💻 **Código fuente y Releases:** https://github.com/Montejaque/punto-vuela-linux-toolkit
-- 📦 **Releases:** https://github.com/Montejaque/punto-vuela-linux-toolkit/releases
+- **Web oficial:** https://toolkit.javigallego.es/
+- **Guía de uso:** https://toolkit.javigallego.es/guia.html
+- **Privacidad:** https://toolkit.javigallego.es/privacy.html
+- **Términos y condiciones:** https://toolkit.javigallego.es/terms.html
+- **Descargas:** https://github.com/Montejaque/punto-vuela-linux-toolkit/releases
 
 ## Funcionalidades
 
-### Catálogo AppImage
-- Catálogo Community con búsqueda por nombre, descripción y autor.
-- Filtrado por categorías y consulta de fichas de aplicaciones.
-- Metadatos como versión, autor, licencia, icono y requisitos de compatibilidad cuando están disponibles.
-- Descarga desde las fuentes del proyecto, cuando existe un recurso compatible identificado.
+### Catálogo de aplicaciones
+- Explora aplicaciones AppImage disponibles en el catálogo comunitario.
+- Busca por nombre, descripción o autor.
+- Filtra por categorías y consulta fichas de cada aplicación.
+- Consulta información como versión, autor, licencia, icono y compatibilidad, cuando esos datos están disponibles.
+- Accede a las descargas de las aplicaciones desde sus fuentes originales.
 
-### Biblioteca local — Mis aplicaciones
-- Listado de AppImages gestionadas desde el perfil del usuario.
-- Abrir aplicaciones y reparar permisos de ejecución.
-- Comprobación de actualizaciones cuando la AppImage ofrece metadatos compatibles.
-- Actualización delegada a AppImageUpdate cuando está disponible.
-- Eliminación de archivos y gestión de lanzadores de escritorio.
+### Mis aplicaciones
+- Consulta las aplicaciones AppImage que tienes en tu equipo y que gestiona Toolkit.
+- Abre aplicaciones y corrige permisos de ejecución.
+- Comprueba si existen actualizaciones compatibles.
+- Actualiza aplicaciones cuando se dispone de los mecanismos necesarios.
+- Elimina aplicaciones y administra sus accesos directos.
 
 ### Herramientas Punto Vuela
-Descubrimiento e instalación de AppImages publicadas en Releases de repositorios públicos del ecosistema Punto Vuela/Montejaque, cuando se encuentra un paquete compatible.
+Encuentra aplicaciones y herramientas publicadas en repositorios públicos del ecosistema Punto Vuela y Montejaque, cuando hay paquetes compatibles disponibles.
 
 ### Recursos y ayuda
-- Banco de recursos enlazado con portales originales.
-- FAQs de software y documentación de referencia.
-- Guía integrada en la aplicación y guía web con capturas de pantalla.
+- Accede a recursos y contenidos de consulta desde sus portales originales.
+- Consulta preguntas frecuentes y documentación de apoyo.
+- Utiliza la guía integrada y la guía web ilustrada.
 
 ### Contacto y propuestas
-Formulario para seleccionar centro, revisar los datos y preparar propuestas de aplicaciones. Incluye información legal, verificación anti-spam de Cloudflare Turnstile y envío mediante el servicio remoto de correo. También permite abrir una conversación de WhatsApp con el texto de la propuesta preparado.
+Envía propuestas de aplicaciones, selecciona el centro y revisa la información antes de enviarla. También puedes contactar por WhatsApp con un mensaje preparado.
 
 ### Personalización
 - Tema claro, oscuro o automático.
-- Interfaz responsive con navegación lateral.
-- Gestión de aplicaciones en el espacio de usuario, sin operaciones privilegiadas.
+- Navegación lateral y diseño adaptable.
+- Gestión de aplicaciones desde tu espacio de usuario.
 
 ## Compatibilidad
 
-- Linux x86_64.
-- Objetivo de compatibilidad: Ubuntu 20.04 y posteriores.
-- La compatibilidad real de cada AppImage depende de sus requisitos: glibc, FUSE, bibliotecas, controladores y otras dependencias del sistema.
-- No todas las AppImages del catálogo tienen instalador o actualización compatible.
+- Sistemas Linux de 64 bits (x86_64).
+- Compatibilidad objetivo: Ubuntu 20.04 y versiones posteriores.
+- La compatibilidad de cada AppImage depende de los requisitos de la propia aplicación y del sistema.
+- Algunas aplicaciones pueden no disponer de opciones compatibles de instalación, actualización o gestión.
 
-## Instalación y uso
+## Instalación
 
-Descarga la AppImage desde la sección **Releases** del repositorio, guarda el archivo, dale permiso de ejecución y ábrelo. No requiere instalación de paquetes del sistema ni permisos de administrador para las operaciones de gestión local.
+1. Descarga la AppImage desde la sección [Releases](https://github.com/Montejaque/punto-vuela-linux-toolkit/releases).
+2. Guarda el archivo en tu equipo y habilita el permiso de ejecución.
+3. Abre la aplicación.
 
-Consulta la [guía de uso](https://toolkit.javigallego.es/guia.html) para recorrer las secciones de la aplicación.
+No necesitas instalar paquetes del sistema ni disponer de permisos de administrador para las funciones de gestión local.
 
-## Desarrollo
-
-Requisitos: Node.js/npm compatibles con Electron 43.
-
-```bash
-cd desktop-electron
-npm ci
-npm run dev
-```
-
-Comprobaciones y empaquetado:
-
-```bash
-npm run typecheck
-npm run build
-npm run dist:appimage
-```
-
-La aplicación de escritorio usa Electron, React, TypeScript y Vite. Las funciones locales se gestionan en el proceso principal de Electron y se exponen al renderer mediante una API IPC limitada.
-
-## Seguridad y limitaciones
-
-- El renderer no tiene acceso directo a Node.js; la comunicación con operaciones locales se realiza mediante IPC controlado.
-- Las descargas usan HTTPS y se realizan comprobaciones del tipo de archivo; estas comprobaciones **no sustituyen a un antivirus ni garantizan que el software sea seguro**.
-- Las actualizaciones AppImage dependen de metadatos compatibles del editor.
-- La aplicación no ejecuta instalaciones privilegiadas silenciosas.
-- La disponibilidad del envío de propuestas depende del servicio remoto y su configuración.
-
-## Tecnología
-
-Electron 43 · React 18 · TypeScript · Vite · Lucide React · electron-builder · Cloudflare Workers para el servicio de correo.
+Consulta la [guía de uso](https://toolkit.javigallego.es/guia.html) para conocer las secciones de la aplicación.
 
 ## Contacto
 
-- Correo: [montejaque@puntosvuela.es](mailto:montejaque@puntosvuela.es)
-- WhatsApp: [633 402 959](https://wa.me/34633402959)
+- **Correo:** montejaque@puntosvuela.es
+- **WhatsApp:** [633 402 959](https://wa.me/34633402959)
 
 ## Licencia
 
-Código bajo licencia MIT. Los logos, marcas y recursos de terceros mantienen sus derechos y licencias respectivas.
+Puntos Vuela Toolkit se distribuye bajo licencia MIT. Los logotipos, marcas y recursos de terceros mantienen sus derechos y licencias correspondientes.
