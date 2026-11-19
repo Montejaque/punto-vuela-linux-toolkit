@@ -37,9 +37,20 @@ async function verifyTurnstile(token, request, env) {
   const body = new URLSearchParams({secret:env.TURNSTILE_SECRET_KEY,response:token});
   const ip = request.headers.get("CF-Connecting-IP");
   if (ip) body.set("remoteip", ip);
-  const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body});
-  if (!response.ok) return {ok:false, reason:"verification-unavailable"};
+  console.log("turnstile_siteverify_request", JSON.stringify({event:"siteverify_request",timestamp:new Date().toISOString()}));
+  let response;
+  try {
+    response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body});
+  } catch (error) {
+    console.error("turnstile_siteverify_network_error", String(error?.message||error).slice(0,180));
+    return {ok:false, reason:"verification-unavailable"};
+  }
+  if (!response.ok) {
+    console.error("turnstile_siteverify_http_error", response.status);
+    return {ok:false, reason:"verification-unavailable"};
+  }
   const result = await response.json();
+  console.log("turnstile_siteverify_result", JSON.stringify({success:result.success===true,hostname:result.hostname||null,action:result.action||null,errorCodes:result["error-codes"]||[]}));
   return {ok:result.success === true, reason:result.success ? "" : "invalid-token"};
 }
 function esc(value) {
@@ -59,6 +70,9 @@ export default {
     }
     try {
       if (!env.RATE_LIMIT) return json({ok: false, message: "La protección antispam no está configurada."}, 503);
+      const data = await request.json();
+      const verification = await verifyTurnstile(data.turnstileToken, request, env);
+      if (!verification.ok) return json({ok:false,message:verification.reason==="missing-secret"?"La protección Turnstile no está configurada en el servidor.":"Completa de nuevo la verificación antispam."}, verification.reason==="missing-secret"?503:403);
       const ip = request.headers.get("CF-Connecting-IP") || "unknown";
       {
         const key = "mail:" + ip;
@@ -66,9 +80,6 @@ export default {
         if (current >= 5) return json({ok: false, message: "Se ha alcanzado el límite temporal de solicitudes. Inténtalo más tarde."}, 429);
         await env.RATE_LIMIT.put(key, String(current + 1), {expirationTtl: 3600});
       }
-      const data = await request.json();
-      const verification = await verifyTurnstile(data.turnstileToken, request, env);
-      if (!verification.ok) return json({ok:false,message:verification.reason==="missing-secret"?"La protección Turnstile no está configurada en el servidor.":"Completa de nuevo la verificación antispam."}, verification.reason==="missing-secret"?503:403);
       // Honeypot: silently accept bot submissions without forwarding email.
       if (String(data.website || "").trim()) return json({ok: true, message: "Solicitud recibida."});
       const required = ["center", "municipality", "province", "contact", "phone", "reply_email", "application", "purpose"];
