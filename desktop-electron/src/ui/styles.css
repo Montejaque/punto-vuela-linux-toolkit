@@ -379,3 +379,9 @@ h1,h2,h3 { font-family: "Space Grotesk","DM Sans",sans-serif; }
 .mail-result-modal.failure .secondary-button{background:#374151;color:#fff}
 .light .mail-result-modal{background:#fff;color:#17202b}
 @media(max-width:36rem){.mail-result-modal{padding:1.4rem}.mail-result-actions button{flex:1}}
+
+/* AppImage details: keep the application icon visible in the hero, alongside screenshots */
+.detail-cover{position:relative;isolation:isolate}
+.detail-cover .detail-screenshot{position:absolute;inset:0;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;object-fit:cover!important;border-radius:0!important;padding:0!important;background:transparent!important;opacity:.34;filter:blur(1px)!important;z-index:0}
+.detail-hero-icon{position:relative;z-index:2;width:8rem;height:8rem;display:grid;place-items:center;border-radius:1.8rem;background:#fff;box-shadow:0 1rem 2.5rem rgba(0,0,0,.3);overflow:hidden}
+.detail-hero-icon img{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;padding:.7rem!important;border-radius:0!important;object-fit:contain!important;filter:none!important}
