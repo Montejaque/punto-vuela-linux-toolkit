@@ -1,6 +1,6 @@
 {
   "name": "puntos-vuela-toolkit",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": true,
   "description": "Centro de aplicaciones AppImage y herramientas Punto Vuela para Linux",
   "main": "dist-electron/main.js",
@@ -10,7 +10,8 @@
     "start": "electron .",
     "dist:appimage": "npm run build && electron-builder --linux AppImage --x64 --publish never",
     "typecheck": "tsc --noEmit --pretty false && tsc -p electron/tsconfig.json --noEmit",
-    "test": "npm run typecheck"
+    "test": "npm run typecheck",
+    "release:appimage": "npm run build && electron-builder --linux AppImage --x64 --publish never"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
@@ -41,7 +42,9 @@
       "package.json"
     ],
     "linux": {
-      "target": ["AppImage"],
+      "target": [
+        "AppImage"
+      ],
       "category": "Utility",
       "artifactName": "Puntos_Vuela_Toolkit-Electron-${arch}.${ext}",
       "icon": "build/icon.png"
