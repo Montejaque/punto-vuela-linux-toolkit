@@ -48,6 +48,14 @@ jobs:
       - name: Typecheck and test
         working-directory: desktop-electron
         run: npm test
+      - name: Configure updater channel
+        working-directory: desktop-electron
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            printf '{"channel":"stable"}\n' > updater-channel.json
+          else
+            printf '{"channel":"test"}\n' > updater-channel.json
+          fi
       - name: Build
         working-directory: desktop-electron
         run: npm run build
