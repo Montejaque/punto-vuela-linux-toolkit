@@ -210,22 +210,23 @@ async function performUpdate(window:BrowserWindow,asset:any,checksumAsset:any,ve
   if(!image){await dialog.showMessageBox(window,{type:"warning",title:"Actualización no disponible",message:"Esta instalación no es una AppImage ejecutada directamente. Descarga la nueva versión desde GitHub Releases."});return;}
   const folder=dirname(image),tmp=image+".update-part",backup=image+".backup";
   let replaced = false;
+  let progressUI:{window:BrowserWindow;update:(percent:number,message:string)=>void;close:()=>void}|null=null;
   try{
     const checksumResponse=await fetch(checksumAsset.browser_download_url,{headers:{"User-Agent":"Puntos-Vuela-Toolkit-Updater"},signal:AbortSignal.timeout(30000)});
     if(!checksumResponse.ok)throw new Error("No se pudo obtener el archivo de sumas de verificación.");
     const checksums=await checksumResponse.text();
     const expected=checksums.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).map(line=>{const match=line.match(/^([a-f0-9]{64})\s+\*?(.+)$/i);return match?{hash:match[1],name:match[2].trim().replace(/^\.\//,"")}:null;}).find(entry=>entry&&entry.name===asset.name)?.hash;
     if(!expected||!/^[a-f0-9]{64}$/i.test(expected))throw new Error("No se encontró una suma SHA-256 válida para la descarga.");
-    const progress=showDownloadProgress(window);
-    progress.update(0,"Conectando con GitHub Releases…");
+    progressUI=showDownloadProgress(window);
+    progressUI.update(0,"Conectando con GitHub Releases…");
     const downloadResponse=await fetch(asset.browser_download_url,{headers:{"User-Agent":"Puntos-Vuela-Toolkit-Updater"},signal:AbortSignal.timeout(20*60*1000)});
     if(!downloadResponse.ok||!downloadResponse.body)throw new Error("No se pudo descargar la actualización.");
     const reader=downloadResponse.body.getReader(),chunks:Uint8Array[]=[];let received=0;const total=Number(downloadResponse.headers.get("content-length"))||Number(asset.size)||0;
-    while(true){const chunk=await reader.read();if(chunk.done)break;chunks.push(chunk.value);received+=chunk.value.length;progress.update(total>0?Math.min(92,received/total*92):0,total>0?"Descargando AppImage…":"Descargando AppImage… ("+Math.round(received/1024/1024)+" MB)");}
-    const data=Buffer.concat(chunks.map(chunk=>Buffer.from(chunk)));progress.update(94,"Verificando SHA-256…");
+    while(true){const chunk=await reader.read();if(chunk.done)break;chunks.push(chunk.value);received+=chunk.value.length;progressUI.update(total>0?Math.min(92,received/total*92):0,total>0?"Descargando AppImage…":"Descargando AppImage… ("+Math.round(received/1024/1024)+" MB)");}
+    const data=Buffer.concat(chunks.map(chunk=>Buffer.from(chunk)));progressUI.update(94,"Verificando SHA-256…");
     const actual=createHash("sha256").update(data).digest("hex");
     if(actual.toLowerCase()!==expected.toLowerCase())throw new Error("La verificación SHA-256 ha fallado. No se instalará el archivo.");
-    progress.update(96,"Checksum válido. Preparando instalación…");
+    progressUI.update(96,"Checksum válido. Preparando instalación…");
     await fs.writeFile(tmp,data,{mode:0o755});
     await fs.chmod(tmp,0o755);
     await fs.copyFile(image,backup);
@@ -233,11 +234,12 @@ async function performUpdate(window:BrowserWindow,asset:any,checksumAsset:any,ve
     await fs.writeFile(markerPath(),JSON.stringify({version,backup,installedAt:new Date().toISOString()}));
     await fs.rename(tmp,image);
     replaced = true;
-    progress.update(100,"Actualización instalada. Preparando reinicio…");
-    progress.close();
+    progressUI.update(100,"Actualización instalada. Preparando reinicio…");
+    progressUI.close();progressUI=null;
     const result=await showUpdateReadyModal(window,version);
     if(result==="restart"){spawn(image,[],{detached:true,stdio:"ignore",env:process.env}).unref();app.exit(0);}
   }catch(error:any){
+    progressUI?.close();progressUI=null;
     await fs.rm(tmp,{force:true}).catch(()=>{});
     await fs.rm(markerPath(),{force:true}).catch(()=>{});
     if (replaced && await fs.access(backup).then(()=>true).catch(()=>false)) { await fs.rename(backup,image).catch(()=>{}); }
