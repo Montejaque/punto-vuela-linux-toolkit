@@ -56,6 +56,33 @@ Puedes seleccionar tema claro, oscuro o automático. La navegación lateral se p
 - AppImageUpdate solo funciona con metadatos compatibles incorporados por el editor.
 - El Toolkit gestiona aplicaciones en el espacio de usuario y no necesita root para estas operaciones.
 
+## 11. Actualizador automático de la aplicación
+
+Toolkit comprueba periódicamente si hay una versión más reciente de la aplicación, tanto en el canal estable como en el canal de pruebas cuando existe una release descargable compatible.
+
+### Modal de actualización
+
+Cuando se detecta una versión, aparece un diálogo con la versión disponible y la versión instalada. El botón **Actualizar ahora** inicia la descarga y el proceso de actualización; **Más tarde** cierra el diálogo sin descartar la actualización.
+
+![Modal de actualización de Puntos Vuela Toolkit](../screenshots/10-actualizador-modal.png)
+
+### Banner persistente
+
+Si se pulsa **Más tarde** o se cierra el modal, la aplicación muestra un banner en la parte superior del área de trabajo. El banner informa de la versión detectada y permite pulsar **Actualizar ahora** para retomar el proceso. También se puede cerrar el aviso; el comprobador puede volver a mostrarlo si la actualización sigue pendiente.
+
+![Banner de actualización pendiente en Puntos Vuela Toolkit](../screenshots/11-actualizador-banner.png)
+
+### Proceso de actualización y recuperación
+
+1. Descarga el AppImage de la release compatible.
+2. Verifica la suma SHA-256 usando el archivo de checksums publicado.
+3. Conserva una copia de la AppImage actual antes de sustituirla.
+4. Sustituye el archivo y solicita reiniciar para usar la nueva versión.
+5. Si el inicio de la nueva versión falla antes de confirmarse, el mecanismo de recuperación puede restaurar la copia previa.
+
+**Recomendación:** mantén conexión a Internet durante la comprobación y descarga. No interrumpas el proceso de reemplazo del archivo.
+
+
 ## 12. Descarga, soporte y documentación
 - Web: https://toolkit.javigallego.es/
 - Releases: https://github.com/Montejaque/punto-vuela-linux-toolkit/releases
