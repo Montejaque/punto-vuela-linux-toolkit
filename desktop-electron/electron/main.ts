@@ -6,7 +6,7 @@ import { spawn } from "node:child_process";
 import { api } from "./services";
 
 const isDevelopment = !app.isPackaged;
-const allowed = new Set(["catalog.search","tools.list","apps.list","apps.folder","apps.install","tools.install","apps.launch","apps.permissions","apps.remove","apps.checkUpdate","apps.update","tools.openExternal","mail.send","mail.health","centres.list","centres.details","app.info","images.cache"]);
+const allowed = new Set(["catalog.search","tools.list","apps.list","apps.folder","apps.install","tools.install","apps.launch","apps.permissions","apps.remove","apps.checkUpdate","apps.update","tools.openExternal","mail.send","mail.health","centres.list","centres.details","app.info","images.cache","cache.init"]);
 const REPO = "Montejaque/punto-vuela-linux-toolkit";
 const UPDATE_BASE = "https://api.github.com/repos/" + REPO;
 const markerPath = () => join(app.getPath("userData"), "update-pending.json");
@@ -271,6 +271,7 @@ ipcMain.handle("pv:invoke", async (_event, method: string, args: unknown) => {
 app.whenReady().then(async () => {
   Menu.setApplicationMenu(null);
   await recoverPreviousVersion();
+  try { const cache=await api("cache.init",{}); console.info("[Punto Vuela Toolkit] Caché de imágenes preparada:",cache.path); } catch(error:any) { console.error("[Punto Vuela Toolkit] No se pudo crear la caché persistente de imágenes:",error); await dialog.showMessageBox({type:"warning",title:"Caché de imágenes",message:"No se pudo crear la carpeta de caché persistente de iconos.",detail:String(error?.message||error)}); }
   createWindow();
   app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
