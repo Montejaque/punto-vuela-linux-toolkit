@@ -75,38 +75,56 @@ async function desktopIntegrate(file:string,name?:string):Promise<string> {
   return target;
 }
 async function cachedImage(url:string):Promise<string>{
-  const target=new URL(url);
-  if(target.protocol!=="https:")throw new Error("Solo se permiten imágenes HTTPS.");
+  let target:URL;
+  try{target=new URL(url);}catch{console.error("[PV image-cache] URL inválida:",url);return "";}
+  if(target.protocol!=="https:"){console.error("[PV image-cache] Bloqueada URL no HTTPS:",target.href);return "";}
   const cacheKey=createHash("sha256").update(target.href).digest("hex");
   await fs.mkdir(IMAGE_CACHE,{recursive:true});
-  const file=path.join(IMAGE_CACHE,cacheKey+".img"), metaFile=file+".json", failureFile=file+".failed.json";
+  const metaFile=path.join(IMAGE_CACHE,cacheKey+".json"),failureFile=path.join(IMAGE_CACHE,cacheKey+".failed.json");
+  const extFor=(mime:string)=>({ "image/png":".png","image/jpeg":".jpg","image/webp":".webp","image/gif":".gif","image/svg+xml":".svg" } as Record<string,string>)[mime]||".image";
   const atomicWrite=async(targetFile:string,data:string|Buffer)=>{const tmp=targetFile+".tmp-"+randomUUID();await fs.writeFile(tmp,data);await fs.rename(tmp,targetFile);};
-  // Persistent positive cache: valid icons survive app restarts and offline use.
+  // Read metadata first so files have a real, user-recognizable image extension.
   try{
-    const bytes=await fs.readFile(file),meta=await fs.readFile(metaFile,"utf8").then(JSON.parse).catch(()=>null);
-    if(meta&&meta.source===target.href&&/^image\/(png|jpeg|webp|gif|svg\+xml)$/.test(meta.mime)&&bytes.length>0&&bytes.length<=8*1024*1024)
+    const meta=JSON.parse(await fs.readFile(metaFile,"utf8"));
+    const file=path.join(IMAGE_CACHE,cacheKey+extFor(meta.mime));
+    const bytes=await fs.readFile(file);
+    if(meta.source===target.href&&/^image\/(png|jpeg|webp|gif|svg\+xml)$/.test(meta.mime)&&bytes.length>0&&bytes.length<=8*1024*1024)
       return "data:"+meta.mime+";base64,"+bytes.toString("base64");
-  }catch{}
-  // Persistent negative cache avoids repeatedly hitting known-broken URLs. Retry after 12h.
+  }catch{
+    // Migrate cache entries from older builds which stored files as .img.
+    try{
+      const legacy=path.join(IMAGE_CACHE,cacheKey+".img"),legacyBytes=await fs.readFile(legacy),meta=JSON.parse(await fs.readFile(metaFile,"utf8"));
+      if(meta.source===target.href&&legacyBytes.length>0){const newFile=path.join(IMAGE_CACHE,cacheKey+extFor(meta.mime));await atomicWrite(newFile,legacyBytes);await fs.rm(legacy,{force:true});return "data:"+meta.mime+";base64,"+legacyBytes.toString("base64");}
+    }catch{}
+  }
   try{
     const failed=JSON.parse(await fs.readFile(failureFile,"utf8"));
-    if(failed.source===target.href&&Number(failed.failedAt)>0&&Date.now()-Number(failed.failedAt)<12*3600*1000)return "";
+    if(failed.source===target.href&&Number(failed.failedAt)>0&&Date.now()-Number(failed.failedAt)<12*3600*1000){
+      console.warn("[PV image-cache] URL en caché de error (se reintentará tras 12 h):",target.href,failed.reason||"");
+      return "";
+    }
   }catch{}
   try{
+    console.info("[PV image-cache] Descargando:",target.href);
     const response=await remoteFetch(target.href,{headers:{"user-agent":UA,"accept":"image/avif,image/webp,image/png,image/jpeg,image/svg+xml,*/*"},redirect:"follow",signal:AbortSignal.timeout(30000)});
-    if(!response.ok||!response.url.startsWith("https://")||!response.body)throw new Error("No se pudo recuperar la imagen.");
+    if(!response.ok)throw new Error("HTTP "+response.status+" "+response.statusText);
+    if(!response.url.startsWith("https://")||!response.body)throw new Error("La URL final no es HTTPS o no hay contenido.");
     const mime=(response.headers.get("content-type")||"").split(";")[0].trim().toLowerCase();
-    if(!/^image\/(png|jpeg|webp|gif|svg\+xml)$/.test(mime))throw new Error("El servidor no devolvió un formato de imagen admitido.");
+    if(!/^image\/(png|jpeg|webp|gif|svg\+xml)$/.test(mime))throw new Error("MIME no permitido: "+(mime||"(vacío)"));
     const reader=response.body.getReader(),chunks:Buffer[]=[];let size=0;
-    while(true){const {done,value}=await reader.read();if(done)break;const chunk=Buffer.from(value);size+=chunk.length;if(size>8*1024*1024){await reader.cancel();throw new Error("La imagen supera el límite de caché de 8 MB.");}chunks.push(chunk);}
-    const bytes=Buffer.concat(chunks);
+    while(true){const {done,value}=await reader.read();if(done)break;const chunk=Buffer.from(value);size+=chunk.length;if(size>8*1024*1024){await reader.cancel();throw new Error("Imagen supera 8 MB.");}chunks.push(chunk);}
+    const bytes=Buffer.concat(chunks);if(!bytes.length)throw new Error("Descarga vacía.");
+    const file=path.join(IMAGE_CACHE,cacheKey+extFor(mime));
     await atomicWrite(file,bytes);
-    await atomicWrite(metaFile,JSON.stringify({mime,source:target.href,cachedAt:Date.now(),size:bytes.length}));
+    const saved=await fs.stat(file);if(saved.size!==bytes.length)throw new Error("Verificación de escritura fallida: tamaño guardado no coincide.");
+    await atomicWrite(metaFile,JSON.stringify({mime,source:target.href,cachedAt:Date.now(),size:bytes.length,file:path.basename(file)}));
     await fs.rm(failureFile,{force:true}).catch(()=>{});
+    console.info("[PV image-cache] Guardada:",file,"bytes:",saved.size);
     return "data:"+mime+";base64,"+bytes.toString("base64");
   }catch(error:any){
-    // Keep the initial-letter fallback visible, and store failure state across launches.
-    await atomicWrite(failureFile,JSON.stringify({source:target.href,failedAt:Date.now(),reason:String(error?.message||"fetch failed").slice(0,240)})).catch(()=>{});
+    const reason=String(error?.message||"fetch failed").slice(0,300);
+    console.error("[PV image-cache] ERROR:",target.href,reason);
+    await atomicWrite(failureFile,JSON.stringify({source:target.href,failedAt:Date.now(),reason})).catch(writeError=>console.error("[PV image-cache] No se pudo guardar el diagnóstico:",writeError));
     return "";
   }
 }
