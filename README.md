@@ -71,6 +71,12 @@ Envía propuestas de aplicaciones, selecciona el centro y revisa la información
 - Navegación lateral y diseño adaptable.
 - Gestión de aplicaciones desde tu espacio de usuario.
 
+
+## Actualizador automático
+
+La aplicación comprueba si hay releases disponibles. El modal permite **Actualizar ahora** o **Más tarde**. Al posponer o cerrar el modal, queda un banner en la interfaz para retomar la actualización. La descarga se verifica mediante SHA-256, se conserva una copia de la AppImage actual y el mecanismo de recuperación puede restaurarla si el nuevo inicio no se confirma.
+
+
 ## Compatibilidad
 
 - Sistemas Linux de 64 bits (x86_64).
