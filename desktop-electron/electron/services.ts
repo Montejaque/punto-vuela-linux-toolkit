@@ -8,6 +8,7 @@ import { createHash } from "node:crypto";
 const DATA = path.join(process.env.XDG_DATA_HOME || path.join(os.homedir(), ".local", "share"), "punto-vuela-linux-toolkit");
 const APP_DIR = path.join(DATA, "AppImages");
 const CACHE = path.join(DATA, "cache");
+const IMAGE_CACHE = path.join(CACHE, "images");
 const FEED = "https://appimage.github.io/feed.json";
 const MAIL = "https://punto-vuela-mail.montejaque.workers.dev";
 const UA = "PuntoVuelaLinuxToolkit-Electron/0.3";
@@ -60,6 +61,29 @@ async function desktopIntegrate(file:string,name?:string):Promise<string> {
   await fs.writeFile(target,`[Desktop Entry]\nType=Application\nName=${label}\nComment=Aplicación gestionada por Punto Vuela Toolkit\nExec="${safe}" %U\nIcon=application-x-executable\nTerminal=false\nCategories=Utility;\nStartupNotify=true\n`,{mode:0o644});
   return target;
 }
+async function cachedImage(url:string):Promise<string>{
+  const target=new URL(url);
+  if(target.protocol!=="https:")throw new Error("Solo se permiten imágenes HTTPS.");
+  const cacheKey=createHash("sha256").update(target.href).digest("hex");
+  await fs.mkdir(IMAGE_CACHE,{recursive:true});
+  const file=path.join(IMAGE_CACHE,cacheKey+".img");
+  try{
+    const bytes=await fs.readFile(file);
+    const meta=await fs.readFile(file+".json","utf8").then(JSON.parse).catch(()=>null);
+    if(meta&&/^image\/(png|jpeg|webp|gif|svg\+xml)$/.test(meta.mime)&&bytes.length<=8*1024*1024)
+      return "data:"+meta.mime+";base64,"+bytes.toString("base64");
+  }catch{}
+  const response=await remoteFetch(target.href,{headers:{"user-agent":UA,"accept":"image/avif,image/webp,image/png,image/jpeg,image/svg+xml,*/*"},redirect:"follow",signal:AbortSignal.timeout(30000)});
+  if(!response.ok||!response.url.startsWith("https://")||!response.body)throw new Error("No se pudo recuperar la imagen.");
+  const mime=(response.headers.get("content-type")||"").split(";")[0].trim().toLowerCase();
+  if(!/^image\/(png|jpeg|webp|gif|svg\+xml)$/.test(mime))throw new Error("El servidor no devolvió un formato de imagen admitido.");
+  const reader=response.body.getReader();const chunks:Buffer[]=[];let size=0;
+  while(true){const {done,value}=await reader.read();if(done)break;const chunk=Buffer.from(value);size+=chunk.length;if(size>8*1024*1024){await reader.cancel();throw new Error("La imagen supera el límite de caché de 8 MB.");}chunks.push(chunk);}
+  const bytes=Buffer.concat(chunks);const tmp=file+".part";
+  await fs.writeFile(tmp,bytes);await fs.rename(tmp,file);
+  await fs.writeFile(file+".json",JSON.stringify({mime,source:target.href,cachedAt:Date.now()}));
+  return "data:"+mime+";base64,"+bytes.toString("base64");
+}
 async function catalogSearch(query="",force=false):Promise<any[]> {
   const feed=await cachedJson(path.join(CACHE,"feed.json"),12*3600*1000,()=>getJson(FEED),force);
   if(!Array.isArray(feed.items))throw new Error("El feed oficial no tiene el formato esperado.");
@@ -97,6 +121,7 @@ async function updaterInstall():Promise<string>{
 }
 export async function api(method:string,args:any={}):Promise<any>{
   switch(method){
+    case "images.cache": return cachedImage(String(args.url||""));
     case "catalog.search": return catalogSearch(args.query||"",!!args.force);
     case "tools.list": return publicTools(!!args.force);
     case "apps.list": return installed();
