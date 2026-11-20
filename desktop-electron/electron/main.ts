@@ -78,7 +78,7 @@ async function recoverPreviousVersion(): Promise<void> {
 }
 
 function releaseVersion(tag: string, testMode = false): string | null {
-  const match = tag.match(/^v?(\\d+\\.\\d+\\.\\d+)(?:-([0-9A-Za-z.-]+))?$/);
+  const match = tag.match(/^v?(\d+\.\d+\.\d+)(?:-([0-9A-Za-z.-]+))?$/);
   if (!match || (match[2] && !testMode)) return null;
   return match[1] + (match[2] ? "-" + match[2] : "");
 }
