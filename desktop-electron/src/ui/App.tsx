@@ -117,7 +117,7 @@ function MarkdownDocument({content}:{content:string}){
   if(last<value.length)nodes.push(value.slice(last));
   return nodes;
  };
- const lines=content.replace(/\r/g,"").split("\\n");const blocks:React.ReactNode[]=[];let paragraph:string[]=[];let list:string[]=[];let ordered=false;
+ const lines=content.replace(/\r/g,"").split("\n");const blocks:React.ReactNode[]=[];let paragraph:string[]=[];let list:string[]=[];let ordered=false;
  const flushParagraph=()=>{if(paragraph.length){blocks.push(<p key={"p"+blocks.length}>{inline(paragraph.join(" "), "p"+blocks.length)}</p>);paragraph=[];}};
  const flushList=()=>{if(list.length){const Tag=ordered?"ol":"ul";blocks.push(<Tag key={"l"+blocks.length}>{list.map((item,i)=><li key={i}>{inline(item,"l"+blocks.length+"-"+i)}</li>)}</Tag>);list=[];}};
  for(let i=0;i<lines.length;i++){const line=lines[i].trim();
