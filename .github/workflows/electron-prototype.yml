@@ -1,55 +1,60 @@
-name: Electron Linux AppImage
+name: Electron AppImage · Build and Release
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - "desktop-electron/**"
-      - ".github/workflows/electron-prototype.yml"
+  workflow_dispatch:
   push:
     branches: ["rewrite/electron-desktop"]
     tags: ["v*"]
-  workflow_dispatch:
+  pull_request:
+    branches: ["rewrite/electron-desktop"]
+    paths:
+      - "desktop-electron/**"
+      - ".github/workflows/electron-prototype.yml"
 
 permissions:
   contents: write
 
+concurrency:
+  group: electron-build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
-    timeout-minutes: 30
+    name: Build and test Electron AppImage
     runs-on: ubuntu-22.04
-    container: debian:bullseye-slim
+    timeout-minutes: 35
+    container:
+      image: debian:bullseye-slim
     steps:
-      - name: Install glibc 2.31 build and runtime dependencies
+      - name: Prepare glibc 2.31 environment
         run: |
           export DEBIAN_FRONTEND=noninteractive
           sed -i -e 's#deb.debian.org/debian#archive.debian.org/debian#g' -e 's#security.debian.org/debian-security#archive.debian.org/debian-security#g' /etc/apt/sources.list
-          apt-get -o Acquire::Check-Valid-Until=false -o Acquire::Retries=1 -o Acquire::http::Timeout=25 update
+          apt-get -o Acquire::Check-Valid-Until=false -o Acquire::Retries=1 update
           apt-get install -y ca-certificates curl git xz-utils libfuse2 xvfb libgtk-3-0 libnss3 libasound2 libxss1 libxtst6 libgbm1 libxkbcommon0 libatspi2.0-0 libdrm2 libx11-xcb1 libxcb-dri3-0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libxrender1 libxshmfence1 dbus librsvg2-bin
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Node.js
+      - uses: actions/checkout@v4
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 22.12.0
-      - name: Install dependencies
+          node-version: 22
+      - name: Install npm dependencies
         working-directory: desktop-electron
         run: npm install
-      - name: Generate application icon assets
+      - name: Generate app icon
         run: |
           mkdir -p desktop-electron/build
           rsvg-convert -w 512 -h 512 desktop-electron/public/assets/logo_toolkit.svg -o desktop-electron/public/assets/logo_toolkit.png
           cp desktop-electron/public/assets/logo_toolkit.png desktop-electron/build/icon.png
-      - name: TypeScript checks
+      - name: Typecheck and test
         working-directory: desktop-electron
-        run: npm run typecheck
-      - name: Build renderer and Electron main process
+        run: npm test
+      - name: Build
         working-directory: desktop-electron
         run: npm run build
       - name: Package AppImage
         working-directory: desktop-electron
         run: npm run dist:appimage
-      - name: Smoke test packaged AppImage on glibc 2.31 (Ubuntu 20.04 baseline)
+      - name: Smoke test packaged AppImage
         working-directory: desktop-electron
         shell: bash
         run: |
@@ -59,44 +64,34 @@ jobs:
           code=$?
           set -e
           cat /tmp/pv-electron-smoke.log
-          if [ "$code" -ne 0 ]; then
-            echo "La AppImage no ha superado el smoke test (código $code)."
-            exit "$code"
-          fi
-          if grep -Eqi "error while loading shared libraries|GLIBC_[0-9.]+ not found" /tmp/pv-electron-smoke.log; then
-            echo "Se han detectado errores de bibliotecas."
-            exit 1
-          fi
-      - name: Upload tested AppImage artifact
-        uses: actions/upload-artifact@v4
+          if [ "$code" -ne 0 ]; then exit "$code"; fi
+          if grep -Eqi "error while loading shared libraries|GLIBC_[0-9.]+ not found" /tmp/pv-electron-smoke.log; then exit 1; fi
+      - uses: actions/upload-artifact@v4
         with:
-          name: puntos-vuela-toolkit-electron-glibc231-x86_64
+          name: puntos-vuela-toolkit-electron-appimage
           path: desktop-electron/release/*.AppImage
           if-no-files-found: error
           retention-days: 30
 
-  publish:
-    name: Publish tagged Electron GitHub Release
+  release:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build
     runs-on: ubuntu-22.04
     steps:
-      - name: Download tested AppImage
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: puntos-vuela-toolkit-electron-glibc231-x86_64
-      - name: Verify release asset and generate checksum
-        shell: bash
+          name: puntos-vuela-toolkit-electron-appimage
+      - name: Generate SHA256SUMS
         run: |
           APPIMAGE="$(find . -maxdepth 1 -type f -name '*.AppImage' -print -quit)"
           test -n "$APPIMAGE"
           sha256sum "$APPIMAGE" > SHA256SUMS
-      - name: Publish GitHub Release
+      - name: Publish Electron release assets
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           name: Puntos Vuela Toolkit ${{ github.ref_name }} · Electron
-          prerelease: true
+          prerelease: false
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
