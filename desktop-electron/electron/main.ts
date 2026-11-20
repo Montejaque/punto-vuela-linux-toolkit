@@ -6,7 +6,7 @@ import { spawn } from "node:child_process";
 import { api } from "./services";
 
 const isDevelopment = !app.isPackaged;
-const allowed = new Set(["catalog.search","tools.list","apps.list","apps.folder","apps.install","tools.install","apps.launch","apps.permissions","apps.remove","apps.checkUpdate","apps.update","tools.openExternal","mail.send","mail.health","centres.list","centres.details","app.info"]);
+const allowed = new Set(["catalog.search","tools.list","apps.list","apps.folder","apps.install","tools.install","apps.launch","apps.permissions","apps.remove","apps.checkUpdate","apps.update","tools.openExternal","mail.send","mail.health","centres.list","centres.details","app.info","images.cache"]);
 const REPO = "Montejaque/punto-vuela-linux-toolkit";
 const UPDATE_BASE = "https://api.github.com/repos/" + REPO;
 const markerPath = () => join(app.getPath("userData"), "update-pending.json");
