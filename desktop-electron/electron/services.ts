@@ -41,6 +41,19 @@ async function cachedJson(file: string, ttl: number, loader: () => Promise<any>,
 }
 function ver(value: string): number[] | null { const m=value.match(/(\d+(?:\.\d+)*)/); return m?m[1].split(".").map(Number):null; }
 function glibcCompatible(value: string): boolean { const v=ver(value); if(!v)return true; for(let i=0;i<3;i++){if((v[i]||0)!==(GLIBC_MAX[i]||0))return (v[i]||0)<(GLIBC_MAX[i]||0);} return true; }
+function appimageAssetUrl(value:any):string {
+  if(typeof value!=="string"||!value.trim()) return "";
+  const raw=value.trim();
+  try {
+    const absolute=new URL(raw);
+    if(absolute.protocol==="https:") return absolute.href;
+    if(absolute.protocol==="http:") { absolute.protocol="https:"; return absolute.href; }
+    return "";
+  } catch {}
+  // The feed can contain paths with or without the database/ prefix.
+  const clean=raw.replace(/^\/+/,"").replace(/^database\//i,"").split("/").filter(part=>part&&part!=="."&&part!=="..").map(encodeURIComponent).join("/");
+  return clean ? "https://appimage.github.io/database/"+clean : "";
+}
 function githubRepo(links:any[]): string { const l=(links||[]).find(x=>String(x.type).toLowerCase()==="github"); const value=String(l?.url||"").replace("https://github.com/","").replace(/\/$/,""); return /^[\w.-]+\/[\w.-]+$/.test(value)?value:""; }
 function safeName(value:string):string { const name=path.basename(value).replace(/[^A-Za-z0-9._+-]/g,"-").replace(/^[-.]+|[-.]+$/g,""); if(!name)throw new Error("Nombre de archivo no válido."); return name.toLowerCase().endsWith(".appimage")?name.replace(/\.appimage$/i,"")+".AppImage":name+".AppImage"; }
 function managedPath(file:string):string { const full=path.resolve(file); if(path.dirname(full)!==path.resolve(APP_DIR)||!full.toLowerCase().endsWith(".appimage"))throw new Error("La operación solo está permitida sobre AppImages de la carpeta administrada."); return full; }
