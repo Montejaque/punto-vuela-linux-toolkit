@@ -154,7 +154,7 @@ async function checkUpdates(window: BrowserWindow): Promise<void> {
       .sort((a: any, b: any) => compareVersions(b.version, a.version));
 
     const candidate = candidates[0];
-    if (!candidate) {
+    if (!candidate && testMode) {
       const legacyTestRelease = releases
         .filter((release: any) => !release.draft && release.prerelease && /^pruebas-\d+$/i.test(String(release.tag_name || "")))
         .filter((release: any) => appImageAssetForArch(release.assets || []) && (release.assets || []).some((asset: any) => asset.name === "SHA256SUMS"))
