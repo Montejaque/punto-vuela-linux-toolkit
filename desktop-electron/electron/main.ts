@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain, dialog } from "electron";
+import { app, BrowserWindow, shell, ipcMain, dialog, Menu } from "electron";
 import { join, dirname } from "node:path";
 import { promises as fs } from "node:fs";
 import { createHash } from "node:crypto";
@@ -33,7 +33,7 @@ function showUpdaterModal(parent: BrowserWindow, options: { title: string; versi
 
 function createWindow(): BrowserWindow {
   const window = new BrowserWindow({
-    width: 1440, height: 920, minWidth: 760, minHeight: 600, show: false,
+    width: 1440, height: 920, minWidth: 760, minHeight: 600, show: false, autoHideMenuBar: true,
     backgroundColor: "#171d25", title: "Puntos Vuela Toolkit", icon: join(__dirname, "../dist/assets/logo_toolkit.svg"),
     webPreferences: {
       preload: join(__dirname, "preload.js"),
@@ -41,7 +41,7 @@ function createWindow(): BrowserWindow {
       webSecurity: true
     }
   });
-  window.once("ready-to-show", () => window.show());
+  window.once("ready-to-show", () => { window.maximize(); window.show(); });
   window.webContents.once("did-finish-load", async () => {
     if (process.argv.includes("--smoke-test")) setTimeout(() => app.exit(0), 750);
     await confirmSuccessfulStartup();
@@ -259,6 +259,7 @@ ipcMain.handle("pv:invoke", async (_event, method: string, args: unknown) => {
 });
 
 app.whenReady().then(async () => {
+  Menu.setApplicationMenu(null);
   await recoverPreviousVersion();
   createWindow();
   app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
