@@ -11,6 +11,23 @@ const REPO = "Montejaque/punto-vuela-linux-toolkit";
 const UPDATE_BASE = "https://api.github.com/repos/" + REPO;
 const markerPath = () => join(app.getPath("userData"), "update-pending.json");
 
+
+function showUpdaterModal(parent: BrowserWindow, options: { title: string; version: string; current?: string; testMode?: boolean; legacy?: boolean; description?: string }): Promise<"update"|"later"|"release"> {
+  return new Promise(resolve => {
+    const modal = new BrowserWindow({ width: 560, height: 430, minWidth: 560, minHeight: 430, maxWidth: 560, maxHeight: 430, resizable: false, modal: true, parent, show: false, title: options.title, autoHideMenuBar: true, backgroundColor: "#f7f8fa", webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true } });
+    let settled = false;
+    const finish = (action: "update"|"later"|"release") => { if (settled) return; settled=true; resolve(action); if (!modal.isDestroyed()) modal.close(); };
+    modal.once("ready-to-show", () => modal.show());
+    modal.webContents.on("will-navigate", (event, url) => { if (url.startsWith("pvu-updater://")) { event.preventDefault(); const action=url.replace("pvu-updater://",""); if(action==="update"||action==="later"||action==="release") finish(action); } else event.preventDefault(); });
+    modal.on("closed",()=>{if(!settled){settled=true;resolve("later");}});
+    const testBadge=options.testMode?'<span class="badge">CANAL DE PRUEBAS</span>':'';
+    const current=options.current?'<div class="version-row"><span>Versión instalada</span><b>'+options.current+'</b></div>':'';
+    const updateButton=options.legacy?'<a class="secondary" href="pvu-updater://release">Ver release de pruebas</a>':'<a class="primary" href="pvu-updater://update"><span class="arrow">↻</span> Actualizar ahora</a>';
+    const html='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><style>*{box-sizing:border-box}body{margin:0;background:#f6f7f9;color:#17212b;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}.wrap{padding:30px 32px 26px}.top{display:flex;align-items:center;gap:14px}.icon{width:58px;height:58px;border-radius:17px;background:#f0cf00;display:grid;place-items:center;font-size:32px;font-weight:900;color:#121820;box-shadow:0 5px 18px #0001}.badge{font-size:10px;font-weight:800;letter-spacing:.12em;color:#806600;background:#fff1b4;padding:7px 10px;border-radius:999px}.eyebrow{font-size:11px;color:#71808e;font-weight:750;letter-spacing:.13em;text-transform:uppercase;margin-top:22px}.h{font-size:25px;font-weight:850;letter-spacing:-.04em;margin:8px 0 6px}.desc{font-size:14px;line-height:1.55;color:#52616d;margin:0 0 20px}.version-row{display:flex;justify-content:space-between;align-items:center;background:white;border:1px solid #e3e7eb;border-radius:12px;padding:13px 15px;margin-bottom:18px;color:#65717b;font-size:13px}.version-row b{color:#18212b;font-size:14px}.safe{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.45;color:#677581;margin-bottom:20px}.safe .check{color:#17834b;font-size:16px;font-weight:900}.actions{display:flex;justify-content:flex-end;gap:10px}.actions a{border-radius:11px;padding:12px 17px;font-size:13px;font-weight:750;text-decoration:none;cursor:pointer}.primary{background:#171e26;color:white}.primary:hover{background:#2a3542}.secondary{background:#e9edf0;color:#26323d}.footer{margin-top:19px;padding-top:13px;border-top:1px solid #e4e8eb;color:#89939c;font-size:11px}</style></head><body><div class="wrap"><div class="top"><div class="icon">V</div>'+testBadge+'</div><div class="eyebrow">'+(options.legacy?"Actualizador · pruebas detectadas":"Actualización disponible")+'</div><div class="h">'+(options.legacy?"Canal de pruebas "+options.version:"Puntos Vuela Toolkit "+options.version)+'</div><p class="desc">'+(options.description||("Hay una nueva versión disponible. Descarga y verificación se realizarán antes de reemplazar la AppImage."))+'</p>'+current+'<div class="safe"><span class="check">✓</span><span>La descarga se verifica con SHA-256 y se conserva una copia de la versión actual para poder recuperarla si el inicio de la nueva falla.</span></div><div class="actions">'+updateButton+'<a class="secondary" href="pvu-updater://later">'+(options.legacy?"Cerrar":"Más tarde")+'</a></div><div class="footer">Actualizador oficial · Puntos Vuela Toolkit</div></div></body></html>';
+    void modal.loadURL("data:text/html;charset=utf-8,"+encodeURIComponent(html));
+  });
+}
+
 function createWindow(): BrowserWindow {
   const window = new BrowserWindow({
     width: 1440, height: 920, minWidth: 760, minHeight: 600, show: false,
@@ -140,13 +157,8 @@ async function checkUpdates(window: BrowserWindow): Promise<void> {
         .filter((release: any) => appImageAssetForArch(release.assets || []) && (release.assets || []).some((asset: any) => asset.name === "SHA256SUMS"))
         .sort((a: any, b: any) => Date.parse(b.published_at || b.created_at || 0) - Date.parse(a.published_at || a.created_at || 0))[0];
       if (legacyTestRelease) {
-        const choice = await dialog.showMessageBox(window, {
-          type: "info", buttons: ["Ver release de pruebas", "Cerrar"], defaultId: 0, cancelId: 1,
-          title: "ACTUALIZADOR · MODO DE PRUEBAS",
-          message: "Canal de pruebas detectado: " + legacyTestRelease.tag_name,
-          detail: "Las releases antiguas de pruebas no usan etiquetas SemVer. Este modal valida la detección y presentación; no instala estas releases legacy."
-        });
-        if (choice.response === 0 && legacyTestRelease.html_url) void shell.openExternal(legacyTestRelease.html_url);
+        const action = await showUpdaterModal(window, { title: "Actualizador · pruebas detectadas", version: legacyTestRelease.tag_name, testMode: true, legacy: true, description: "Las releases legacy de pruebas no son instalables desde este diálogo. Esta comprobación confirma la detección del canal y el diseño del actualizador." });
+        if (action === "release" && legacyTestRelease.html_url) void shell.openExternal(legacyTestRelease.html_url);
         return;
       }
     }
@@ -155,12 +167,8 @@ async function checkUpdates(window: BrowserWindow): Promise<void> {
     const latest = candidate.version;
     const appImageAsset = candidate.appImage;
     const checksumAsset = candidate.checksums;
-    const choice = await dialog.showMessageBox(window, {
-      type: "info", buttons: ["Actualizar ahora", "Más tarde"], defaultId: 0, cancelId: 1,
-      title: testMode ? "ACTUALIZADOR · MODO DE PRUEBAS" : "Nueva versión disponible", message: "Puntos Vuela Toolkit " + latest,
-      detail: (testMode ? "CANAL DE PRUEBAS (release prerelease). " : "") + "Tienes instalada la versión " + current + ". La versión " + latest + " está disponible. La descarga se verificará antes de sustituir la aplicación. Se conservará una copia para recuperación."
-    });
-    if (choice.response !== 0) return;
+    const action = await showUpdaterModal(window, { title: testMode ? "Actualizador · pruebas" : "Nueva versión disponible", version: latest, current, testMode, description: "Está disponible la versión " + latest + ". Pulsa Actualizar ahora para descargarla, comprobar su integridad y sustituir la AppImage de forma segura." });
+    if (action !== "update") return;
     await performUpdate(window, appImageAsset, checksumAsset, latest);
   } catch (error: any) {
     console.warn("Updater:", error?.message || error);
