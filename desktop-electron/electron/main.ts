@@ -126,8 +126,18 @@ function appImageAssetForArch(assets: any[]): any | undefined {
   );
 }
 
+async function updaterChannelIsTest(): Promise<boolean> {
+  if (!app.isPackaged) return false;
+  try {
+    const config = JSON.parse(await fs.readFile(join(process.resourcesPath, "updater-channel.json"), "utf8"));
+    return config?.channel === "test";
+  } catch {
+    return false;
+  }
+}
+
 async function checkUpdates(window: BrowserWindow): Promise<void> {
-  const testMode = process.argv.includes("--updater-test");
+  const testMode = process.argv.includes("--updater-test") || await updaterChannelIsTest();
   try {
     const response = await fetch(UPDATE_BASE + "/releases?per_page=20", {
       headers: { "Accept": "application/vnd.github+json", "User-Agent": "Puntos-Vuela-Toolkit-Updater" },
