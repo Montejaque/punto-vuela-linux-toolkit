@@ -206,8 +206,8 @@ async function performUpdate(window:BrowserWindow,asset:any,checksumAsset:any,ve
     await fs.writeFile(markerPath(),JSON.stringify({version,backup,installedAt:new Date().toISOString()}));
     await fs.rename(tmp,image);
     replaced = true;
-    const result=await dialog.showMessageBox(window,{type:"info",buttons:["Reiniciar ahora","Reiniciar más tarde"],defaultId:0,title:"Actualización descargada y verificada",message:"La versión "+version+" está lista. Se ha guardado una copia de seguridad para permitir la recuperación si la nueva versión no inicia correctamente."});
-    if(result.response===0){app.relaunch();app.exit(0);}
+    const result=await showUpdateReadyModal(window,version);
+    if(result==="restart"){spawn(image,[],{detached:true,stdio:"ignore",env:process.env}).unref();app.exit(0);}
   }catch(error:any){
     await fs.rm(tmp,{force:true}).catch(()=>{});
     await fs.rm(markerPath(),{force:true}).catch(()=>{});
