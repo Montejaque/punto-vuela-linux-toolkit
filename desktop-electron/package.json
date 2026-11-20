@@ -41,6 +41,9 @@
       "dist-electron/**",
       "package.json"
     ],
+    "extraResources": [
+      { "from": "updater-channel.json", "to": "updater-channel.json" }
+    ],
     "linux": {
       "target": [
         "AppImage"
