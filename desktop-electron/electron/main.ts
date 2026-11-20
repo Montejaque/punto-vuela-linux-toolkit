@@ -24,7 +24,7 @@ function showUpdaterModal(parent: BrowserWindow, options: { title: string; versi
     modal.on("closed",()=>{if(!settled){settled=true;resolve("later");}});
     const testBadge=options.testMode?'<span class="badge">CANAL DE PRUEBAS</span>':'';
     const current=options.current?'<div class="version-row"><span>Versión instalada</span><b>'+options.current+'</b></div>':'';
-    const changelogHtml=options.changelog?'<div class="changes"><strong>Novedades de esta versión</strong><ul>'+options.changelog.split(/\\r?\\n/).map(line=>line.trim()).filter(line=>line.startsWith("- ")||line.startsWith("* ")).map(line=>'<li>'+line.slice(2).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")+'</li>').join("")+'</ul></div>':'';
+    const changelogHtml=options.changelog?'<div class="changes"><strong>Novedades de esta versión</strong><ul>'+options.changelog.split(/\\r?\\n/).map(line=>line.trim()).filter(line=>line.startsWith("- ")||line.startsWith("* ")).slice(0,3).map(line=>'<li>'+line.slice(2).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")+'</li>').join("")+'</ul></div>':'';
     const updateButton='<a class="primary" href="pvu-updater://update"><span class="arrow">↻</span> Actualizar ahora</a>';
     const html='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><style>*{box-sizing:border-box}body{margin:0;overflow:hidden;background:#f6f7f9;color:#17212b;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}.wrap{padding:20px 26px 18px}.modal-head{display:flex;align-items:center;justify-content:space-between;margin:-20px -26px 18px;padding:11px 16px;background:#17212b;color:#fff;font-size:12px;font-weight:750;letter-spacing:.02em;-webkit-app-region:drag}.modal-close{border:0;background:transparent;color:#fff;font-size:20px;text-decoration:none;cursor:pointer;-webkit-app-region:no-drag}.top{display:flex;align-items:center;gap:14px}.icon{width:52px;height:52px;border-radius:16px;background:#f0cf00;display:grid;place-items:center;font-size:32px;font-weight:900;color:#121820;box-shadow:0 5px 18px #0001}.badge{font-size:10px;font-weight:800;letter-spacing:.12em;color:#806600;background:#fff1b4;padding:7px 10px;border-radius:999px}.eyebrow{font-size:11px;color:#71808e;font-weight:750;letter-spacing:.13em;text-transform:uppercase;margin-top:15px}.h{font-size:23px;font-weight:850;letter-spacing:-.04em;margin:8px 0 6px}.desc{font-size:14px;line-height:1.4;color:#52616d;margin:0 0 14px}.version-row{display:flex;justify-content:space-between;align-items:center;background:white;border:1px solid #e3e7eb;border-radius:12px;padding:11px 13px;margin-bottom:14px;color:#65717b;font-size:13px}.version-row b{color:#18212b;font-size:14px}.safe{display:flex;gap:9px;align-items:flex-start;font-size:12px;line-height:1.4;color:#677581;margin-bottom:14px}.safe .check{color:#17834b;font-size:16px;font-weight:900}.actions{display:flex;justify-content:flex-end;gap:10px}.actions a{border-radius:11px;padding:11px 16px;font-size:13px;font-weight:750;text-decoration:none;cursor:pointer}.primary{background:#171e26;color:white}.primary:hover{background:#2a3542}.secondary{background:#e9edf0;color:#26323d}.changes{background:#fff;border:1px solid #e3e7eb;border-radius:12px;padding:10px 12px;margin:0 0 12px;font-size:12px;color:#465663}.changes strong{font-size:12px;color:#17212b}.changes ul{margin:7px 0 0;padding-left:18px}.changes li{margin:3px 0;line-height:1.35}.footer{margin-top:14px;padding-top:11px;border-top:1px solid #e4e8eb;color:#89939c;font-size:11px}</style></head><body><div class="wrap"><div class="modal-head"><span>PUNTOS VUELA TOOLKIT · ACTUALIZADOR</span><a class="modal-close" href="pvu-updater://later" aria-label="Cerrar">×</a></div><div class="top"><div class="icon">V</div>'+testBadge+'</div><div class="eyebrow">'+(options.legacy?"Actualización de pruebas disponible":"Actualización disponible")+'</div><div class="h">'+("Puntos Vuela Toolkit · "+options.version)+'</div><p class="desc">'+(options.description||("Hay una nueva versión disponible. Descarga y verificación se realizarán antes de reemplazar la AppImage."))+'</p>'+current+changelogHtml+'<div class="safe"><span class="check">✓</span><span>La descarga se verifica con SHA-256 y se conserva una copia de la versión actual para poder recuperarla si el inicio de la nueva falla.</span></div><div class="actions">'+updateButton+'<a class="secondary" href="pvu-updater://later">'+("Más tarde")+'</a></div><div class="footer">Actualizador oficial · Puntos Vuela Toolkit</div></div></body></html>';
     void modal.loadURL("data:text/html;charset=utf-8,"+encodeURIComponent(html));
@@ -197,6 +197,14 @@ function showUpdateReadyModal(parent:BrowserWindow,version:string):Promise<"rest
   });
 }
 
+function showDownloadProgress(parent:BrowserWindow):{window:BrowserWindow;update:(percent:number,message:string)=>void;close:()=>void}{
+  const win=new BrowserWindow({width:430,height:330,minWidth:430,minHeight:330,maxWidth:430,maxHeight:330,resizable:false,modal:true,parent,show:false,frame:false,title:"Actualizando Puntos Vuela Toolkit",backgroundColor:"#e9edf1",webPreferences:{contextIsolation:true,nodeIntegration:false,sandbox:true}});
+  const html='<!doctype html><html><head><meta charset="utf-8"><style>*{box-sizing:border-box}body{margin:0;background:#e9edf1;color:#17212b;font-family:Inter,system-ui,sans-serif}.wrap{height:330px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px}.ring{width:156px;height:156px;position:relative;display:grid;place-items:center}.ring svg{position:absolute;inset:0;transform:rotate(-90deg)}.logo{width:78px;height:78px;border-radius:22px;background:#f0cf00;display:grid;place-items:center;font-size:48px;font-weight:950;color:#101820;box-shadow:0 6px 20px #0002}.pct{font-size:14px;font-weight:800;margin-top:14px}.msg{font-size:13px;color:#596775;text-align:center;margin-top:8px;min-height:20px}.track{stroke:#d1d8de}.progress{stroke:#f0cf00;stroke-linecap:round;transition:stroke-dashoffset .15s}</style></head><body><div class="wrap"><div class="ring"><svg viewBox="0 0 156 156"><circle class="track" cx="78" cy="78" r="69" fill="none" stroke-width="9"/><circle id="progress" class="progress" cx="78" cy="78" r="69" fill="none" stroke-width="9" stroke-dasharray="433.54" stroke-dashoffset="433.54"/></svg><div class="logo">V</div></div><div id="pct" class="pct">0%</div><div id="msg" class="msg">Preparando la descarga…</div></div><script>window.setProgress=(p,m)=>{const v=Math.max(0,Math.min(100,Number(p)||0));document.getElementById("pct").textContent=Math.round(v)+"%";document.getElementById("progress").style.strokeDashoffset=433.54*(1-v/100);document.getElementById("msg").textContent=m||"Actualizando…";}</script></body></html>';
+  void win.loadURL("data:text/html;charset=utf-8,"+encodeURIComponent(html));
+  win.once("ready-to-show",()=>win.show());
+  return {window:win,update:(percent,message)=>{if(!win.isDestroyed())win.webContents.executeJavaScript("window.setProgress("+Math.round(percent)+","+JSON.stringify(message)+")").catch(()=>{});},close:()=>{if(!win.isDestroyed())win.close();}};
+}
+
 async function performUpdate(window:BrowserWindow,asset:any,checksumAsset:any,version:string):Promise<void>{
   const image=process.env.APPIMAGE;
   if(!image){await dialog.showMessageBox(window,{type:"warning",title:"Actualización no disponible",message:"Esta instalación no es una AppImage ejecutada directamente. Descarga la nueva versión desde GitHub Releases."});return;}
@@ -208,11 +216,16 @@ async function performUpdate(window:BrowserWindow,asset:any,checksumAsset:any,ve
     const checksums=await checksumResponse.text();
     const expected=checksums.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).map(line=>{const match=line.match(/^([a-f0-9]{64})\s+\*?(.+)$/i);return match?{hash:match[1],name:match[2].trim().replace(/^\.\//,"")}:null;}).find(entry=>entry&&entry.name===asset.name)?.hash;
     if(!expected||!/^[a-f0-9]{64}$/i.test(expected))throw new Error("No se encontró una suma SHA-256 válida para la descarga.");
+    const progress=showDownloadProgress(window);
+    progress.update(0,"Conectando con GitHub Releases…");
     const downloadResponse=await fetch(asset.browser_download_url,{headers:{"User-Agent":"Puntos-Vuela-Toolkit-Updater"},signal:AbortSignal.timeout(20*60*1000)});
     if(!downloadResponse.ok||!downloadResponse.body)throw new Error("No se pudo descargar la actualización.");
-    const data=Buffer.from(await downloadResponse.arrayBuffer());
+    const reader=downloadResponse.body.getReader(),chunks:Uint8Array[]=[];let received=0;const total=Number(downloadResponse.headers.get("content-length"))||Number(asset.size)||0;
+    while(true){const chunk=await reader.read();if(chunk.done)break;chunks.push(chunk.value);received+=chunk.value.length;progress.update(total>0?Math.min(92,received/total*92):0,total>0?"Descargando AppImage…":"Descargando AppImage… ("+Math.round(received/1024/1024)+" MB)");}
+    const data=Buffer.concat(chunks.map(chunk=>Buffer.from(chunk)));progress.update(94,"Verificando SHA-256…");
     const actual=createHash("sha256").update(data).digest("hex");
     if(actual.toLowerCase()!==expected.toLowerCase())throw new Error("La verificación SHA-256 ha fallado. No se instalará el archivo.");
+    progress.update(96,"Checksum válido. Preparando instalación…");
     await fs.writeFile(tmp,data,{mode:0o755});
     await fs.chmod(tmp,0o755);
     await fs.copyFile(image,backup);
@@ -220,6 +233,8 @@ async function performUpdate(window:BrowserWindow,asset:any,checksumAsset:any,ve
     await fs.writeFile(markerPath(),JSON.stringify({version,backup,installedAt:new Date().toISOString()}));
     await fs.rename(tmp,image);
     replaced = true;
+    progress.update(100,"Actualización instalada. Preparando reinicio…");
+    progress.close();
     const result=await showUpdateReadyModal(window,version);
     if(result==="restart"){spawn(image,[],{detached:true,stdio:"ignore",env:process.env}).unref();app.exit(0);}
   }catch(error:any){
