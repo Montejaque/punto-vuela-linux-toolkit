@@ -34,7 +34,7 @@ function showUpdaterModal(parent: BrowserWindow, options: { title: string; versi
 function createWindow(): BrowserWindow {
   const window = new BrowserWindow({
     width: 1440, height: 920, minWidth: 760, minHeight: 600, show: false,
-    backgroundColor: "#171d25", title: "Puntos Vuela Toolkit", icon: join(__dirname, "../dist/assets/logo_toolkit.png"),
+    backgroundColor: "#171d25", title: "Puntos Vuela Toolkit", icon: join(__dirname, "../dist/assets/logo_toolkit.svg"),
     webPreferences: {
       preload: join(__dirname, "preload.js"),
       contextIsolation: true, nodeIntegration: false, sandbox: true,
