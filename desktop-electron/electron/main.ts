@@ -89,7 +89,7 @@ async function checkUpdates(window: BrowserWindow): Promise<void> {
       const assets = candidate.assets||[];
       return compareVersions(version,current)>0 &&
         assets.some((a:any)=>String(a.name).includes("Puntos_Vuela_Toolkit-Electron") && String(a.name).endsWith("-x64.AppImage")) &&
-        assets.some((a:any)=>a.name==="SHA256SUMS";
+        assets.some((a:any)=>a.name==="SHA256SUMS");
     });
     if (!release) return;
     const latest = String(release.tag_name||"").replace(/^v/,"");
