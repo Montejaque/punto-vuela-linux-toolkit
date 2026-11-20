@@ -77,35 +77,72 @@ async function recoverPreviousVersion(): Promise<void> {
   } catch {}
 }
 
-async function checkUpdates(window: BrowserWindow): Promise<void> {
-  try {
-    const response = await fetch(UPDATE_BASE + "/releases?per_page=20", {headers:{"Accept":"application/vnd.github+json","User-Agent":"Puntos-Vuela-Toolkit-Updater"}, signal:AbortSignal.timeout(15000)});
-    if (!response.ok) return;
-    const releases:any[] = await response.json();
-    const current = app.getVersion();
-    const release = releases.find((candidate:any)=>{
-      if(candidate.draft || candidate.prerelease) return false;
-      const version = String(candidate.tag_name||"").replace(/^v/,"");
-      const assets = candidate.assets||[];
-      return compareVersions(version,current)>0 &&
-        assets.some((a:any)=>String(a.name).includes("Puntos_Vuela_Toolkit-Electron") && String(a.name).endsWith("-x64.AppImage")) &&
-        assets.some((a:any)=>a.name==="SHA256SUMS");
-    });
-    if (!release) return;
-    const latest = String(release.tag_name||"").replace(/^v/,"");
-    const appImageAsset = (release.assets||[]).find((a:any)=>String(a.name).includes("Puntos_Vuela_Toolkit-Electron") && String(a.name).endsWith("-x64.AppImage"));
-    const checksumAsset = (release.assets||[]).find((a:any)=>a.name==="SHA256SUMS");
-    const choice = await dialog.showMessageBox(window,{type:"info",buttons:["Actualizar ahora","Más tarde"],defaultId:0,cancelId:1,title:"Nueva versión disponible",message:"Puntos Vuela Toolkit "+latest,detail:"Tienes instalada la versión "+current+". La versión "+latest+" está disponible. La descarga se verificará antes de sustituir la aplicación. Se conservará una copia para recuperación."});
-    if(choice.response!==0) return;
-    await performUpdate(window, appImageAsset, checksumAsset, latest);
-  } catch (error:any) {
-    console.warn("Updater:",error?.message||error);
-  }
+function releaseVersion(tag: string): string | null {
+  const match = tag.match(/^v?(\\d+\\.\\d+\\.\\d+)$/);
+  return match ? match[1] : null;
 }
 
-function compareVersions(a:string,b:string):number {
-  const pa=a.split(".").map(Number),pb=b.split(".").map(Number);
-  for(let i=0;i<Math.max(pa.length,pb.length);i++){const x=pa[i]||0,y=pb[i]||0;if(x!==y)return x>y?1:-1;}return 0;
+function compareVersions(a: string, b: string): number {
+  const pa = a.split(".").map(Number), pb = b.split(".").map(Number);
+  for (let i = 0; i < 3; i++) {
+    const x = pa[i] || 0, y = pb[i] || 0;
+    if (x !== y) return x > y ? 1 : -1;
+  }
+  return 0;
+}
+
+function appImageAssetForArch(assets: any[]): any | undefined {
+  const arch = process.arch === "arm64" ? "arm64" : process.arch === "x64" ? "x86_64" : process.arch;
+  const suffix = "-" + arch + ".AppImage";
+  return assets.find((asset: any) =>
+    typeof asset.name === "string" &&
+    asset.name.includes("Puntos_Vuela_Toolkit-Electron") &&
+    asset.name.endsWith(suffix)
+  );
+}
+
+async function checkUpdates(window: BrowserWindow): Promise<void> {
+  try {
+    const response = await fetch(UPDATE_BASE + "/releases?per_page=20", {
+      headers: { "Accept": "application/vnd.github+json", "User-Agent": "Puntos-Vuela-Toolkit-Updater" },
+      signal: AbortSignal.timeout(15000)
+    });
+    if (!response.ok) return;
+
+    const releases: any[] = await response.json();
+    const current = app.getVersion();
+    const candidates = releases
+      .filter((candidate: any) => !candidate.draft && !candidate.prerelease)
+      .map((candidate: any) => ({
+        release: candidate,
+        version: releaseVersion(String(candidate.tag_name || "")),
+        assets: candidate.assets || []
+      }))
+      .filter((candidate: any) => candidate.version && compareVersions(candidate.version, current) > 0)
+      .map((candidate: any) => ({
+        ...candidate,
+        appImage: appImageAssetForArch(candidate.assets),
+        checksums: candidate.assets.find((asset: any) => asset.name === "SHA256SUMS")
+      }))
+      .filter((candidate: any) => candidate.appImage && candidate.checksums)
+      .sort((a: any, b: any) => compareVersions(b.version, a.version));
+
+    const candidate = candidates[0];
+    if (!candidate) return;
+
+    const latest = candidate.version;
+    const appImageAsset = candidate.appImage;
+    const checksumAsset = candidate.checksums;
+    const choice = await dialog.showMessageBox(window, {
+      type: "info", buttons: ["Actualizar ahora", "Más tarde"], defaultId: 0, cancelId: 1,
+      title: "Nueva versión disponible", message: "Puntos Vuela Toolkit " + latest,
+      detail: "Tienes instalada la versión " + current + ". La versión " + latest + " está disponible. La descarga se verificará antes de sustituir la aplicación. Se conservará una copia para recuperación."
+    });
+    if (choice.response !== 0) return;
+    await performUpdate(window, appImageAsset, checksumAsset, latest);
+  } catch (error: any) {
+    console.warn("Updater:", error?.message || error);
+  }
 }
 
 async function performUpdate(window:BrowserWindow,asset:any,checksumAsset:any,version:string):Promise<void>{
