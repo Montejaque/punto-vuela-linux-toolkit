@@ -3,7 +3,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import os from "node:os";
 import { spawn } from "node:child_process";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 
 const DATA = path.join(process.env.XDG_DATA_HOME || path.join(os.homedir(), ".local", "share"), "punto-vuela-linux-toolkit");
 const APP_DIR = path.join(DATA, "AppImages");
@@ -80,7 +80,7 @@ async function cachedImage(url:string):Promise<string>{
   const cacheKey=createHash("sha256").update(target.href).digest("hex");
   await fs.mkdir(IMAGE_CACHE,{recursive:true});
   const file=path.join(IMAGE_CACHE,cacheKey+".img"), metaFile=file+".json", failureFile=file+".failed.json";
-  const atomicWrite=async(targetFile:string,data:string|Buffer)=>{const tmp=targetFile+".tmp-"+process.pid+"-"+Date.now();await fs.writeFile(tmp,data);await fs.rename(tmp,targetFile);};
+  const atomicWrite=async(targetFile:string,data:string|Buffer)=>{const tmp=targetFile+".tmp-"+randomUUID();await fs.writeFile(tmp,data);await fs.rename(tmp,targetFile);};
   // Persistent positive cache: valid icons survive app restarts and offline use.
   try{
     const bytes=await fs.readFile(file),meta=await fs.readFile(metaFile,"utf8").then(JSON.parse).catch(()=>null);
