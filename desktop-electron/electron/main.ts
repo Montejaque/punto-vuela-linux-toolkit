@@ -79,15 +79,22 @@ async function recoverPreviousVersion(): Promise<void> {
 
 async function checkUpdates(window: BrowserWindow): Promise<void> {
   try {
-    const response = await fetch(UPDATE_BASE + "/releases/latest", {headers:{"Accept":"application/vnd.github+json","User-Agent":"Puntos-Vuela-Toolkit-Updater"}, signal:AbortSignal.timeout(15000)});
+    const response = await fetch(UPDATE_BASE + "/releases?per_page=20", {headers:{"Accept":"application/vnd.github+json","User-Agent":"Puntos-Vuela-Toolkit-Updater"}, signal:AbortSignal.timeout(15000)});
     if (!response.ok) return;
-    const release:any = await response.json();
-    const latest = String(release.tag_name||"").replace(/^v/,"");
+    const releases:any[] = await response.json();
     const current = app.getVersion();
-    if (!latest || compareVersions(latest,current)<=0 || release.draft || release.prerelease) return;
-    const appImageAsset = (release.assets||[]).find((a:any)=>String(a.name).endsWith("-x64.AppImage") && String(a.name).includes("Puntos_Vuela_Toolkit-Electron"));
+    const release = releases.find((candidate:any)=>{
+      if(candidate.draft || candidate.prerelease) return false;
+      const version = String(candidate.tag_name||"").replace(/^v/,"");
+      const assets = candidate.assets||[];
+      return compareVersions(version,current)>0 &&
+        assets.some((a:any)=>String(a.name).includes("Puntos_Vuela_Toolkit-Electron") && String(a.name).endsWith("-x64.AppImage")) &&
+        assets.some((a:any)=>a.name==="SHA256SUMS";
+    });
+    if (!release) return;
+    const latest = String(release.tag_name||"").replace(/^v/,"");
+    const appImageAsset = (release.assets||[]).find((a:any)=>String(a.name).includes("Puntos_Vuela_Toolkit-Electron") && String(a.name).endsWith("-x64.AppImage"));
     const checksumAsset = (release.assets||[]).find((a:any)=>a.name==="SHA256SUMS");
-    if (!appImageAsset || !checksumAsset) return;
     const choice = await dialog.showMessageBox(window,{type:"info",buttons:["Actualizar ahora","Más tarde"],defaultId:0,cancelId:1,title:"Nueva versión disponible",message:"Puntos Vuela Toolkit "+latest,detail:"Tienes instalada la versión "+current+". La versión "+latest+" está disponible. La descarga se verificará antes de sustituir la aplicación. Se conservará una copia para recuperación."});
     if(choice.response!==0) return;
     await performUpdate(window, appImageAsset, checksumAsset, latest);
