@@ -134,6 +134,22 @@ async function checkUpdates(window: BrowserWindow): Promise<void> {
       .sort((a: any, b: any) => compareVersions(b.version, a.version));
 
     const candidate = candidates[0];
+    if (!candidate && testMode) {
+      const legacyTestRelease = releases
+        .filter((release: any) => !release.draft && release.prerelease && /^pruebas-\d+$/i.test(String(release.tag_name || "")))
+        .filter((release: any) => appImageAssetForArch(release.assets || []) && (release.assets || []).some((asset: any) => asset.name === "SHA256SUMS"))
+        .sort((a: any, b: any) => Date.parse(b.published_at || b.created_at || 0) - Date.parse(a.published_at || a.created_at || 0))[0];
+      if (legacyTestRelease) {
+        const choice = await dialog.showMessageBox(window, {
+          type: "info", buttons: ["Ver release de pruebas", "Cerrar"], defaultId: 0, cancelId: 1,
+          title: "ACTUALIZADOR · MODO DE PRUEBAS",
+          message: "Canal de pruebas detectado: " + legacyTestRelease.tag_name,
+          detail: "Las releases antiguas de pruebas no usan etiquetas SemVer. Este modal valida la detección y presentación; no instala estas releases legacy."
+        });
+        if (choice.response === 0 && legacyTestRelease.html_url) void shell.openExternal(legacyTestRelease.html_url);
+        return;
+      }
+    }
     if (!candidate) return;
 
     const latest = candidate.version;
