@@ -54,20 +54,27 @@ async function confirmSuccessfulStartup(): Promise<void> {
 }
 
 async function recoverPreviousVersion(): Promise<void> {
-  if (process.env.APPIMAGE) {
-    try {
-      const marker = JSON.parse(await fs.readFile(markerPath(), "utf8"));
-      if (marker?.backup && await fs.access(marker.backup).then(()=>true).catch(()=>false)) {
-        const current = process.env.APPIMAGE!;
-        await fs.rename(current, current + ".failed");
-        await fs.rename(marker.backup, current);
-        await fs.rm(current + ".failed", {force:true});
-        await fs.rm(markerPath(), {force:true});
-        spawn(current, [], {detached:true, stdio:"ignore"}).unref();
-        app.exit(0);
-      }
-    } catch {}
-  }
+  if (!process.env.APPIMAGE) return;
+  try {
+    const marker = JSON.parse(await fs.readFile(markerPath(), "utf8"));
+    if (!marker?.backup || !await fs.access(marker.backup).then(()=>true).catch(()=>false)) return;
+    // First launch after replacement: arm the rollback watchdog and allow startup.
+    if (!marker.started) {
+      marker.started = true;
+      await fs.writeFile(markerPath(), JSON.stringify(marker));
+      return;
+    }
+    // If a launch was armed but never reached the renderer-ready checkpoint,
+    // restore the previous image on the next invocation.
+    const current = process.env.APPIMAGE;
+    const failed = current + ".failed";
+    await fs.rename(current, failed);
+    await fs.rename(marker.backup, current);
+    await fs.rm(failed, {force:true});
+    await fs.rm(markerPath(), {force:true});
+    spawn(current, [], {detached:true, stdio:"ignore"}).unref();
+    app.exit(0);
+  } catch {}
 }
 
 async function checkUpdates(window: BrowserWindow): Promise<void> {
