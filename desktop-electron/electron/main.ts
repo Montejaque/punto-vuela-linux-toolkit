@@ -192,7 +192,7 @@ async function performUpdate(window:BrowserWindow,asset:any,checksumAsset:any,ve
     const checksumResponse=await fetch(checksumAsset.browser_download_url,{headers:{"User-Agent":"Puntos-Vuela-Toolkit-Updater"},signal:AbortSignal.timeout(30000)});
     if(!checksumResponse.ok)throw new Error("No se pudo obtener el archivo de sumas de verificación.");
     const checksums=await checksumResponse.text();
-    const expected=checksums.split(/\r?\n/).find(line=>line.endsWith("  "+asset.name))?.split(/\s+/)[0];
+    const expected=checksums.split(/\r?\n/).map(line=>line.trim()).filter(Boolean).map(line=>{const match=line.match(/^([a-f0-9]{64})\s+\*?(.+)$/i);return match?{hash:match[1],name:match[2].trim().replace(/^\.\//,"")}:null;}).find(entry=>entry&&entry.name===asset.name)?.hash;
     if(!expected||!/^[a-f0-9]{64}$/i.test(expected))throw new Error("No se encontró una suma SHA-256 válida para la descarga.");
     const downloadResponse=await fetch(asset.browser_download_url,{headers:{"User-Agent":"Puntos-Vuela-Toolkit-Updater"},signal:AbortSignal.timeout(20*60*1000)});
     if(!downloadResponse.ok||!downloadResponse.body)throw new Error("No se pudo descargar la actualización.");
