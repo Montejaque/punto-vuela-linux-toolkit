@@ -72,6 +72,10 @@ Envía propuestas de aplicaciones, selecciona el centro y revisa la información
 - Gestión de aplicaciones desde tu espacio de usuario.
 
 
+
+## Changelog
+
+Consulta [CHANGELOG.md](CHANGELOG.md) para conocer las novedades y cambios de cada versión.
 ## Actualizador automático
 
 La aplicación comprueba si hay releases disponibles. El modal permite **Actualizar ahora** o **Más tarde**. Al posponer o cerrar el modal, queda un banner en la interfaz para retomar la actualización. La descarga se verifica mediante SHA-256, se conserva una copia de la AppImage actual y el mecanismo de recuperación puede restaurarla si el nuevo inicio no se confirma.
