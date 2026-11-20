@@ -8,7 +8,7 @@ import { createHash, randomUUID } from "node:crypto";
 const DATA = path.join(process.env.XDG_DATA_HOME || path.join(os.homedir(), ".local", "share"), "punto-vuela-linux-toolkit");
 const APP_DIR = path.join(DATA, "AppImages");
 const CACHE = path.join(DATA, "cache");
-const IMAGE_CACHE = path.join(CACHE, "images");
+const IMAGE_CACHE = path.join(os.homedir(), ".local", "share", "punto-vuela-linux-toolkit", "cache", "images");
 const FEED = "https://appimage.github.io/feed.json";
 const MAIL = "https://punto-vuela-mail.montejaque.workers.dev";
 const UA = "PuntoVuelaLinuxToolkit-Electron/0.3";
@@ -147,6 +147,7 @@ async function updaterInstall():Promise<string>{
 }
 export async function api(method:string,args:any={}):Promise<any>{
   switch(method){
+    case "cache.init": await fs.mkdir(IMAGE_CACHE,{recursive:true}); return {path:IMAGE_CACHE,created:true};
     case "images.cache": return cachedImage(String(args.url||""));
     case "catalog.search": return catalogSearch(args.query||"",!!args.force);
     case "tools.list": return publicTools(!!args.force);
