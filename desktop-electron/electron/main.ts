@@ -186,7 +186,8 @@ async function performUpdate(window:BrowserWindow,asset:any,checksumAsset:any,ve
     const checksumResponse=await fetch(checksumAsset.browser_download_url,{headers:{"User-Agent":"Puntos-Vuela-Toolkit-Updater"},signal:AbortSignal.timeout(30000)});
     if(!checksumResponse.ok)throw new Error("No se pudo obtener el archivo de sumas de verificación.");
     const checksums=await checksumResponse.text();
-    const expected=checksums.split(/\r?\n/).find(line=>line.endsWith("  "+asset.name))?.split(/\s+/)[0];
+    const expected=checksums.split(/\r?
+/).find(line=>line.endsWith("  "+asset.name))?.split(/\s+/)[0];
     if(!expected||!/^[a-f0-9]{64}$/i.test(expected))throw new Error("No se encontró una suma SHA-256 válida para la descarga.");
     const downloadResponse=await fetch(asset.browser_download_url,{headers:{"User-Agent":"Puntos-Vuela-Toolkit-Updater"},signal:AbortSignal.timeout(20*60*1000)});
     if(!downloadResponse.ok||!downloadResponse.body)throw new Error("No se pudo descargar la actualización.");
@@ -211,7 +212,13 @@ async function performUpdate(window:BrowserWindow,asset:any,checksumAsset:any,ve
   }
 }
 
-ipcMain.handle("pv:updater-action", async () => {\n  const pending=pendingUpdaterAction; if(!pending) return false; pendingUpdaterAction=null;\n  if(pending.legacy){if(pending.releaseUrl) void shell.openExternal(pending.releaseUrl); return true;}\n  const action=await showUpdaterModal(pending.window,{title:"Actualización disponible",version:pending.version,current:pending.current,testMode:pending.testMode,description:"Pulsa Actualizar ahora para descargar, verificar e instalar la versión disponible."});\n  if(action==="update") await performUpdate(pending.window,pending.asset,pending.checksums,pending.version); else {pendingUpdaterAction=pending; pending.window.webContents.send("pv:updater-banner",{version:pending.version,kind:pending.testMode?"test":"stable"});} return true;\n});\nipcMain.handle("pv:invoke", async (_event, method: string, args: unknown) => {
+ipcMain.handle("pv:updater-action", async () => {
+  const pending=pendingUpdaterAction; if(!pending) return false; pendingUpdaterAction=null;
+  if(pending.legacy){if(pending.releaseUrl) void shell.openExternal(pending.releaseUrl); return true;}
+  const action=await showUpdaterModal(pending.window,{title:"Actualización disponible",version:pending.version,current:pending.current,testMode:pending.testMode,description:"Pulsa Actualizar ahora para descargar, verificar e instalar la versión disponible."});
+  if(action==="update") await performUpdate(pending.window,pending.asset,pending.checksums,pending.version); else {pendingUpdaterAction=pending; pending.window.webContents.send("pv:updater-banner",{version:pending.version,kind:pending.testMode?"test":"stable"});} return true;
+});
+ipcMain.handle("pv:invoke", async (_event, method: string, args: unknown) => {
   if (!allowed.has(method)) throw new Error("Operación no autorizada.");
   return api(method, args && typeof args === "object" ? args : {});
 });
