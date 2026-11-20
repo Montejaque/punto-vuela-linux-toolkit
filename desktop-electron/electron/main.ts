@@ -10,6 +10,8 @@ const allowed = new Set(["catalog.search","tools.list","apps.list","apps.folder"
 const REPO = "Montejaque/punto-vuela-linux-toolkit";
 const UPDATE_BASE = "https://api.github.com/repos/" + REPO;
 const markerPath = () => join(app.getPath("userData"), "update-pending.json");
+let pendingUpdaterAction: {window: BrowserWindow; version: string; asset: any; checksums: any; legacy?: boolean; releaseUrl?: string; testMode?: boolean; current?: string} | null = null;
+
 
 
 function showUpdaterModal(parent: BrowserWindow, options: { title: string; version: string; current?: string; testMode?: boolean; legacy?: boolean; description?: string }): Promise<"update"|"later"|"release"> {
@@ -209,7 +211,7 @@ async function performUpdate(window:BrowserWindow,asset:any,checksumAsset:any,ve
   }
 }
 
-ipcMain.handle("pv:invoke", async (_event, method: string, args: unknown) => {
+ipcMain.handle("pv:updater-action", async () => {\n  const pending=pendingUpdaterAction; if(!pending) return false; pendingUpdaterAction=null;\n  if(pending.legacy){if(pending.releaseUrl) void shell.openExternal(pending.releaseUrl); return true;}\n  const action=await showUpdaterModal(pending.window,{title:"Actualización disponible",version:pending.version,current:pending.current,testMode:pending.testMode,description:"Pulsa Actualizar ahora para descargar, verificar e instalar la versión disponible."});\n  if(action==="update") await performUpdate(pending.window,pending.asset,pending.checksums,pending.version); else {pendingUpdaterAction=pending; pending.window.webContents.send("pv:updater-banner",{version:pending.version,kind:pending.testMode?"test":"stable"});} return true;\n});\nipcMain.handle("pv:invoke", async (_event, method: string, args: unknown) => {
   if (!allowed.has(method)) throw new Error("Operación no autorizada.");
   return api(method, args && typeof args === "object" ? args : {});
 });
