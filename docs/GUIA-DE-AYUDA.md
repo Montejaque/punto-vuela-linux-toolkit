@@ -56,7 +56,21 @@ Puedes seleccionar tema claro, oscuro o automático. La navegación lateral se p
 - AppImageUpdate solo funciona con metadatos compatibles incorporados por el editor.
 - El Toolkit gestiona aplicaciones en el espacio de usuario y no necesita root para estas operaciones.
 
-## 11. Actualizador automático de la aplicación
+## 12. Caché local de imágenes
+
+El catálogo y las fichas pueden mostrar iconos y capturas obtenidos de sus servidores de origen mediante HTTPS. Toolkit mantiene una caché local para reutilizar las imágenes entre sesiones y reducir descargas repetidas.
+
+- Formatos admitidos: PNG, JPEG, WebP, GIF y SVG.
+- Tamaño máximo por imagen: 8 MB.
+- Las imágenes guardadas se conservan sin caducidad automática; pueden quedar desactualizadas si el origen cambia.
+- Los errores de descarga se registran localmente y la URL fallida no se vuelve a intentar durante 12 horas.
+- Los nombres de archivo se derivan de SHA-256 de la URL; se guardan metadatos JSON y se usan extensiones de imagen reconocibles.
+- Ruta: `~/.local/share/punto-vuela-linux-toolkit/cache/images`. Actualmente esta ruta fija no sigue `XDG_DATA_HOME`.
+- La carpeta se prepara al iniciar la aplicación. Si no puede crearse, se muestra un aviso. Para vaciarla, cierra Toolkit y elimina `cache/images`; se volverá a crear en el siguiente arranque.
+
+El contenido de esta caché permanece en el equipo y no se sincroniza ni se envía al servicio de propuestas. Los servidores de origen sí reciben las solicitudes HTTPS de imágenes y pueden registrar datos técnicos de conexión.
+
+## 13. Actualizador automático de la aplicación
 
 Toolkit comprueba periódicamente si hay una versión más reciente de la aplicación, tanto en el canal estable como en el canal de pruebas cuando existe una release descargable compatible.
 
@@ -64,13 +78,13 @@ Toolkit comprueba periódicamente si hay una versión más reciente de la aplica
 
 Cuando se detecta una versión, aparece un diálogo con la versión disponible y la versión instalada. El botón **Actualizar ahora** inicia la descarga y el proceso de actualización; **Más tarde** cierra el diálogo sin descartar la actualización.
 
-![Modal de actualización de Puntos Vuela Toolkit](../screenshots/10-actualizador-modal.png)
+**Captura del modal:** el archivo de imagen no está incluido en esta rama; se ha retirado el enlace que no resolvía.
 
 ### Banner persistente
 
 Si se pulsa **Más tarde** o se cierra el modal, la aplicación muestra un banner en la parte superior del área de trabajo. El banner informa de la versión detectada y permite pulsar **Actualizar ahora** para retomar el proceso. También se puede cerrar el aviso; el comprobador puede volver a mostrarlo si la actualización sigue pendiente.
 
-![Banner de actualización pendiente en Puntos Vuela Toolkit](../screenshots/11-actualizador-banner.png)
+**Captura del banner:** el archivo de imagen tampoco está incluido en esta rama; se ha retirado el enlace que no resolvía.
 
 ### Proceso de actualización y recuperación
 
@@ -83,7 +97,7 @@ Si se pulsa **Más tarde** o se cierra el modal, la aplicación muestra un banne
 **Recomendación:** mantén conexión a Internet durante la comprobación y descarga. No interrumpas el proceso de reemplazo del archivo.
 
 
-## 12. Descarga, soporte y documentación
+## 14. Descarga, soporte y documentación
 - Web: https://toolkit.javigallego.es/
 - Releases: https://github.com/Montejaque/punto-vuela-linux-toolkit/releases
 - Guía interactiva: https://toolkit.javigallego.es/guia.html

@@ -1,7 +1,7 @@
 # ADR-001: Nueva interfaz de escritorio con Electron
 
 - Estado: implementación Electron activa; validación de publicación y pruebas manuales pendientes
-- Fecha de actualización: 2026-11-19
+- Fecha de actualización: 2026-11-21
 - Fecha de decisión original: 2026-11-16
 - Rama: `rewrite/electron-desktop`
 - Versiones anteriores: se conservan sin modificar (`pruebas-80` y anteriores)
@@ -58,7 +58,7 @@ Evaluar **Electron + React + TypeScript + Vite** como nueva interfaz, con estas 
 - **Compatibilidad glibc**: compilar en entorno con glibc 2.31 o más antiguo y ejecutar prueba real en Ubuntu 20.04.
 - **Correo**: no simular éxito; requiere despliegue del Worker y prueba real con cuenta autorizada.
 
-## Estado de implementación (19-11-2026)
+## Estado de implementación (21-11-2026)
 
 La rama Electron ya incorpora:
 - Proceso principal con IPC de lista permitida; el renderer no tiene acceso Node directo.
@@ -68,6 +68,7 @@ La rama Electron ya incorpora:
 - Directorio de centros desde puntosvuela.es y precarga de datos públicos de contacto en el formulario.
 - Formulario de propuestas con campos obligatorios, motivo, observaciones y aceptaciones legales; envío a Cloudflare Worker y confirmación basada en respuesta HTTP/Gmail del servicio.
 - Pantallas de biblioteca, herramientas, directorio, contacto y ayuda.
+- Caché persistente de iconos y capturas: solo HTTPS y MIME permitidos, límite de 8 MB, claves SHA-256, extensiones reconocibles, metadatos, escritura atómica con temporales únicos, migración de archivos `.img` antiguos y caché negativa de 12 horas; la carpeta se inicializa al arrancar y muestra un aviso si falla.
 
 Pendiente de validación:
 - Prueba manual de la AppImage en Ubuntu 20.04 GNOME: arranque, integración de escritorio, navegación y cierre.
@@ -75,5 +76,7 @@ Pendiente de validación:
 - Prueba real del formulario y del servicio remoto de correo, incluyendo Turnstile y confirmación de entrega.
 - Revisión de accesibilidad: teclado, foco, contraste y lector de pantalla.
 - Revisión de dependencias y avisos de seguridad relevantes.
+- Verificar caché positiva/negativa, persistencia entre reinicios, migración de archivos `.img`, escrituras concurrentes, fallos de permisos y fallback visual.
+- Resolver la discrepancia de configuración: `IMAGE_CACHE` está fijada a `~/.local/share/...` y no sigue `XDG_DATA_HOME`, a diferencia del directorio principal de datos.
 
-La guía, README y documentación integrada se han actualizado para describir la edición Electron. El estado de los workflows y de la publicación debe verificarse en Actions antes de dar por cerrada la validación. La implementación no debe considerarse Release estable hasta completar las pruebas anteriores.
+La guía, README y documentación integrada, además de privacidad y condiciones, se han actualizado para describir el comportamiento de la edición Electron. El estado de los workflows y de la publicación debe verificarse en Actions antes de dar por cerrada la validación. La implementación no debe considerarse Release estable hasta completar las pruebas anteriores.

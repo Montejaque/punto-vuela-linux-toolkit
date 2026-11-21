@@ -48,6 +48,9 @@ npm run dist:appimage
 - AppImageUpdate depende de metadatos compatibles de la aplicación.
 - El envío de propuestas depende de la disponibilidad del servicio remoto de correo.
 
+## Caché de imágenes
+Los iconos y capturas se descargan por HTTPS y se almacenan en caché local (PNG, JPEG, WebP, GIF o SVG; hasta 8 MB por archivo). La caché persiste, los errores se reintentan tras 12 horas y se puede borrar desde `~/.local/share/punto-vuela-linux-toolkit/cache/images`. Actualmente la ruta no respeta `XDG_DATA_HOME`; las imágenes y metadatos de caché no se envían ni sincronizan.
+
 ## Contacto
 
 Francisco Javier Gallego Orellana · Puntos Vuela Montejaque  

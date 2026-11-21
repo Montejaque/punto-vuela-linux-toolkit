@@ -71,7 +71,13 @@ Envía propuestas de aplicaciones, selecciona el centro y revisa la información
 - Navegación lateral y diseño adaptable.
 - Gestión de aplicaciones desde tu espacio de usuario.
 
-
+### Caché persistente de imágenes
+- El catálogo y las fichas pueden descargar iconos y capturas desde sus orígenes HTTPS.
+- Se aceptan PNG, JPEG, WebP, GIF y SVG; cada imagen está limitada a 8 MB.
+- La caché de imágenes se conserva entre ejecuciones y utiliza nombres derivados de SHA-256 de la URL, extensiones reconocibles y metadatos locales.
+- Los errores de descarga quedan registrados y la URL fallida se vuelve a intentar tras 12 horas. Las imágenes que ya se han guardado no caducan automáticamente.
+- Ruta actual: `~/.local/share/punto-vuela-linux-toolkit/cache/images`. Por ahora no respeta `XDG_DATA_HOME`.
+- Para vaciar la caché, cierra Toolkit y elimina esa carpeta; la aplicación la vuelve a crear al arrancar.
 
 ## Changelog
 
@@ -88,7 +94,11 @@ La aplicación comprueba si hay releases disponibles. El modal permite **Actuali
 - La compatibilidad de cada AppImage depende de los requisitos de la propia aplicación y del sistema.
 - Algunas aplicaciones pueden no disponer de opciones compatibles de instalación, actualización o gestión.
 
-## Descargas\n\nDescarga la versión más reciente desde [GitHub Releases](https://github.com/Montejaque/punto-vuela-linux-toolkit/releases).\n\n## Instalación
+## Descargas
+
+Descarga la versión más reciente desde [GitHub Releases](https://github.com/Monteja/punto-vuela-linux-toolkit/releases).
+
+## Instalación
 
 1. Descarga la AppImage desde la sección [Releases](https://github.com/Montejaque/punto-vuela-linux-toolkit/releases).
 2. Guarda el archivo en tu equipo y habilita el permiso de ejecución.
