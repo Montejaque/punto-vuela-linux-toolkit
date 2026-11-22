@@ -96,7 +96,7 @@ La aplicación comprueba si hay releases disponibles. El modal permite **Actuali
 
 ## Descargas
 
-Descarga la versión más reciente desde [GitHub Releases](https://github.com/Monteja/punto-vuela-linux-toolkit/releases).
+Descarga la versión más reciente desde [GitHub Releases](https://github.com/Montejaque/punto-vuela-linux-toolkit/releases).
 
 ## Instalación
 
