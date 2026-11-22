@@ -44,7 +44,7 @@ Descarga desde fuentes fiables. Las comprobaciones de tipo de archivo y ejecutab
 
 ## Documentación web
 - Web: https://toolkit.javigallego.es/
-- Guía ilustrada: https://toolkit.javigallego.es/guia.html
+- Guía web de uso (sin capturas de interfaz en esta revisión): https://toolkit.javigallego.es/guia.html
 - Releases: https://github.com/Montejaque/punto-vuela-linux-toolkit/releases
 - Privacidad: https://toolkit.javigallego.es/privacy.html
 - Condiciones: https://toolkit.javigallego.es/terms.html

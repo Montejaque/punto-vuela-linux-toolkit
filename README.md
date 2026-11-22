@@ -12,32 +12,7 @@
 
 ## Capturas de la aplicación
 
-### Pantalla de inicio
-![Pantalla de inicio de Puntos Vuela Toolkit](https://toolkit.javigallego.es/screenshots/01-inicio.png)
-
-### Catálogo de aplicaciones
-![Catálogo de aplicaciones AppImage](https://toolkit.javigallego.es/screenshots/02-catalogo.png)
-
-### Ficha de aplicación
-![Ficha de detalle de una aplicación](https://toolkit.javigallego.es/screenshots/03-ficha-app.png)
-
-### Mis aplicaciones
-![Biblioteca de aplicaciones](https://toolkit.javigallego.es/screenshots/04-mis-aplicaciones.png)
-
-### Herramientas Punto Vuela
-![Herramientas Punto Vuela](https://toolkit.javigallego.es/screenshots/05-herramientas.png)
-
-### Recursos
-![Banco de recursos](https://toolkit.javigallego.es/screenshots/06-recursos.png)
-
-### Preguntas frecuentes
-![Preguntas frecuentes](https://toolkit.javigallego.es/screenshots/07-faqs.png)
-
-### Contacto y propuestas
-![Contacto y propuestas](https://toolkit.javigallego.es/screenshots/08-contacto.png)
-
-### Ayuda
-![Ayuda y documentación](https://toolkit.javigallego.es/screenshots/09-ayuda.png)
+Las capturas de interfaz no están disponibles en esta rama. Se retiraron los enlaces a archivos no verificados para evitar imágenes rotas; se reincorporarán cuando se publiquen y validen.
 
 ## Funcionalidades
 
@@ -61,7 +36,7 @@ Encuentra aplicaciones y herramientas publicadas en repositorios públicos del e
 ### Recursos y ayuda
 - Accede a recursos y contenidos de consulta desde sus portales originales.
 - Consulta preguntas frecuentes y documentación de apoyo.
-- Utiliza la guía integrada y la guía web ilustrada.
+- Utiliza la guía integrada y la guía web.
 
 ### Contacto y propuestas
 Envía propuestas de aplicaciones, selecciona el centro y revisa la información antes de enviarla. También puedes contactar por WhatsApp con un mensaje preparado.

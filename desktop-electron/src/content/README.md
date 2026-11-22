@@ -17,7 +17,7 @@ Aplicación de escritorio Linux para descubrir aplicaciones AppImage, administra
 ## Guías
 
 - Guía integrada: archivo `GUIA-DE-AYUDA.md`.
-- Guía web interactiva y capturas: https://toolkit.javigallego.es/guia.html
+- Guía web interactiva (sin capturas de interfaz en esta revisión): https://toolkit.javigallego.es/guia.html
 - Web del proyecto: https://toolkit.javigallego.es/
 
 ## Compatibilidad

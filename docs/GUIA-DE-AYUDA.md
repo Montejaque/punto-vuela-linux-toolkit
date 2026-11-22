@@ -43,7 +43,7 @@ Antes de continuar, el formulario requiere consultar y aceptar los apartados leg
 - **WhatsApp:** se abre una conversación con el texto preparado para que confirmes el envío en WhatsApp.
 
 ## 9. Ayuda y documentación
-La sección Ayuda incluye guía, información de compatibilidad, gestión de AppImages, actualizaciones, privacidad y condiciones. También puedes consultar la [guía web ilustrada](https://toolkit.javigallego.es/guia.html).
+La sección Ayuda incluye guía, información de compatibilidad, gestión de AppImages, actualizaciones, privacidad y condiciones. También puedes consultar la [guía web](https://toolkit.javigallego.es/guia.html).
 
 ## 10. Tema y navegación
 Puedes seleccionar tema claro, oscuro o automático. La navegación lateral se puede expandir o contraer.
@@ -78,13 +78,13 @@ Toolkit comprueba periódicamente si hay una versión más reciente de la aplica
 
 Cuando se detecta una versión, aparece un diálogo con la versión disponible y la versión instalada. El botón **Actualizar ahora** inicia la descarga y el proceso de actualización; **Más tarde** cierra el diálogo sin descartar la actualización.
 
-**Captura del modal:** el archivo de imagen no está incluido en esta rama; se ha retirado el enlace que no resolvía.
+
 
 ### Banner persistente
 
 Si se pulsa **Más tarde** o se cierra el modal, la aplicación muestra un banner en la parte superior del área de trabajo. El banner informa de la versión detectada y permite pulsar **Actualizar ahora** para retomar el proceso. También se puede cerrar el aviso; el comprobador puede volver a mostrarlo si la actualización sigue pendiente.
 
-**Captura del banner:** el archivo de imagen tampoco está incluido en esta rama; se ha retirado el enlace que no resolvía.
+
 
 ### Proceso de actualización y recuperación
 
@@ -98,6 +98,8 @@ Si se pulsa **Más tarde** o se cierra el modal, la aplicación muestra un banne
 
 
 ## 14. Descarga, soporte y documentación
+
+**Capturas de interfaz:** no están disponibles en esta rama; se retiraron las referencias a archivos ausentes y la guía se mantiene en formato textual.
 - Web: https://toolkit.javigallego.es/
 - Releases: https://github.com/Montejaque/punto-vuela-linux-toolkit/releases
 - Guía interactiva: https://toolkit.javigallego.es/guia.html
