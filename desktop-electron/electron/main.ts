@@ -135,7 +135,7 @@ async function updaterChannelConfig(): Promise<{channel: string; testTag?: strin
   }
 }
 function testReleaseNumber(tag: string): number {
-  const match = tag.match(/^prueba-(\\d+)$/i);
+  const match = tag.match(/^prueba-(\d+)$/i);
   return match ? Number(match[1]) : 0;
 }
 
