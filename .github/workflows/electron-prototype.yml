@@ -54,7 +54,8 @@ jobs:
           if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
             printf '{"channel":"stable"}\n' > updater-channel.json
           else
-            printf '{"channel":"test"}\n' > updater-channel.json
+            TEST_TAG="prueba-84"
+            printf '{"channel":"test","testTag":"%s"}\n' "$TEST_TAG" > updater-channel.json
           fi
       - name: Build
         working-directory: desktop-electron
@@ -119,15 +120,16 @@ jobs:
           APPIMAGE="$(find . -maxdepth 1 -type f -name '*.AppImage' -print -quit)"
           test -n "$APPIMAGE"
           sha256sum "$APPIMAGE" > SHA256SUMS
-      - name: Publish PRUEBA-83 test release
+      - name: Publish PRUEBA-84 test release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: prueba-83
+          tag_name: prueba-84
           target_commitish: rewrite/electron-desktop
-          name: PRUEBA-83 · Banner de prueba del actualizador
+          name: PRUEBA-84 · Banner de prueba del actualizador
           prerelease: true
           body: |
-            - PRUEBA: esta release se utiliza exclusivamente para comprobar el actualizador.
+            - PRUEBA-84: esta release se utiliza exclusivamente para comprobar el actualizador.
+            - El instalador incluye el identificador prueba-84 y solo actualizará desde prueba-N a una N superior.
             - El banner/modal debe identificar claramente el canal de pruebas.
             - Build creado desde la rama rewrite/electron-desktop.
           fail_on_unmatched_files: true
