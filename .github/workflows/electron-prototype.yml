@@ -21,6 +21,8 @@ concurrency:
 jobs:
   build:
     name: Build and test Electron AppImage
+    outputs:
+      test_tag: ${{ steps.configure.outputs.test_tag }}
     runs-on: ubuntu-22.04
     timeout-minutes: 35
     container:
@@ -125,12 +127,12 @@ jobs:
       - name: Publish test release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.configure.outputs.test_tag }}
+          tag_name: ${{ needs.build.outputs.test_tag }}
           target_commitish: rewrite/electron-desktop
-          name: ${{ steps.configure.outputs.test_tag }} · Banner de prueba del actualizador
+          name: ${{ needs.build.outputs.test_tag }} · Banner de prueba del actualizador
           prerelease: true
           body: |
-            - ${{ steps.configure.outputs.test_tag }}: release generada automáticamente para probar el actualizador.
+            - ${{ needs.build.outputs.test_tag }}: release generada automáticamente para probar el actualizador.
             - El instalador incluye su identificador de prueba y solo actualizará desde prueba-N a una N superior.
             - El banner/modal debe identificar claramente el canal de pruebas.
             - Build creado desde la rama rewrite/electron-desktop.
