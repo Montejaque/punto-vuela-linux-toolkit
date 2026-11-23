@@ -105,3 +105,32 @@ jobs:
           files: |
             *.AppImage
             SHA256SUMS
+
+  test-release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/rewrite/electron-desktop'
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: puntos-vuela-toolkit-electron-appimage
+      - name: Generate SHA256SUMS
+        run: |
+          APPIMAGE="$(find . -maxdepth 1 -type f -name '*.AppImage' -print -quit)"
+          test -n "$APPIMAGE"
+          sha256sum "$APPIMAGE" > SHA256SUMS
+      - name: Publish PRUEBA-83 test release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: prueba-83
+          target_commitish: rewrite/electron-desktop
+          name: PRUEBA-83 · Banner de prueba del actualizador
+          prerelease: true
+          body: |
+            - PRUEBA: esta release se utiliza exclusivamente para comprobar el actualizador.
+            - El banner/modal debe identificar claramente el canal de pruebas.
+            - Build creado desde la rama rewrite/electron-desktop.
+          fail_on_unmatched_files: true
+          files: |
+            *.AppImage
+            SHA256SUMS
