@@ -22,7 +22,7 @@ function showUpdaterModal(parent: BrowserWindow, options: { title: string; versi
     modal.once("ready-to-show", () => modal.show());
     modal.webContents.on("will-navigate", (event, url) => { if (url.startsWith("pvu-updater://")) { event.preventDefault(); const action=url.replace("pvu-updater://",""); if(action==="update"||action==="later"||action==="release") finish(action); } else event.preventDefault(); });
     modal.on("closed",()=>{if(!settled){settled=true;resolve("later");}});
-    const testBadge=options.testMode?'<span class="badge">CANAL DE PRUEBAS</span>':'';
+    const testBadge=options.testMode?'<span class="badge">PRUEBA</span>':'';
     const current=options.current?'<div class="version-row"><span>Versión instalada</span><b>'+options.current+'</b></div>':'';
     const changelogHtml=options.changelog?'<div class="changes"><strong>Novedades de esta versión</strong><ul>'+options.changelog.split(/\\r?\\n/).map(line=>line.trim()).filter(line=>line.startsWith("- ")||line.startsWith("* ")).slice(0,3).map(line=>'<li>'+line.slice(2).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")+'</li>').join("")+'</ul></div>':'';
     const updateButton='<a class="primary" href="pvu-updater://update"><span class="arrow">↻</span> Actualizar ahora</a>';
