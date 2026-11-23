@@ -11,6 +11,7 @@ const REPO = "Montejaque/punto-vuela-linux-toolkit";
 const UPDATE_BASE = "https://api.github.com/repos/" + REPO;
 const markerPath = () => join(app.getPath("userData"), "update-pending.json");
 let pendingUpdaterAction: {window: BrowserWindow; version: string; asset: any; checksums: any; legacy?: boolean; releaseUrl?: string; testMode?: boolean; current?: string} | null = null;
+let updaterCheckInProgress = false;
 
 
 
@@ -140,6 +141,9 @@ function testReleaseNumber(tag: string): number {
 }
 
 async function checkUpdates(window: BrowserWindow): Promise<void> {
+  // Avoid duplicate dialogs when the periodic checker runs while a notification is pending.
+  if (updaterCheckInProgress || pendingUpdaterAction) return;
+  updaterCheckInProgress = true;
   const channelConfig = await updaterChannelConfig();
   const testMode = process.argv.includes("--updater-test") || channelConfig.channel === "test";
   try {
@@ -198,6 +202,8 @@ async function checkUpdates(window: BrowserWindow): Promise<void> {
     else { pendingUpdaterAction = { window, version: latest, asset: appImageAsset, checksums: checksumAsset, testMode }; window.webContents.send("pv:updater-banner", { version: latest, kind: testMode ? "test" : "stable" }); }
   } catch (error: any) {
     console.warn("Updater:", error?.message || error);
+  } finally {
+    updaterCheckInProgress = false;
   }
 }
 
@@ -279,7 +285,12 @@ app.whenReady().then(async () => {
   Menu.setApplicationMenu(null);
   await recoverPreviousVersion();
   try { const cache=await api("cache.init",{}); console.info("[Punto Vuela Toolkit] Caché de imágenes preparada:",cache.path); } catch(error:any) { console.error("[Punto Vuela Toolkit] No se pudo crear la caché persistente de imágenes:",error); await dialog.showMessageBox({type:"warning",title:"Caché de imágenes",message:"No se pudo crear la carpeta de caché persistente de iconos.",detail:String(error?.message||error)}); }
-  createWindow();
+  const mainWindow = createWindow();
+  // Check on launch (inside createWindow) and every 6 hours while the app remains open.
+  if (!isDevelopment) setInterval(() => {
+    const activeWindow = BrowserWindow.getAllWindows()[0];
+    if (activeWindow && !activeWindow.isDestroyed()) void checkUpdates(activeWindow);
+  }, 6 * 60 * 60 * 1000);
   app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
 app.on("window-all-closed", () => { if (process.platform !== "darwin") app.quit(); });
