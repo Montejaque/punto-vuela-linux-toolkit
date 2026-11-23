@@ -68,7 +68,7 @@ La rama Electron ya incorpora:
 - Directorio de centros desde puntosvuela.es y precarga de datos públicos de contacto en el formulario.
 - Formulario de propuestas con campos obligatorios, motivo, observaciones y aceptaciones legales; envío a Cloudflare Worker y confirmación basada en respuesta HTTP/Gmail del servicio.
 - Pantallas de biblioteca, herramientas, directorio, contacto y ayuda.
-- Caché persistente de iconos y capturas: solo HTTPS y MIME permitidos, límite de 8 MB, claves SHA-256, extensiones reconocibles, metadatos, escritura atómica con temporales únicos, migración de archivos `.img` antiguos y caché negativa de 12 horas; la carpeta se inicializa al arrancar y muestra un aviso si falla.
+- Caché persistente de iconos y capturas: solo HTTPS y MIME permitidos, límite de 8 MB, claves SHA-256, extensiones reconocibles, metadatos, escritura atómica con temporales únicos, migración de archivos `.img` antiguos y registro local de fallos para diagnóstico; las solicitudes posteriores reintentan inmediatamente (sin espera de 12 horas). La carpeta se inicializa al arrancar y muestra un aviso si falla. La interfaz de Ayuda permite diagnosticar la ruta, conteos y entradas, y limpiar únicamente los registros de fallos.
 
 Pendiente de validación:
 - Prueba manual de la AppImage en Ubuntu 20.04 GNOME: arranque, integración de escritorio, navegación y cierre.
@@ -76,7 +76,7 @@ Pendiente de validación:
 - Prueba real del formulario y del servicio remoto de correo, incluyendo Turnstile y confirmación de entrega.
 - Revisión de accesibilidad: teclado, foco, contraste y lector de pantalla.
 - Revisión de dependencias y avisos de seguridad relevantes.
-- Verificar caché positiva/negativa, persistencia entre reinicios, migración de archivos `.img`, escrituras concurrentes, fallos de permisos y fallback visual.
+- Verificar caché de imágenes, registros de fallos y reintentos inmediatos, persistencia entre reinicios, migración de archivos `.img`, escrituras concurrentes, fallos de permisos y fallback visual; comprobar además los botones de diagnóstico y limpieza de errores.
 - Resolver la discrepancia de configuración: `IMAGE_CACHE` está fijada a `~/.local/share/...` y no sigue `XDG_DATA_HOME`, a diferencia del directorio principal de datos.
 
 La guía, README y documentación integrada, además de privacidad y condiciones, se han actualizado para describir el comportamiento de la edición Electron. El estado de los workflows y de la publicación debe verificarse en Actions antes de dar por cerrada la validación. La implementación no debe considerarse Release estable hasta completar las pruebas anteriores.
