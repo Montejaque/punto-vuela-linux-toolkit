@@ -166,7 +166,7 @@ async function checkUpdates(window: BrowserWindow): Promise<void> {
     const candidate = candidates[0];
     if (!candidate && testMode) {
       const legacyTestRelease = releases
-        .filter((release: any) => !release.draft && release.prerelease && /^pruebas-\d+$/i.test(String(release.tag_name || "")))
+        .filter((release: any) => !release.draft && release.prerelease && /^prueba(?:s)?-\d+$/i.test(String(release.tag_name || "")))
         .filter((release: any) => appImageAssetForArch(release.assets || []) && (release.assets || []).some((asset: any) => asset.name === "SHA256SUMS"))
         .sort((a: any, b: any) => Date.parse(b.published_at || b.created_at || 0) - Date.parse(a.published_at || a.created_at || 0))[0];
       if (legacyTestRelease) {
