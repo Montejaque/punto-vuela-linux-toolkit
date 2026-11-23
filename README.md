@@ -37,6 +37,7 @@ Encuentra aplicaciones y herramientas publicadas en repositorios públicos del e
 - Accede a recursos y contenidos de consulta desde sus portales originales.
 - Consulta preguntas frecuentes y documentación de apoyo.
 - Utiliza la guía integrada y la guía web.
+- En Ayuda, diagnostica la caché de imágenes (ruta, conteos y entradas) o elimina solo los registros de fallos; no se borran las imágenes almacenadas.
 
 ### Contacto y propuestas
 Envía propuestas de aplicaciones, selecciona el centro y revisa la información antes de enviarla. También puedes contactar por WhatsApp con un mensaje preparado.
@@ -50,7 +51,7 @@ Envía propuestas de aplicaciones, selecciona el centro y revisa la información
 - El catálogo y las fichas pueden descargar iconos y capturas desde sus orígenes HTTPS.
 - Se aceptan PNG, JPEG, WebP, GIF y SVG; cada imagen está limitada a 8 MB.
 - La caché de imágenes se conserva entre ejecuciones y utiliza nombres derivados de SHA-256 de la URL, extensiones reconocibles y metadatos locales.
-- Los errores de descarga quedan registrados y la URL fallida se vuelve a intentar tras 12 horas. Las imágenes que ya se han guardado no caducan automáticamente.
+- Los fallos quedan registrados localmente solo para diagnóstico; cada nueva solicitud vuelve a intentar descargar la imagen (sin espera de 12 horas). Las imágenes guardadas no caducan automáticamente.
 - Ruta actual: `~/.local/share/punto-vuela-linux-toolkit/cache/images`. Por ahora no respeta `XDG_DATA_HOME`.
 - Para vaciar la caché, cierra Toolkit y elimina esa carpeta; la aplicación la vuelve a crear al arrancar.
 
