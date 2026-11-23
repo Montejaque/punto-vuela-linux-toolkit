@@ -49,7 +49,7 @@ npm run dist:appimage
 - El envío de propuestas depende de la disponibilidad del servicio remoto de correo.
 
 ## Caché de imágenes
-Los iconos y capturas se descargan por HTTPS y se almacenan en caché local (PNG, JPEG, WebP, GIF o SVG; hasta 8 MB por archivo). La caché persiste, los errores se reintentan tras 12 horas y se puede borrar desde `~/.local/share/punto-vuela-linux-toolkit/cache/images`. Actualmente la ruta no respeta `XDG_DATA_HOME`; las imágenes y metadatos de caché no se envían ni sincronizan.
+Los iconos y capturas se descargan por HTTPS y se almacenan en caché local (PNG, JPEG, WebP, GIF o SVG; hasta 8 MB por archivo). Los fallos se registran localmente para diagnóstico, pero cada nueva solicitud reintenta la descarga inmediatamente (sin espera de 12 horas). Desde Ayuda se puede consultar la ruta, conteos y entradas, o borrar solo los registros de fallo. La carpeta de imágenes es `~/.local/share/punto-vuela-linux-toolkit/cache/images`. Actualmente la ruta no respeta `XDG_DATA_HOME`; la caché no se envía ni sincroniza.
 
 ## Contacto
 
