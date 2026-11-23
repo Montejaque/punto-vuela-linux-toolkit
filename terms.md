@@ -34,7 +34,7 @@ La confirmación de envío indica que el servicio ha remitido técnicamente el m
 
 ## 5. Disponibilidad y cambios
 
-El funcionamiento depende de proveedores externos de infraestructura y correo electrónico. Puede haber interrupciones, límites de uso o cambios técnicos. El mantenimiento podrá actualizar, suspender o retirar funciones por motivos técnicos, de seguridad o de funcionamiento.
+El funcionamiento depende de proveedores externos de infraestructura y correo electrónico. Puede haber interrupciones, límites de uso o cambios técnicos. La caché local de imágenes admite diagnóstico y limpieza de registros de error; no elimina las imágenes almacenadas y los fallos se reintentan en solicitudes posteriores sin espera fija. El mantenimiento podrá actualizar, suspender o retirar funciones por motivos técnicos, de seguridad o de funcionamiento.
 
 No se garantiza disponibilidad ininterrumpida ni la aceptación de todas las propuestas enviadas.
 
