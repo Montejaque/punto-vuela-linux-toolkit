@@ -97,13 +97,8 @@ async function cachedImage(url:string):Promise<string>{
       if(meta.source===target.href&&legacyBytes.length>0){const newFile=path.join(IMAGE_CACHE,cacheKey+extFor(meta.mime));await atomicWrite(newFile,legacyBytes);await fs.rm(legacy,{force:true});return "data:"+meta.mime+";base64,"+legacyBytes.toString("base64");}
     }catch{}
   }
-  try{
-    const failed=JSON.parse(await fs.readFile(failureFile,"utf8"));
-    if(failed.source===target.href&&Number(failed.failedAt)>0&&Date.now()-Number(failed.failedAt)<12*3600*1000){
-      console.warn("[PV image-cache] URL en caché de error (se reintentará tras 12 h):",target.href,failed.reason||"");
-      return "";
-    }
-  }catch{}
+  // Failure records are diagnostic only: every call retries immediately so transient
+  // network/HTTP errors do not suppress icons for 12 hours.
   try{
     console.info("[PV image-cache] Descargando:",target.href);
     const response=await remoteFetch(target.href,{headers:{"user-agent":UA,"accept":"image/avif,image/webp,image/png,image/jpeg,image/svg+xml,*/*"},redirect:"follow",signal:AbortSignal.timeout(30000)});
@@ -167,6 +162,25 @@ export async function api(method:string,args:any={}):Promise<any>{
   switch(method){
     case "cache.init": await fs.mkdir(IMAGE_CACHE,{recursive:true}); return {path:IMAGE_CACHE,created:true};
     case "images.cache": return cachedImage(String(args.url||""));
+    case "images.cacheDiagnostics": {
+      await fs.mkdir(IMAGE_CACHE,{recursive:true});
+      const names=await fs.readdir(IMAGE_CACHE);
+      const rows=[];
+      for(const name of names){
+        if(name.endsWith(".failed.json")){
+          try{const d=JSON.parse(await fs.readFile(path.join(IMAGE_CACHE,name),"utf8"));rows.push({type:"failure",file:name,url:d.source||"",failedAt:d.failedAt||0,reason:d.reason||""});}catch{rows.push({type:"failure",file:name,reason:"Registro de error ilegible"});}
+        }else if(/\\.(png|jpg|webp|gif|svg|image|img)$/i.test(name)){
+          const stat=await fs.stat(path.join(IMAGE_CACHE,name));rows.push({type:"image",file:name,size:stat.size,modified:stat.mtimeMs});
+        }
+      }
+      return {path:IMAGE_CACHE,totalFiles:names.length,images:rows.filter(x=>x.type==="image").length,failures:rows.filter(x=>x.type==="failure").length,entries:rows};
+    }
+    case "images.cacheClearFailures": {
+      await fs.mkdir(IMAGE_CACHE,{recursive:true});
+      const names=await fs.readdir(IMAGE_CACHE);let removed=0;
+      for(const name of names)if(name.endsWith(".failed.json")){await fs.rm(path.join(IMAGE_CACHE,name),{force:true});removed++;}
+      return {removed,path:IMAGE_CACHE};
+    }
     case "catalog.search": return catalogSearch(args.query||"",!!args.force);
     case "tools.list": return publicTools(!!args.force);
     case "apps.list": return installed();
