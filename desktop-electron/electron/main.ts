@@ -126,18 +126,22 @@ function appImageAssetForArch(assets: any[]): any | undefined {
   );
 }
 
-async function updaterChannelIsTest(): Promise<boolean> {
-  if (!app.isPackaged) return false;
+async function updaterChannelConfig(): Promise<{channel: string; testTag?: string}> {
+  if (!app.isPackaged) return {channel: "stable"};
   try {
-    const config = JSON.parse(await fs.readFile(join(process.resourcesPath, "updater-channel.json"), "utf8"));
-    return config?.channel === "test";
+    return JSON.parse(await fs.readFile(join(process.resourcesPath, "updater-channel.json"), "utf8"));
   } catch {
-    return false;
+    return {channel: "stable"};
   }
+}
+function testReleaseNumber(tag: string): number {
+  const match = tag.match(/^prueba-(\\d+)$/i);
+  return match ? Number(match[1]) : 0;
 }
 
 async function checkUpdates(window: BrowserWindow): Promise<void> {
-  const testMode = process.argv.includes("--updater-test") || await updaterChannelIsTest();
+  const channelConfig = await updaterChannelConfig();
+  const testMode = process.argv.includes("--updater-test") || channelConfig.channel === "test";
   try {
     const response = await fetch(UPDATE_BASE + "/releases?per_page=20", {
       headers: { "Accept": "application/vnd.github+json", "User-Agent": "Puntos-Vuela-Toolkit-Updater" },
@@ -163,23 +167,26 @@ async function checkUpdates(window: BrowserWindow): Promise<void> {
       .filter((candidate: any) => candidate.appImage && candidate.checksums)
       .sort((a: any, b: any) => compareVersions(b.version, a.version));
 
-    const candidate = candidates[0];
-    if (!candidate && testMode) {
-      const legacyTestRelease = releases
-        .filter((release: any) => !release.draft && release.prerelease && /^prueba(?:s)?-\d+$/i.test(String(release.tag_name || "")))
+    // Test channel: use monotonic prueba-N tags, not publish date or semver.
+    // This prevents an installed test build from ever downgrading.
+    if (testMode) {
+      const installedNumber = testReleaseNumber(String(channelConfig.testTag || ""));
+      const testRelease = releases
+        .filter((release: any) => !release.draft && release.prerelease)
+        .filter((release: any) => testReleaseNumber(String(release.tag_name || "")) > installedNumber)
         .filter((release: any) => appImageAssetForArch(release.assets || []) && (release.assets || []).some((asset: any) => asset.name === "SHA256SUMS"))
-        .sort((a: any, b: any) => Date.parse(b.published_at || b.created_at || 0) - Date.parse(a.published_at || a.created_at || 0))[0];
-      if (legacyTestRelease) {
-        const testAsset = appImageAssetForArch(legacyTestRelease.assets || []);
-        const testChecksums = (legacyTestRelease.assets || []).find((asset: any) => asset.name === "SHA256SUMS");
-        const testVersion = String(legacyTestRelease.tag_name);
-        pendingUpdaterAction = { window, version: testVersion, asset: testAsset, checksums: testChecksums, releaseUrl: legacyTestRelease.html_url, testMode: true };
-        const action = await showUpdaterModal(window, { title: "Actualizador · canal de pruebas", version: testVersion, current, testMode: true, legacy: true, description: "Hay una versión de pruebas descargable. Pulsa Actualizar ahora para descargarla, verificar SHA-256 y sustituir la AppImage con copia de recuperación.", changelog: String(legacyTestRelease.body || "") });
-        if (action === "update") await performUpdate(window, testAsset, testChecksums, testVersion);
-        else { pendingUpdaterAction = { window, version: testVersion, asset: testAsset, checksums: testChecksums, releaseUrl: legacyTestRelease.html_url, testMode: true }; window.webContents.send("pv:updater-banner", { version: testVersion, kind: "test", releaseUrl: legacyTestRelease.html_url }); }
-        return;
-      }
+        .sort((a: any, b: any) => testReleaseNumber(String(b.tag_name)) - testReleaseNumber(String(a.tag_name)))[0];
+      if (!testRelease) return;
+      const testAsset = appImageAssetForArch(testRelease.assets || []);
+      const testChecksums = (testRelease.assets || []).find((asset: any) => asset.name === "SHA256SUMS");
+      const testVersion = String(testRelease.tag_name);
+      pendingUpdaterAction = { window, version: testVersion, asset: testAsset, checksums: testChecksums, releaseUrl: testRelease.html_url, testMode: true };
+      const action = await showUpdaterModal(window, { title: "Actualizador · canal de pruebas", version: testVersion, current: channelConfig.testTag || "instalación anterior", testMode: true, legacy: true, description: "Nueva release de pruebas detectada. Solo se ofrecerá una etiqueta prueba-N superior a la instalada; no se instalarán releases anteriores.", changelog: String(testRelease.body || "") });
+      if (action === "update") await performUpdate(window, testAsset, testChecksums, testVersion);
+      else { pendingUpdaterAction = { window, version: testVersion, asset: testAsset, checksums: testChecksums, releaseUrl: testRelease.html_url, testMode: true }; window.webContents.send("pv:updater-banner", { version: testVersion, kind: "test", releaseUrl: testRelease.html_url }); }
+      return;
     }
+    const candidate = candidates[0];
     if (!candidate) return;
 
     const latest = candidate.version;
