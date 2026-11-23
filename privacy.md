@@ -75,6 +75,10 @@ La transmisión entre la aplicación y el servicio se realiza mediante HTTPS. La
 
 Los AIL deben utilizar la herramienta para su finalidad profesional y evitar remitir información excesiva o innecesaria. Ningún sistema conectado a Internet puede garantizar seguridad absoluta.
 
+## 8 bis. Caché local de imágenes
+
+Los iconos y capturas de catálogo se descargan de sus orígenes HTTPS y se almacenan en una caché local persistente en `~/.local/share/punto-vuela-linux-toolkit/cache/images`. Se conserva metadato técnico de URL de origen, tipo MIME, fecha, tamaño y nombre de archivo. Los registros de descargas fallidas contienen URL, fecha y motivo técnico; se consultan desde la sección Ayuda y pueden limpiarse desde la propia aplicación. Cada nueva solicitud vuelve a intentar la descarga, sin espera de 12 horas. La caché y los registros de diagnóstico no se sincronizan ni se envían al servicio de propuestas; los servidores de origen pueden recibir datos técnicos de conexión. Los formatos admitidos son PNG, JPEG, WebP, GIF y SVG, hasta 8 MB por imagen. Las imágenes guardadas no caducan automáticamente. La ruta no sigue actualmente `XDG_DATA_HOME`.
+
 ## 9. Contacto técnico
 
 **Mantenimiento técnico de Punto Vuela Linux Toolkit y gestión operativa del buzón receptor:** Francisco Javier Gallego Orellana, AIL del Punto Vuela de Montejaque.
