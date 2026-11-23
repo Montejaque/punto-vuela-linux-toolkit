@@ -63,10 +63,12 @@ El catálogo y las fichas pueden mostrar iconos y capturas obtenidos de sus serv
 - Formatos admitidos: PNG, JPEG, WebP, GIF y SVG.
 - Tamaño máximo por imagen: 8 MB.
 - Las imágenes guardadas se conservan sin caducidad automática; pueden quedar desactualizadas si el origen cambia.
-- Los errores de descarga se registran localmente y la URL fallida no se vuelve a intentar durante 12 horas.
+- Los errores de descarga se registran localmente para diagnóstico. Cada nueva solicitud vuelve a intentar descargar la imagen; no existe una espera de 12 horas.
 - Los nombres de archivo se derivan de SHA-256 de la URL; se guardan metadatos JSON y se usan extensiones de imagen reconocibles.
 - Ruta: `~/.local/share/punto-vuela-linux-toolkit/cache/images`. Actualmente esta ruta fija no sigue `XDG_DATA_HOME`.
 - La carpeta se prepara al iniciar la aplicación. Si no puede crearse, se muestra un aviso. Para vaciarla, cierra Toolkit y elimina `cache/images`; se volverá a crear en el siguiente arranque.
+
+En Ayuda, **Diagnosticar caché de imágenes** muestra la ruta, los contadores y las entradas (incluida la URL y el motivo de los fallos). **Limpiar errores de caché** elimina solo los registros `.failed.json`, no las imágenes guardadas.
 
 El contenido de esta caché permanece en el equipo y no se sincroniza ni se envía al servicio de propuestas. Los servidores de origen sí reciben las solicitudes HTTPS de imágenes y pueden registrar datos técnicos de conexión.
 
