@@ -79,7 +79,7 @@ En una versión empaquetada, Toolkit consulta GitHub Releases aproximadamente 5 
 - **Estable:** busca releases estables con AppImage para la arquitectura del equipo y `SHA256SUMS`.
 - **Pruebas:** las builds de desarrollo identificadas como `prueba-N` buscan solo números mayores que el identificador incluido en la build. El modal y el banner muestran **PRUEBA**; no se propone volver a un número inferior.
 
-El modal permite **Actualizar ahora** o **Más tarde**. Si lo pospones, aparece un banner para retomar. Al iniciar la actualización, se descarga el AppImage, se comprueba SHA-256 y se conserva una copia previa para recuperación si el arranque de la nueva versión no se confirma.
+El modal permite **Actualizar ahora** o **Más tarde**. Si lo pospones, aparece un banner para retomar. En ventanas de menor altura, el contenido puede desplazarse y los botones de acción permanecen accesibles al pie. Al iniciar la actualización, se descarga el AppImage, se comprueba SHA-256 y se conserva una copia previa para recuperación si el arranque de la nueva versión no se confirma.
 
 ### Modal de actualización
 

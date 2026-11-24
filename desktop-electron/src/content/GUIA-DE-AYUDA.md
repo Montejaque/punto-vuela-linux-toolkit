@@ -29,7 +29,7 @@ AppImageUpdate solo puede actualizar archivos con metadatos compatibles. Si no h
 ## Actualizador de Toolkit
 En builds empaquetadas, Toolkit consulta GitHub Releases unos 5 segundos después del inicio y cada 6 horas mientras permanece abierto. La consulta no instala automáticamente. Las releases estables se buscan en el canal estable; las builds de prueba identificadas como `prueba-N` solo reciben avisos para un número superior al incorporado en la build y se etiquetan como **PRUEBA**.
 
-El modal permite **Actualizar ahora** o **Más tarde**. Al posponerlo, queda un banner para retomar. La descarga verifica SHA-256, conserva una copia de la AppImage actual y puede recuperarla si no se confirma el inicio de la versión nueva.
+El modal permite **Actualizar ahora** o **Más tarde**. Al posponerlo, queda un banner para retomar. En ventanas de menor altura, el contenido se desplaza y las acciones quedan accesibles al pie. La descarga verifica SHA-256, conserva una copia de la AppImage actual y puede recuperarla si no se confirma el inicio de la versión nueva.
 
 ## Contacto y propuestas
 Selecciona un centro Punto Vuela, revisa los datos cargados si están disponibles y completa los campos de propuesta. Consulta y acepta privacidad, protección de datos y condiciones. La comprobación antispam Cloudflare Turnstile es necesaria antes de abrir la vista previa.
