@@ -1,4 +1,6 @@
-import { _electron as electron } from "playwright";
+import { createRequire } from "node:module";
+const require = createRequire(path.resolve("package.json"));
+const { _electron: electron } = require("playwright");
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
