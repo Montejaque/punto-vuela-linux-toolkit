@@ -20,7 +20,14 @@ try {
   let modal;
   const deadline = Date.now() + 20000;
   while (Date.now() < deadline) {
-    modal = app.windows().find((candidate) => candidate !== main && candidate.getTitle().includes("capturas de documentación"));
+    for (const candidate of app.windows()) {
+      if (candidate === main) continue;
+      const title = await candidate.title();
+      if (title.includes("capturas de documentación")) {
+        modal = candidate;
+        break;
+      }
+    }
     if (modal) break;
     await new Promise((resolve) => setTimeout(resolve, 200));
   }
