@@ -214,7 +214,7 @@ h1,h2,h3 { font-family: "Space Grotesk","DM Sans",sans-serif; }
 .app-card .muted{min-height:0}
 .brand-mark img{object-fit:contain!important;padding:.2rem}
 .hero-logo img{object-fit:contain!important;padding:.35rem}
-.developer-panel{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;max-width:74rem;width:100%;margin:0 0 1rem;padding:1.25rem 1.5rem;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(115deg,rgba(243,213,78,.12),var(--panel))}.developer-panel>div:first-child{flex:1;min-width:0}
+.developer-panel{display:flex;align-items:center;justify-content:space-between;gap:1.5rem;max-width:88rem;width:100%;margin:0 0 1rem;padding:1.25rem 1.5rem;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(115deg,rgba(243,213,78,.12),var(--panel))}.developer-panel>div:first-child{flex:1;min-width:0}
 .developer-panel h2{margin:.25rem 0;font-size:1.25rem}
 .developer-panel p{margin:.3rem 0 .6rem;color:var(--muted);font-size:.84rem}
 .developer-panel strong{font-size:.78rem;color:var(--text)}
