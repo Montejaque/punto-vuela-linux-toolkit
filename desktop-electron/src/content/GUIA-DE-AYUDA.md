@@ -12,7 +12,7 @@ En las versiones empaquetadas, la aplicación consulta GitHub Releases unos 5 se
 - Si pospones el aviso, queda un banner en la parte superior con la acción **Actualizar ahora**.
 - Al iniciar la descarga, verifica SHA-256, realiza copia de seguridad y reemplaza la AppImage. Si falla la comprobación de arranque, intenta recuperar la copia anterior.
 
-Las capturas reales del modal y banner del actualizador están pendientes de obtener desde una ejecución real de Electron. No se utilizarán maquetas ni recreaciones.
+Las Las capturas del modal y del banner se generan durante el workflow de GitHub Pages ejecutando Electron real en Linux virtualizado. de obtener desde una ejecución real de Electron. No se utilizarán maquetas ni recreaciones.
 
 
 ## Navegación
