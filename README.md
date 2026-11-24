@@ -12,7 +12,7 @@
 
 ## Capturas de la aplicación
 
-La guía web genera capturas de interfaz durante la publicación, incluidas las vistas del actualizador (modal de aviso y banner de actualización). Consulta la [guía interactiva](https://toolkit.javigallego.es/guia.html), sección **Actualizador automático**, para verlas.
+La guía web utiliza capturas reales de la aplicación. Las imágenes del modal y banner del actualizador están pendientes de obtener desde una ejecución real de Electron; no se publicarán maquetas ni recreaciones.
 
 ## Funcionalidades
 
