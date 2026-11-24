@@ -46,7 +46,13 @@ function createWindow(): BrowserWindow {
   window.webContents.once("did-finish-load", async () => {
     if (process.argv.includes("--smoke-test")) setTimeout(() => app.exit(0), 750);
     await confirmSuccessfulStartup();
-    if (!isDevelopment && !process.argv.includes("--smoke-test")) setTimeout(() => void checkUpdates(window), 5000);
+    if (process.argv.includes("--capture-updater-docs")) {
+      setTimeout(async () => {
+        const action = await showUpdaterModal(window, { title: "Actualizador · capturas de documentación", version: "0.4.3", current: app.getVersion(), testMode: true, legacy: true, description: "Modo de captura para documentación. No descarga ni instala nada.", changelog: "- Avisos de nueva versión\n- Actualizador seguro\n- Recuperación ante fallos" });
+        if (action === "later") window.webContents.send("pv:updater-banner", { version: "0.4.3", kind: "legacy", releaseUrl: "https://github.com/Montejaque/punto-vuela-linux-toolkit/releases" });
+      }, 1200);
+    }
+    if (!isDevelopment && !process.argv.includes("--smoke-test") && !process.argv.includes("--capture-updater-docs")) setTimeout(() => void checkUpdates(window), 5000);
   });
   window.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("https://punto-vuela-mail.montejaque.workers.dev/turnstile")) {
