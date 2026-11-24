@@ -14,7 +14,7 @@ try {
   let main;
   const mainDeadline = Date.now() + 30000;
   while (Date.now() < mainDeadline) {
-    main = app.windows().find((win) => win.url().includes("127.0.0.1:5173"));
+    main = app.windows().find((win) => win.url().includes(":5173"));
     if (main) break;
     await new Promise((resolve) => setTimeout(resolve, 250));
   }
