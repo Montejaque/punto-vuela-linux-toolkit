@@ -12,7 +12,7 @@
 
 ## Capturas de la aplicación
 
-Las capturas de interfaz no están disponibles en esta rama. Se retiraron los enlaces a archivos no verificados para evitar imágenes rotas; se reincorporarán cuando se publiquen y validen.
+La guía web genera capturas de interfaz durante la publicación, incluidas las vistas del actualizador (modal de aviso y banner de actualización). Consulta la [guía interactiva](https://toolkit.javigallego.es/guia.html), sección **Actualizador automático**, para verlas.
 
 ## Funcionalidades
 
