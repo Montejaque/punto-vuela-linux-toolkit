@@ -14,6 +14,13 @@ Aplicación de escritorio Linux para descubrir aplicaciones AppImage, administra
 - **Ayuda y documentación:** documentación integrada.
 - **Tema:** claro, oscuro o automático; navegación lateral expandible/compacta.
 
+## Actualizador de Toolkit
+
+Las versiones empaquetadas comprueban GitHub Releases unos 5 segundos después del inicio y cada 6 horas mientras están abiertas. La instalación no se inicia sola: puedes elegir **Actualizar ahora** o **Más tarde** en el modal y retomarla desde el banner. La descarga valida SHA-256 y conserva una copia de la AppImage anterior para recuperación.
+
+- Las builds estables buscan releases estables compatibles.
+- Las builds de pruebas usan tags preliminares `prueba-N`, muestran la etiqueta **PRUEBA** y solo ofrecen números superiores al identificador de prueba incorporado.
+
 ## Guías
 
 - Guía integrada: archivo `GUIA-DE-AYUDA.md`.

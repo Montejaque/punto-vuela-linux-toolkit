@@ -74,7 +74,12 @@ El contenido de esta caché permanece en el equipo y no se sincroniza ni se env�
 
 ## 13. Actualizador automático de la aplicación
 
-Toolkit comprueba periódicamente si hay una versión más reciente de la aplicación, tanto en el canal estable como en el canal de pruebas cuando existe una release descargable compatible.
+En una versión empaquetada, Toolkit consulta GitHub Releases aproximadamente 5 segundos después del inicio y repite la comprobación cada 6 horas mientras está abierto. La consulta no instala la actualización automáticamente.
+
+- **Estable:** busca releases estables con AppImage para la arquitectura del equipo y `SHA256SUMS`.
+- **Pruebas:** las builds de desarrollo identificadas como `prueba-N` buscan solo números mayores que el identificador incluido en la build. El modal y el banner muestran **PRUEBA**; no se propone volver a un número inferior.
+
+El modal permite **Actualizar ahora** o **Más tarde**. Si lo pospones, aparece un banner para retomar. Al iniciar la actualización, se descarga el AppImage, se comprueba SHA-256 y se conserva una copia previa para recuperación si el arranque de la nueva versión no se confirma.
 
 ### Modal de actualización
 

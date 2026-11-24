@@ -60,7 +60,13 @@ Envía propuestas de aplicaciones, selecciona el centro y revisa la información
 Consulta [CHANGELOG.md](CHANGELOG.md) para conocer las novedades y cambios de cada versión.
 ## Actualizador automático
 
-La aplicación comprueba si hay releases disponibles. El modal permite **Actualizar ahora** o **Más tarde**. Al posponer o cerrar el modal, queda un banner en la interfaz para retomar la actualización. La descarga se verifica mediante SHA-256, se conserva una copia de la AppImage actual y el mecanismo de recuperación puede restaurarla si el nuevo inicio no se confirma.
+En las versiones empaquetadas, Toolkit consulta GitHub Releases unos 5 segundos después de abrir la aplicación y vuelve a comprobarlo cada 6 horas mientras permanece abierta. La comprobación consulta la API pública de Releases; no instala nada automáticamente.
+
+- **Canal estable:** busca releases estables con una AppImage compatible con la arquitectura y el archivo `SHA256SUMS`.
+- **Canal de pruebas:** las builds de la rama de desarrollo usan releases preliminares `prueba-N`. Solo se ofrecen números superiores al identificador de prueba incorporado en la build, evitando retroceder a una prueba anterior. El modal y el aviso identifican este canal como **PRUEBA**.
+- **Instalación bajo control del usuario:** el modal permite **Actualizar ahora** o **Más tarde**; si se pospone, queda un banner para retomar. La descarga se inicia al elegir actualizar, verifica SHA-256, conserva una copia de la AppImage actual y el mecanismo de recuperación puede restaurarla si el nuevo inicio no se confirma.
+
+Los pushes a `rewrite/electron-desktop` están configurados en CI para generar y publicar releases de prueba `prueba-N`; los tags `v*` disparan el flujo de publicación estable.
 
 
 ## Compatibilidad

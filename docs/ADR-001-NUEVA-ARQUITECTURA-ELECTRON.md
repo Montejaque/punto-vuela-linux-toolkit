@@ -1,7 +1,7 @@
 # ADR-001: Nueva interfaz de escritorio con Electron
 
 - Estado: implementación Electron activa; validación de publicación y pruebas manuales pendientes
-- Fecha de actualización: 2026-11-21
+- Fecha de actualización: 2026-11-24
 - Fecha de decisión original: 2026-11-16
 - Rama: `rewrite/electron-desktop`
 - Versiones anteriores: se conservan sin modificar (`pruebas-80` y anteriores)
@@ -58,7 +58,7 @@ Evaluar **Electron + React + TypeScript + Vite** como nueva interfaz, con estas 
 - **Compatibilidad glibc**: compilar en entorno con glibc 2.31 o más antiguo y ejecutar prueba real en Ubuntu 20.04.
 - **Correo**: no simular éxito; requiere despliegue del Worker y prueba real con cuenta autorizada.
 
-## Estado de implementación (21-11-2026)
+## Estado de implementación (24-11-2026)
 
 La rama Electron ya incorpora:
 - Proceso principal con IPC de lista permitida; el renderer no tiene acceso Node directo.
@@ -69,6 +69,9 @@ La rama Electron ya incorpora:
 - Formulario de propuestas con campos obligatorios, motivo, observaciones y aceptaciones legales; envío a Cloudflare Worker y confirmación basada en respuesta HTTP/Gmail del servicio.
 - Pantallas de biblioteca, herramientas, directorio, contacto y ayuda.
 - Caché persistente de iconos y capturas: solo HTTPS y MIME permitidos, límite de 8 MB, claves SHA-256, extensiones reconocibles, metadatos, escritura atómica con temporales únicos, migración de archivos `.img` antiguos y registro local de fallos para diagnóstico; las solicitudes posteriores reintentan inmediatamente (sin espera de 12 horas). La carpeta se inicializa al arrancar y muestra un aviso si falla. La interfaz de Ayuda permite diagnosticar la ruta, conteos y entradas, y limpiar únicamente los registros de fallos.
+- Actualizador de Toolkit: consulta GitHub Releases aproximadamente 5 segundos tras abrir la ventana y cada 6 horas en segundo plano mientras la app empaquetada permanece abierta. El canal estable selecciona releases estables con AppImage x86_64 y `SHA256SUMS`; el canal de pruebas usa tags monotónicos `prueba-N` y no ofrece downgrades de número de prueba. Modal y banner identifican las builds de prueba como **PRUEBA**. La instalación requiere acción del usuario, valida SHA-256 y mantiene una copia de recuperación.
+- CI configurada: los pushes a `rewrite/electron-desktop` publican releases preliminares de prueba con tag `prueba-N`; los tags `v*` publican releases estables. El workflow declara `npm test`, build AppImage y smoke test, pero su ejecución/resultado no se ha verificado en esta revisión.
+- Ajustes recientes de interfaz amplían el ancho máximo del formulario de propuestas, panel de desarrollador y sección de ayuda a 88rem para alinearlos.
 
 Pendiente de validación:
 - Prueba manual de la AppImage en Ubuntu 20.04 GNOME: arranque, integración de escritorio, navegación y cierre.
