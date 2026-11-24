@@ -8,8 +8,14 @@ const out = path.resolve("../docs-site/screenshots");
 await mkdir(out,{recursive:true});
 const app = await electron.launch({args:["--capture-updater-docs","--no-sandbox","--disable-gpu","--disable-dev-shm-usage"]});
 try {
-  const main = app.windows()[0];
-  if (!main) throw new Error("La ventana principal de Electron no se creó.");
+  let main;
+  const mainDeadline = Date.now() + 30000;
+  while (Date.now() < mainDeadline) {
+    main = app.windows()[0];
+    if (main) break;
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+  if (!main) throw new Error("La ventana principal de Electron no se creó tras esperar 30 segundos. Revisa el arranque de Electron y su carga de renderer.");
   await main.waitForLoadState("domcontentloaded");
   let modal;
   const deadline = Date.now() + 20000;
