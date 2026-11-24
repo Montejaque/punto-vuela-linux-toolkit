@@ -104,9 +104,29 @@ Si se pulsa **Más tarde** o se cierra el modal, la aplicación muestra un banne
 **Recomendación:** mantén conexión a Internet durante la comprobación y descarga. No interrumpas el proceso de reemplazo del archivo.
 
 
-## 14. Descarga, soporte y documentación
+## 14. Actualizador de la propia aplicación
 
-**Capturas de interfaz:** no están disponibles en esta rama; se retiraron las referencias a archivos ausentes y la guía se mantiene en formato textual.
+Toolkit comprueba GitHub Releases aproximadamente 5 segundos después de iniciar y repite la comprobación cada 6 horas. Solo avisa: la instalación comienza cuando pulsas **Actualizar ahora**.
+
+- **Estable:** busca releases estables con AppImage x86_64 y `SHA256SUMS`.
+- **Pruebas:** las builds de desarrollo usan el canal `prueba-N` y solo ofrecen un número superior al instalado.
+- **Modal:** muestra versión instalada, versión disponible, novedades y estado de verificación; el contenido puede desplazarse y los botones se mantienen accesibles en ventanas pequeñas.
+- **Banner:** si pospones o cierras el modal, el aviso queda en la parte superior del Toolkit y permite reanudar con **Actualizar ahora**.
+
+### Proceso de actualización
+
+1. Pulsa **Actualizar ahora** para iniciar la descarga.
+2. Se valida la suma SHA-256 contra `SHA256SUMS`.
+3. Se guarda una copia de seguridad de la AppImage actual.
+4. Se reemplaza el archivo y se ofrece reiniciar.
+5. Si el inicio de la versión nueva falla durante la comprobación, se intenta restaurar la copia anterior.
+
+No interrumpas el reemplazo y mantén conexión a Internet. Las capturas del modal y del banner se publican en la [guía interactiva](https://toolkit.javigallego.es/guia.html), sección **Actualizador automático**.
+
+
+## 15. Descarga, soporte y documentación
+
+**Capturas de interfaz:** consulta la guía interactiva publicada, que se genera con capturas durante el flujo de publicación.
 - Web: https://toolkit.javigallego.es/
 - Releases: https://github.com/Montejaque/punto-vuela-linux-toolkit/releases
 - Guía interactiva: https://toolkit.javigallego.es/guia.html
