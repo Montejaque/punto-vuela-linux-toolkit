@@ -2,6 +2,19 @@
 
 Puntos Vuela Toolkit permite descubrir aplicaciones AppImage, administrar aplicaciones locales, consultar herramientas Punto Vuela y acceder a recursos formativos y de software.
 
+## Actualizador de Toolkit
+
+En las versiones empaquetadas, la aplicación consulta GitHub Releases unos 5 segundos después del inicio y vuelve a comprobar cada 6 horas. No descarga ni instala sin confirmación.
+
+- El canal estable ofrece releases estables compatibles.
+- Las compilaciones de prueba usan etiquetas `prueba-N` y no proponen números inferiores a la versión de prueba instalada.
+- El modal muestra el release detectado y las novedades; en ventanas pequeñas el contenido se puede desplazar y los botones permanecen accesibles.
+- Si pospones el aviso, queda un banner en la parte superior con la acción **Actualizar ahora**.
+- Al iniciar la descarga, verifica SHA-256, realiza copia de seguridad y reemplaza la AppImage. Si falla la comprobación de arranque, intenta recuperar la copia anterior.
+
+Consulta las capturas del modal y banner en la guía web: https://toolkit.javigallego.es/guia.html (Actualizador automático).
+
+
 ## Navegación
 - **Inicio:** resumen y accesos directos.
 - **Catálogo AppImage:** búsqueda, categorías y fichas de aplicaciones.
