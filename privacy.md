@@ -1,6 +1,6 @@
 # Política de privacidad de Puntos Vuela Toolkit
 
-**Última actualización: 12 de noviembre de 2026**
+**Última actualización: 24 de noviembre de 2026**
 
 ## 1. Responsable del tratamiento
 
@@ -54,6 +54,8 @@ Estos proveedores pueden tratar datos técnicos y de comunicación necesarios pa
 La aplicación y el servicio de envío no mantienen una base de datos propia de propuestas ni un sistema de expedientes. El contenido se entrega al buzón central y puede permanecer en los buzones de correo del destinatario y del remitente. El servicio puede utilizar contadores temporales y registros técnicos limitados para seguridad, prevención de abusos y funcionamiento; estos datos no constituyen un archivo de propuestas.
 
 Las credenciales técnicas de Google utilizadas para el envío se guardan como secretos en el entorno de Cloudflare. No se incluyen en la aplicación de escritorio ni se solicitan a los AIL.
+
+En las versiones empaquetadas, Toolkit consulta la API pública de GitHub Releases unos 5 segundos después del inicio y cada 6 horas mientras permanece abierta, para detectar una actualización compatible. GitHub puede recibir la dirección IP, el User-Agent y datos técnicos habituales de conexión. La petición no incluye propuestas, credenciales ni datos personales del formulario. La descarga de la AppImage y el archivo de sumas SHA-256 se inicia solo cuando la persona usuaria solicita actualizar; la aplicación comprueba la integridad del archivo. GitHub puede tratar esos datos técnicos conforme a su política de privacidad.
 
 ## 6. Conservación
 
