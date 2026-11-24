@@ -121,7 +121,7 @@ Toolkit comprueba GitHub Releases aproximadamente 5 segundos después de iniciar
 4. Se reemplaza el archivo y se ofrece reiniciar.
 5. Si el inicio de la versión nueva falla durante la comprobación, se intenta restaurar la copia anterior.
 
-No interrumpas el reemplazo y mantén conexión a Internet. Las capturas del modal y del banner se publican en la [guía interactiva](https://toolkit.javigallego.es/guia.html), sección **Actualizador automático**.
+No interrumpas el reemplazo y mantén conexión a Internet. Las capturas reales del modal y del banner están pendientes de obtener desde una ejecución de Electron; no se usan maquetas.
 
 
 ## 15. Descarga, soporte y documentación
