@@ -12,7 +12,7 @@
 
 ## Capturas de la aplicación
 
-La guía web utiliza capturas reales de la aplicación. Las imágenes del modal y banner del actualizador están pendientes de obtener desde una ejecución real de Electron; no se publicarán maquetas ni recreaciones.
+La guía web utiliza capturas reales de la aplicación. Las capturas del modal y del banner del actualizador se generan en CI desde ventanas reales de Electron. El flujo identifica el modal por los controles y el texto renderizado, no por el título del documento, y registra información de las ventanas si no lo encuentra. No se publican maquetas ni recreaciones.
 
 ## Funcionalidades
 
