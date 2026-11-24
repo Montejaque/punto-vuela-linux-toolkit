@@ -40,6 +40,9 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
         working-directory: desktop-electron
+      - name: Build actual Electron application
+        run: npm run build
+        working-directory: desktop-electron
       - name: Start Vite development server
         run: |
           npx vite --host 127.0.0.1 > /tmp/toolkit-vite.log 2>&1 &
@@ -49,6 +52,9 @@ jobs:
           done
           cat /tmp/toolkit-vite.log
           exit 1
+        working-directory: desktop-electron
+      - name: Capture updater UI from real Electron windows
+        run: xvfb-run -a dbus-run-session -- node ../docs-site/capture-electron-updater.mjs
         working-directory: desktop-electron
       - name: Capture full interface with demo API
         run: node ../docs-site/capture-screenshots.mjs
