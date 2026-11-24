@@ -45,12 +45,18 @@ jobs:
         working-directory: desktop-electron
       - name: Start Vite development server
         run: |
-          npx vite --host 127.0.0.1 > /tmp/toolkit-vite.log 2>&1 &
+          node ./node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5173 > /tmp/toolkit-vite.log 2>&1 &
+          echo $! > /tmp/toolkit-vite.pid
           for i in $(seq 1 60); do
-            if curl -fsS http://127.0.0.1:5173/ >/dev/null; then exit 0; fi
+            if curl -fsS http://127.0.0.1:5173/ >/dev/null; then
+              echo "Vite listo en 127.0.0.1:5173"
+              exit 0
+            fi
             sleep 2
           done
+          echo "Vite no arrancó; diagnóstico:"
           cat /tmp/toolkit-vite.log
+          ps -fp "$(cat /tmp/toolkit-vite.pid)" || true
           exit 1
         working-directory: desktop-electron
       - name: Capture updater UI from real Electron windows
