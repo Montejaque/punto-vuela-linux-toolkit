@@ -8,7 +8,8 @@ const out = path.resolve("../docs-site/screenshots");
 await mkdir(out, { recursive: true });
 
 const app = await electron.launch({
-  args: ["--capture-updater-docs", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage"]
+  args: [".", "--capture-updater-docs", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
+  timeout: 60000
 });
 try {
   let main;
