@@ -20,10 +20,11 @@ permissions:
   id-token: write
 concurrency:
   group: publish-guide-pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   build-guide:
     runs-on: ubuntu-22.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -41,6 +42,7 @@ jobs:
         run: npm run build
         working-directory: desktop-electron
       - name: Start Vite server
+        timeout-minutes: 3
         run: |
           node ./node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5173 > /tmp/toolkit-vite.log 2>&1 &
           for i in $(seq 1 60); do
@@ -51,12 +53,15 @@ jobs:
           exit 1
         working-directory: desktop-electron
       - name: Capture updater in real Electron
+        timeout-minutes: 5
         run: xvfb-run -a dbus-run-session -- node ../docs-site/capture-electron-updater.mjs
         working-directory: desktop-electron
       - name: Capture nine app screens
+        timeout-minutes: 10
         run: node ../docs-site/capture-screenshots.mjs
         working-directory: desktop-electron
       - name: Validate 11 actual PNG screenshots
+        timeout-minutes: 2
         run: |
           set -eu
           for image in 01-inicio 02-catalogo 03-ficha-app 04-mis-aplicaciones 05-herramientas 06-recursos 07-faqs 08-contacto 09-ayuda 10-updater-modal 11-updater-banner; do
@@ -66,6 +71,7 @@ jobs:
           done
       - uses: actions/configure-pages@v5
       - name: Assemble and validate deployment
+        timeout-minutes: 3
         run: |
           set -eu
           mkdir -p _site/screenshots
@@ -82,9 +88,11 @@ jobs:
             grep -q "screenshots/$image.png" _site/guia.html || { echo "::error::Missing guide image reference $image"; exit 1; }
           done
       - uses: actions/upload-pages-artifact@v3
+        timeout-minutes: 3
         with:
           path: _site
   deploy:
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

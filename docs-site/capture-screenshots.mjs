@@ -1,5 +1,5 @@
 import { chromium } from "../desktop-electron/node_modules/playwright/index.mjs";
-import { mkdir } from "node:fs/promises";
+import { mkdir, stat } from "node:fs/promises";
 const base="http://127.0.0.1:5173";
 await mkdir("../docs-site/screenshots",{recursive:true});
 const browser=await chromium.launch({headless:true});
@@ -30,8 +30,8 @@ await page.addInitScript(()=>{
 });
 await page.goto(base,{waitUntil:"domcontentloaded",timeout:30000});
 await page.waitForTimeout(1500);
-async function shot(file){await page.waitForTimeout(500);await page.screenshot({path:"../docs-site/screenshots/"+file,fullPage:true,timeout:30000});}
-async function go(label){const btn=page.getByRole("button",{name:label,exact:true}).first();await btn.waitFor({state:"visible",timeout:15000});await btn.evaluate(el=>el.click());await page.waitForTimeout(800);}
+async function shot(file){const target="../docs-site/screenshots/"+file;console.log(`[capture] ${file}: start`);await page.waitForTimeout(500);await page.screenshot({path:target,fullPage:true,animations:"disabled",timeout:20000});const info=await stat(target);if(info.size<1000)throw new Error(`Screenshot ${file} is suspiciously small (${info.size} bytes)`);console.log(`[capture] ${file}: complete (${info.size} bytes)`);}
+async function go(label){console.log(`[capture] navigation: ${label}`);const btn=page.getByRole("button",{name:label,exact:true}).first();await btn.waitFor({state:"visible",timeout:15000});await btn.evaluate(el=>el.click());await page.waitForTimeout(800);}
 async function closeModal(){const close=page.getByRole("button",{name:"Cerrar",exact:true});if(await close.count()) await close.first().evaluate(el=>el.click());await page.waitForTimeout(250);}
 await shot("01-inicio.png");
 await go("Catálogo AppImage");await shot("02-catalogo.png");
