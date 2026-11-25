@@ -1,5 +1,4 @@
-name: Publish interactive guide to GitHub Pages (fallback)
-
+name: Publish interactive guide fallback
 on:
   push:
     branches: ["rewrite/electron-desktop"]
@@ -14,17 +13,15 @@ on:
       - "desktop-electron/package.json"
       - "docs/GUIA-DE-AYUDA.md"
       - ".github/workflows/publish-guide-fallback.yml"
+      - ".github/workflows/publish-guide-pages.yml"
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
-  group: pages
-  cancel-in-progress: true
-
+  group: publish-guide-pages
+  cancel-in-progress: false
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -33,32 +30,43 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      # Screenshot generation is best-effort. Do not let apt mirror failures
-      # prevent publication of the documentation site.
-      - name: Generate screenshots (best effort)
-        continue-on-error: true
+      - name: Install app dependencies and Playwright
         run: |
-          cd desktop-electron
           npm install
           npm install --no-save playwright
-          npx playwright install chromium
-          npx vite --host 127.0.0.1 > /tmp/toolkit-vite.log 2>&1 &
-          for i in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:5173/ >/dev/null; then
-              echo "Vite is ready at http://127.0.0.1:5173"
-              break
-            fi
-            sleep 1
-          done
-          if ! curl -fsS http://127.0.0.1:5173/ >/dev/null; then
-            echo "::warning::Vite did not become ready. Dumping startup log:"
-            cat /tmp/toolkit-vite.log || true
-            exit 1
-          fi
-          node ../docs-site/capture-screenshots.mjs
-      - name: Prepare static Pages site
+          npx playwright install --with-deps chromium
+        working-directory: desktop-electron
+      - name: Build Electron
+        run: npm run build
+        working-directory: desktop-electron
+      - name: Start Vite
         run: |
+          node ./node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5173 > /tmp/toolkit-vite.log 2>&1 &
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:5173/ >/dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/toolkit-vite.log
+          exit 1
+        working-directory: desktop-electron
+      - name: Capture updater UI using Electron
+        run: xvfb-run -a dbus-run-session -- node ../docs-site/capture-electron-updater.mjs
+        working-directory: desktop-electron
+      - name: Capture nine application screens
+        run: node ../docs-site/capture-screenshots.mjs
+        working-directory: desktop-electron
+      - name: Fail unless all 11 real PNG screenshots exist
+        run: |
+          set -eu
+          for image in 01-inicio 02-catalogo 03-ficha-app 04-mis-aplicaciones 05-herramientas 06-recursos 07-faqs 08-contacto 09-ayuda 10-updater-modal 11-updater-banner; do
+            p="docs-site/screenshots/$image.png"
+            test -s "$p" || { echo "::error::Missing screenshot $p"; exit 1; }
+            file "$p" | grep -q 'PNG image data' || { echo "::error::Invalid screenshot $p"; exit 1; }
+          done
+      - uses: actions/configure-pages@v5
+      - name: Build Pages bundle and verify links
+        run: |
+          set -eu
           mkdir -p _site/screenshots
           cp docs-site/index.html _site/index.html
           cp guia.html _site/guia.html
@@ -67,24 +75,13 @@ jobs:
           cp terms.html _site/terms.html
           cp desktop-electron/public/assets/logo_toolkit.svg _site/logo_toolkit.svg
           cp docs/GUIA-DE-AYUDA.md _site/GUIA-DE-AYUDA.md
-          cp -f docs-site/screenshots/*.png _site/screenshots/ 2>/dev/null || true
-          # Preserve the custom domain in the deployed artifact.
+          cp docs-site/screenshots/*.png _site/screenshots/
           printf '%s\n' 'toolkit.javigallego.es' > _site/CNAME
           sed -i 's#../desktop-electron/public/assets/logo_toolkit.svg#logo_toolkit.svg#' _site/index.html
-          # If capture failed, create readable placeholder screenshots so the guide
-          # remains complete and has no broken image links.
-          for spec in '01-inicio:Inicio' '02-catalogo:Catalogo' '03-ficha-app:Ficha de aplicacion' '04-mis-aplicaciones:Mis aplicaciones' '05-herramientas:Herramientas' '06-recursos:Banco de recursos' '07-faqs:FAQs' '08-contacto:Contacto' '09-ayuda:Ayuda'; do
-            file="${spec%%:*}"
-            label="${spec#*:}"
-            if [ ! -s "_site/screenshots/${file}.png" ]; then
-              cat > "_site/screenshots/${file}.svg" <<EOF
-          <svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720"><rect width="1280" height="720" fill="#f2f4f6"/><rect x="0" y="0" width="1280" height="92" fill="#18212b"/><text x="56" y="58" font-family="Arial,sans-serif" font-size="30" fill="#f3d54e">Puntos Vuela Toolkit</text><rect x="70" y="150" width="1140" height="500" rx="24" fill="#fff" stroke="#dce2e8"/><text x="640" y="340" text-anchor="middle" font-family="Arial,sans-serif" font-size="44" fill="#27384b">${label}</text><text x="640" y="400" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" fill="#667282">Captura no disponible en esta publicación</text></svg>
-          EOF
-              # Redirect this guide section's image to the generated SVG fallback.
-              sed -i "s#screenshots/${file}.png#screenshots/${file}.svg#g" _site/index.html _site/guia.html
-            fi
+          for image in 01-inicio 02-catalogo 03-ficha-app 04-mis-aplicaciones 05-herramientas 06-recursos 07-faqs 08-contacto 09-ayuda 10-updater-modal 11-updater-banner; do
+            test -s "_site/screenshots/$image.png"
+            grep -q "screenshots/$image.png" _site/guia.html || { echo "::error::Image reference missing $image"; exit 1; }
           done
-      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
