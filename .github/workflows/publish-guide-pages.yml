@@ -1,5 +1,4 @@
 name: Publish interactive user guide
-
 on:
   push:
     branches: ["rewrite/electron-desktop"]
@@ -13,17 +12,15 @@ on:
       - "privacy.html"
       - "terms.html"
       - ".github/workflows/publish-guide-pages.yml"
+      - ".github/workflows/publish-guide-fallback.yml"
   workflow_dispatch:
-
 permissions:
   contents: read
   pages: write
   id-token: write
-
 concurrency:
-  group: publish-guide-pages-${{ github.ref }}
+  group: publish-guide-pages
   cancel-in-progress: false
-
 jobs:
   build-guide:
     runs-on: ubuntu-22.04
@@ -35,40 +32,42 @@ jobs:
       - name: Install app dependencies
         run: npm install
         working-directory: desktop-electron
-      - name: Install Chromium for screenshots
+      - name: Install Chromium
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
         working-directory: desktop-electron
-      - name: Build actual Electron application
+      - name: Build Electron application
         run: npm run build
         working-directory: desktop-electron
-      - name: Start Vite development server
+      - name: Start Vite server
         run: |
           node ./node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5173 > /tmp/toolkit-vite.log 2>&1 &
-          echo $! > /tmp/toolkit-vite.pid
           for i in $(seq 1 60); do
-            if curl -fsS http://127.0.0.1:5173/ >/dev/null; then
-              echo "Vite listo en 127.0.0.1:5173"
-              exit 0
-            fi
+            if curl -fsS http://127.0.0.1:5173/ >/dev/null; then exit 0; fi
             sleep 2
           done
-          echo "Vite no arrancó; diagnóstico:"
           cat /tmp/toolkit-vite.log
-          ps -fp "$(cat /tmp/toolkit-vite.pid)" || true
           exit 1
         working-directory: desktop-electron
-      - name: Capture updater UI from real Electron windows
+      - name: Capture updater in real Electron
         run: xvfb-run -a dbus-run-session -- node ../docs-site/capture-electron-updater.mjs
         working-directory: desktop-electron
-      - name: Capture full interface with demo API
+      - name: Capture nine app screens
         run: node ../docs-site/capture-screenshots.mjs
         working-directory: desktop-electron
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-      - name: Prepare GitHub Pages bundle
+      - name: Validate 11 actual PNG screenshots
         run: |
+          set -eu
+          for image in 01-inicio 02-catalogo 03-ficha-app 04-mis-aplicaciones 05-herramientas 06-recursos 07-faqs 08-contacto 09-ayuda 10-updater-modal 11-updater-banner; do
+            p="docs-site/screenshots/$image.png"
+            test -s "$p" || { echo "::error::Missing screenshot $p"; exit 1; }
+            file "$p" | grep -q 'PNG image data' || { echo "::error::Invalid image $p"; exit 1; }
+          done
+      - uses: actions/configure-pages@v5
+      - name: Assemble and validate deployment
+        run: |
+          set -eu
           mkdir -p _site/screenshots
           cp docs-site/index.html _site/index.html
           cp -a docs-site/screenshots/. _site/screenshots/
@@ -78,6 +77,10 @@ jobs:
           cp privacy.html _site/privacy.html
           cp terms.html _site/terms.html
           cp guia.html _site/guia.html
+          for image in 01-inicio 02-catalogo 03-ficha-app 04-mis-aplicaciones 05-herramientas 06-recursos 07-faqs 08-contacto 09-ayuda 10-updater-modal 11-updater-banner; do
+            test -s "_site/screenshots/$image.png"
+            grep -q "screenshots/$image.png" _site/guia.html || { echo "::error::Missing guide image reference $image"; exit 1; }
+          done
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
