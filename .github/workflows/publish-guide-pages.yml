@@ -19,7 +19,7 @@ permissions:
   pages: write
   id-token: write
 concurrency:
-  group: publish-guide-pages
+  group: publish-guide-pages-v2-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   build-guide:
