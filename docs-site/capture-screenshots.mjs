@@ -3,7 +3,10 @@ import { mkdir } from "node:fs/promises";
 const base="http://127.0.0.1:5173";
 await mkdir("../docs-site/screenshots",{recursive:true});
 const browser=await chromium.launch({headless:true});
+try {
 const page=await browser.newPage({viewport:{width:1440,height:950},deviceScaleFactor:1});
+page.setDefaultTimeout(15000);
+page.setDefaultNavigationTimeout(30000);
 await page.addInitScript(()=>{
  const catalog=[
   {name:"LibreOffice",description:"Suite de oficina para documentos, hojas de cálculo y presentaciones.",category:"Oficina",categories:["Oficina"],author:"The Document Foundation",license:"MPL-2.0",glibc:"2.31",compatibleUbuntu20:true,compatibility:"Ubuntu 20.04 o posterior (referencia declarada)",iconUrl:"",version:"24.2",repository:"https://github.com/LibreOffice"},
@@ -25,9 +28,9 @@ await page.addInitScript(()=>{
   return {message:"Operación de demostración"};
  }};
 });
-await page.goto(base,{waitUntil:"domcontentloaded"});
+await page.goto(base,{waitUntil:"domcontentloaded",timeout:30000});
 await page.waitForTimeout(1500);
-async function shot(file){await page.waitForTimeout(500);await page.screenshot({path:"../docs-site/screenshots/"+file,fullPage:true});}
+async function shot(file){await page.waitForTimeout(500);await page.screenshot({path:"../docs-site/screenshots/"+file,fullPage:true,timeout:30000});}
 async function go(label){const btn=page.getByRole("button",{name:label,exact:true}).first();await btn.waitFor({state:"visible",timeout:15000});await btn.evaluate(el=>el.click());await page.waitForTimeout(800);}
 async function closeModal(){const close=page.getByRole("button",{name:"Cerrar",exact:true});if(await close.count()) await close.first().evaluate(el=>el.click());await page.waitForTimeout(250);}
 await shot("01-inicio.png");
@@ -40,3 +43,6 @@ await go("FAQs de software");await shot("07-faqs.png");
 await go("Contacto y propuestas");await shot("08-contacto.png");
 await go("Ayuda y documentación");await shot("09-ayuda.png");
 console.log("Capturas de interfaz generadas desde la aplicación web; el actualizador requiere capturas reales desde Electron.");
+} finally {
+  await browser.close().catch(() => {});
+}
