@@ -29,9 +29,8 @@ try {
   while (Date.now() < deadline && !modal) {
     for (const candidate of app.windows()) {
       if (candidate === main) continue;
-      const later = candidate.locator('a[href="pvu-updater://later"]');
-      const captureText = candidate.getByText("Modo de captura para documentación. No descarga ni instala nada.", { exact: true });
-      if (await later.isVisible().catch(() => false) && await captureText.isVisible().catch(() => false)) {
+      const bodyText = await candidate.locator("body").innerText().catch(() => "");
+      if (bodyText.includes("Modo de captura para documentación. No descarga ni instala nada.") && bodyText.includes("Más tarde")) {
         modal = candidate;
         break;
       }
@@ -47,7 +46,7 @@ try {
   }
 
   await modal.screenshot({ path: path.join(out, "10-updater-modal.png") });
-  await modal.locator('a[href="pvu-updater://later"]').click();
+  await modal.getByText("Más tarde", { exact: true }).click();
   await main.locator(".updater-available-banner").waitFor({ state: "visible", timeout: 10000 });
   await main.screenshot({ path: path.join(out, "11-updater-banner.png") });
   console.log("Capturas reales de Electron generadas: modal y banner.");
