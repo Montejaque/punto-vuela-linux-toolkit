@@ -5,6 +5,9 @@ on:
   push:
     branches: ["rewrite/electron-desktop"]
     tags: ["v*"]
+    paths:
+      - "desktop-electron/**"
+      - ".github/workflows/electron-prototype.yml"
   pull_request:
     branches: ["rewrite/electron-desktop"]
     paths:

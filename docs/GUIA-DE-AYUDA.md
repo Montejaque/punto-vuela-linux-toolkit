@@ -104,25 +104,14 @@ Si se pulsa **Más tarde** o se cierra el modal, la aplicación muestra un banne
 **Recomendación:** mantén conexión a Internet durante la comprobación y descarga. No interrumpas el proceso de reemplazo del archivo.
 
 
-## 14. Actualizador de la propia aplicación
+## 14. Capturas de la guía web y publicación
 
-Toolkit comprueba GitHub Releases aproximadamente 5 segundos después de iniciar y repite la comprobación cada 6 horas. Solo avisa: la instalación comienza cuando pulsas **Actualizar ahora**.
+La guía publicada muestra 11 capturas generadas por CI, no archivos versionados en el repositorio:
 
-- **Estable:** busca releases estables con AppImage x86_64 y `SHA256SUMS`.
-- **Pruebas:** las builds de desarrollo usan el canal `prueba-N` y solo ofrecen un número superior al instalado.
-- **Modal:** muestra versión instalada, versión disponible, novedades y estado de verificación; el contenido puede desplazarse y los botones se mantienen accesibles en ventanas pequeñas.
-- **Banner:** si pospones o cierras el modal, el aviso queda en la parte superior del Toolkit y permite reanudar con **Actualizar ahora**.
+- **01–09:** capturas del renderer de la aplicación en Chromium/Playwright (Vite), con una API simulada y datos de demostración; no representan datos ni respuestas reales de servicios.
+- **10–11:** modal y banner capturados desde ventanas reales de Electron, con estado sintético del actualizador. El modo `--capture-updater-docs` está aislado y no descarga ni instala una actualización.
 
-### Proceso de actualización
-
-1. Pulsa **Actualizar ahora** para iniciar la descarga.
-2. Se valida la suma SHA-256 contra `SHA256SUMS`.
-3. Se guarda una copia de seguridad de la AppImage actual.
-4. Se reemplaza el archivo y se ofrece reiniciar.
-5. Si el inicio de la versión nueva falla durante la comprobación, se intenta restaurar la copia anterior.
-
-No interrumpas el reemplazo y mantén conexión a Internet. Las capturas reales del modal y del banner están pendientes de obtener desde una ejecución de Electron; no se usan maquetas.
-
+El workflow de GitHub Pages valida que las 11 imágenes existan, sean PNG y estén referenciadas en `guia.html` antes del despliegue. Si falta una captura o no es válida, la publicación falla en lugar de mostrar placeholders. El workflow principal se activa por cambios en los archivos de la aplicación renderer, `docs-site/**`, esta guía y los HTML legales, entre otros paths configurados. La publicación tiene un grupo de concurrencia con cancelación de ejecuciones anteriores; agrupa los cambios documentales en un solo push para evitar cancelaciones innecesarias.
 
 ## 15. Descarga, soporte y documentación
 

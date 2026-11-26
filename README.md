@@ -12,7 +12,7 @@
 
 ## Capturas de la aplicación
 
-La guía web utiliza capturas reales de la aplicación. Las capturas del modal y del banner del actualizador se generan en CI desde ventanas reales de Electron. El flujo identifica el modal por los controles y el texto renderizado, no por el título del documento, y registra información de las ventanas si no lo encuentra. No se publican maquetas ni recreaciones.
+La guía incluye 11 capturas generadas en CI. Las imágenes 01–09 se obtienen con Chromium/Playwright sobre la interfaz renderer (Vite) y una API simulada con datos de demostración; no representan respuestas reales de los servicios. Las imágenes 10–11 son capturas de ventanas reales de Electron con estado sintético del actualizador, mediante el modo aislado `--capture-updater-docs`, que no descarga ni instala actualizaciones. Las capturas no se versionan: el workflow valida que las 11 sean PNG antes de desplegar.
 
 ## Funcionalidades
 
@@ -66,7 +66,10 @@ En las versiones empaquetadas, Toolkit consulta GitHub Releases unos 5 segundos 
 - **Canal de pruebas:** las builds de la rama de desarrollo usan releases preliminares `prueba-N`. Solo se ofrecen números superiores al identificador de prueba incorporado en la build, evitando retroceder a una prueba anterior. El modal y el aviso identifican este canal como **PRUEBA**.
 - **Instalación bajo control del usuario:** el modal permite **Actualizar ahora** o **Más tarde**; si se pospone, queda un banner para retomar. La descarga se inicia al elegir actualizar, verifica SHA-256, conserva una copia de la AppImage actual y el mecanismo de recuperación puede restaurarla si el nuevo inicio no se confirma.
 
-Los pushes a `rewrite/electron-desktop` están configurados en CI para generar y publicar releases de prueba `prueba-N`; los tags `v*` disparan el flujo de publicación estable.
+## CI y publicación
+
+- **AppImage:** los pushes a `rewrite/electron-desktop` que cambien `desktop-electron/**` o el workflow `.github/workflows/electron-prototype.yml` ejecutan typecheck, build, empaquetado AppImage y smoke test, y publican una pre-release `prueba-N`. Los pushes que solo cambien documentación no disparan este workflow. Los tags `v*` publican releases estables.
+- **Guía web:** los cambios de la aplicación renderer, `docs-site/**`, `docs/GUIA-DE-AYUDA.md`, `guia.html`, las páginas legales HTML y los workflows de Pages activan la publicación. CI genera las 11 capturas, valida sus archivos PNG y los enlaces de imagen antes de desplegar. El fallback es manual (`workflow_dispatch`) y también exige las 11 capturas; no crea placeholders.
 
 
 ## Compatibilidad

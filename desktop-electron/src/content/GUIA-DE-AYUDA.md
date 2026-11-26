@@ -12,7 +12,7 @@ En las versiones empaquetadas, la aplicación consulta GitHub Releases unos 5 se
 - Si pospones el aviso, queda un banner en la parte superior con la acción **Actualizar ahora**.
 - Al iniciar la descarga, verifica SHA-256, realiza copia de seguridad y reemplaza la AppImage. Si falla la comprobación de arranque, intenta recuperar la copia anterior.
 
-Las Las capturas del modal y del banner se generan durante el workflow de GitHub Pages ejecutando Electron real en Linux virtualizado. de obtener desde una ejecución real de Electron. No se utilizarán maquetas ni recreaciones.
+Las capturas 01–09 de la guía web se generan con Chromium/Playwright sobre el renderer de Vite y una API simulada con datos de demostración, no con respuestas reales de servicios. Las capturas 10–11 (modal y banner) se toman de ventanas reales de Electron usando estado sintético del actualizador y el modo aislado `--capture-updater-docs`, que no descarga ni instala. CI comprueba que las 11 imágenes sean PNG y estén presentes antes de desplegar. La publicación principal se activa por los paths documentados del workflow; el fallback es manual y exige las mismas capturas, sin placeholders.
 
 
 ## Navegación
@@ -62,7 +62,7 @@ Descarga desde fuentes fiables. Las comprobaciones de tipo de archivo y ejecutab
 
 ## Documentación web
 - Web: https://toolkit.javigallego.es/
-- Guía web de uso (sin capturas de interfaz en esta revisión): https://toolkit.javigallego.es/guia.html
+- Guía web de uso: 11 capturas generadas y validadas en CI, con datos demo en 01–09 y estado sintético del actualizador en 10–11: https://toolkit.javigallego.es/guia.html
 - Releases: https://github.com/Montejaque/punto-vuela-linux-toolkit/releases
 - Privacidad: https://toolkit.javigallego.es/privacy.html
 - Condiciones: https://toolkit.javigallego.es/terms.html

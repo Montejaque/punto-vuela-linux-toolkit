@@ -1,7 +1,7 @@
 # ADR-001: Nueva interfaz de escritorio con Electron
 
 - Estado: implementación Electron activa; validación de publicación y pruebas manuales pendientes
-- Fecha de actualización: 2026-11-24
+- Fecha de actualización: 2026-11-26
 - Fecha de decisión original: 2026-11-16
 - Rama: `rewrite/electron-desktop`
 - Versiones anteriores: se conservan sin modificar (`pruebas-80` y anteriores)
@@ -58,7 +58,7 @@ Evaluar **Electron + React + TypeScript + Vite** como nueva interfaz, con estas 
 - **Compatibilidad glibc**: compilar en entorno con glibc 2.31 o más antiguo y ejecutar prueba real en Ubuntu 20.04.
 - **Correo**: no simular éxito; requiere despliegue del Worker y prueba real con cuenta autorizada.
 
-## Estado de implementación (24-11-2026)
+## Estado de implementación (26-11-2026)
 
 La rama Electron ya incorpora:
 - Proceso principal con IPC de lista permitida; el renderer no tiene acceso Node directo.
@@ -70,7 +70,8 @@ La rama Electron ya incorpora:
 - Pantallas de biblioteca, herramientas, directorio, contacto y ayuda.
 - Caché persistente de iconos y capturas: solo HTTPS y MIME permitidos, límite de 8 MB, claves SHA-256, extensiones reconocibles, metadatos, escritura atómica con temporales únicos, migración de archivos `.img` antiguos y registro local de fallos para diagnóstico; las solicitudes posteriores reintentan inmediatamente (sin espera de 12 horas). La carpeta se inicializa al arrancar y muestra un aviso si falla. La interfaz de Ayuda permite diagnosticar la ruta, conteos y entradas, y limpiar únicamente los registros de fallos.
 - Actualizador de Toolkit: consulta GitHub Releases aproximadamente 5 segundos tras abrir la ventana y cada 6 horas en segundo plano mientras la app empaquetada permanece abierta. El canal estable selecciona releases estables con AppImage x86_64 y `SHA256SUMS`; el canal de pruebas usa tags monotónicos `prueba-N` y no ofrece downgrades de número de prueba. Modal y banner identifican las builds de prueba como **PRUEBA**. La instalación requiere acción del usuario, valida SHA-256 y mantiene una copia de recuperación. El modal tiene scroll interno y mantiene las acciones visibles en ventanas bajas.
-- CI configurada: los pushes a `rewrite/electron-desktop` publican releases preliminares de prueba con tag `prueba-N`; los tags `v*` publican releases estables. El workflow declara `npm test`, build AppImage y smoke test, pero su ejecución/resultado no se ha verificado en esta revisión.
+- CI de AppImage: los pushes a `rewrite/electron-desktop` que cambien `desktop-electron/**` o el workflow de AppImage ejecutan typecheck, build, empaquetado y smoke test, y publican pre-releases `prueba-N`; los tags `v*` publican releases estables. Se añade filtro de paths para que los pushes solo documentales no generen releases de prueba. `npm test` ejecuta typecheck, no una suite de pruebas unitarias completa.
+- Capturas de la guía: 01–09 se generan con Chromium/Playwright sobre el renderer Vite y una API simulada con datos demo. 10–11 se capturan de ventanas reales Electron con estado sintético del updater en modo `--capture-updater-docs` (sin descargar ni instalar). No se versionan. El workflow de Pages valida las 11 PNG y los enlaces antes de desplegar; el fallback es manual y exige las mismas capturas, sin placeholders.
 - Ajustes recientes de interfaz amplían el ancho máximo del formulario de propuestas, panel de desarrollador y sección de ayuda a 88rem para alinearlos.
 
 Pendiente de validación:
@@ -82,4 +83,4 @@ Pendiente de validación:
 - Verificar caché de imágenes, registros de fallos y reintentos inmediatos, persistencia entre reinicios, migración de archivos `.img`, escrituras concurrentes, fallos de permisos y fallback visual; comprobar además los botones de diagnóstico y limpieza de errores.
 - Resolver la discrepancia de configuración: `IMAGE_CACHE` está fijada a `~/.local/share/...` y no sigue `XDG_DATA_HOME`, a diferencia del directorio principal de datos.
 
-La guía, README y documentación integrada, además de privacidad y condiciones, se han actualizado para describir el comportamiento de la edición Electron. El estado de los workflows y de la publicación debe verificarse en Actions antes de dar por cerrada la validación. La implementación no debe considerarse Release estable hasta completar las pruebas anteriores.
+CI comprobada antes de esta actualización documental (25-11-2026): ejecución AppImage 419 y publicación de guía 97 concluyeron con éxito; el run 97 validó las 11 capturas PNG y desplegó Pages. Se publicó la pre-release `prueba-419` tras el push de documentación/workflows, lo que evidenció que antes del filtro cualquier push a la rama activaba el build y release de prueba. El commit que añade el filtro de paths también modifica el workflow, por lo que se espera una última ejecución AppImage; su resultado se comprobará después del commit. La publicación de Pages conserva `cancel-in-progress: true`; un único commit agrupado evita cancelar runs por pushes sucesivos. La implementación no debe considerarse Release estable hasta completar las pruebas manuales anteriores.

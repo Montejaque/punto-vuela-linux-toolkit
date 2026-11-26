@@ -24,8 +24,13 @@ Las versiones empaquetadas comprueban GitHub Releases unos 5 segundos después d
 ## Guías
 
 - Guía integrada: archivo `GUIA-DE-AYUDA.md`.
-- Guía web interactiva (sin capturas de interfaz en esta revisión): https://toolkit.javigallego.es/guia.html
+- Guía web interactiva con 11 capturas generadas en CI: 01–09 renderer Chromium/Playwright con API y datos demo; 10–11 ventanas reales de Electron con estado sintético del actualizador. Las imágenes se generan al publicar y no se versionan: https://toolkit.javigallego.es/guia.html
 - Web del proyecto: https://toolkit.javigallego.es/
+
+## CI y publicación
+
+- Los pushes a `rewrite/electron-desktop` que cambien `desktop-electron/**` o el workflow de AppImage activan typecheck, build, empaquetado, smoke test y pre-release `prueba-N`. Los cambios solo documentales no activan AppImage; tags `v*` publican releases estables.
+- GitHub Pages genera 01–09 con Chromium/Playwright y API simulada, y 10–11 desde ventanas Electron reales con estado sintético del updater. Valida las 11 PNG antes de desplegar. El workflow fallback se ejecuta manualmente y aplica la misma validación.
 
 ## Compatibilidad
 
