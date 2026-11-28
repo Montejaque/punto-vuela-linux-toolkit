@@ -8,6 +8,7 @@ on:
       - "desktop-electron/package.json"
       - "docs-site/**"
       - "docs/GUIA-DE-AYUDA.md"
+      - "docs/ADR-001-NUEVA-ARQUITECTURA-ELECTRON.md"
       - "guia.html"
       - "privacy.html"
       - "terms.html"
